@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/recipes
+    username: postgres
+    password: 123
+    platform: postgresql
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false
+        jdbc.lob.non_contextual_creation: true
+        ddl-auto: none
+    generate-ddl: false

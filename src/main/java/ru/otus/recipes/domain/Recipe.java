@@ -1,0 +1,98 @@
+package ru.otus.recipes.domain;
+
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "tblrecipe")
+public class Recipe {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="recipe_id")
+    private long id;
+
+    @Column(name="name")
+    private String name;
+
+    @Column(name="description")
+    private String description;
+
+    @Column(name="instructions")
+    private String instructions;
+
+    @Column(name="cooktime")
+    private  int cooktime;
+
+    @ManyToOne
+    @JoinColumn(name = "level_id", nullable = false)
+    private Level level;
+
+    @ManyToOne
+    @JoinColumn(name = "cuisine_id", nullable = false)
+    private Cuisine cousine;
+
+    @Column(name="rating")
+    private int rating;
+
+    @ManyToMany
+    @JoinTable(
+            name = "tblrecipecourse"
+            ,joinColumns = @JoinColumn(name="recipe_id")
+            ,inverseJoinColumns = @JoinColumn(name = "course_id" )
+    )
+    private Set<Course> courses;
+
+    @ManyToMany
+    @JoinTable(
+            name = "tblrecipefoodcategory"
+            ,joinColumns = @JoinColumn(name="recipe_id")
+            ,inverseJoinColumns = @JoinColumn(name = "food_category_id" )
+    )
+    private Set<FoodCategory> foodCategories= new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "tblrecipemeals"
+            ,joinColumns = @JoinColumn(name="recipe_id")
+            ,inverseJoinColumns = @JoinColumn(name = "meal_id" )
+    )
+    private Set<Meal> meals;
+    @Column(name="imagepath")
+    private String imagepath;
+    @OneToMany(mappedBy ="recipe",cascade = CascadeType.ALL)
+    private Set<RecipeIngredient> recipeIngredients ;
+
+    public Recipe(String name, String description, String instructions, int cooktime,
+                  int rating, String imagepath,Level level, Cuisine cousine,Set<Course> courses,
+                  Set<FoodCategory> foodCategories, Set<Meal> meals,  List<RecipeIngredient> recipeIngredients ) {
+        this.name = name;
+        this.description = description;
+        this.instructions = instructions;
+        this.cooktime = cooktime;
+        this.rating = rating;
+        this.imagepath = imagepath;
+        this.level=level;
+        this.cousine=cousine;
+        this.courses=courses;
+        this.foodCategories=foodCategories;
+        this.meals=meals;
+        for(RecipeIngredient  recipeIngredient : recipeIngredients) {
+            recipeIngredient.setRecipe(this);
+        }
+        this.recipeIngredients = recipeIngredients.stream().collect(Collectors.toSet());
+
+
+    }
+
+}
