@@ -171,6 +171,18 @@ CREATE TABLE public.tbllevel (
     level_id bigint NOT NULL
 );
 
+CREATE SEQUENCE public.tbllevel_level_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tbllevel_level_id_seq OWNER TO postgres;
+
+ALTER SEQUENCE public.tbllevel_level_id_seq OWNED BY public.tbllevel.level_id;
+
 
 ALTER TABLE public.tbllevel OWNER TO postgres;
 
@@ -412,22 +424,14 @@ ALTER TABLE ONLY public.tblrecipefoodcategory
 
 ALTER TABLE public.tblrecipemeals OWNER TO postgres;
 
+ALTER TABLE ONLY public.tbllevel ALTER COLUMN level_id SET DEFAULT nextval('public.tbllevel_level_id_seq'::regclass);
 ALTER TABLE ONLY public.tblcourse ALTER COLUMN course_id SET DEFAULT nextval('public.tblcourse_course_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblcuisine ALTER COLUMN cuisine_id SET DEFAULT nextval('public.tblcuisine_cuisine_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblfoodcategory ALTER COLUMN food_category_id SET DEFAULT nextval('public.tblfoodcategory_food_category_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblingredient ALTER COLUMN ingredient_id SET DEFAULT nextval('public.tblingredient_ingredient_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblingredientnutritionaninformation ALTER COLUMN rni_id SET DEFAULT nextval('public.tblingredientnutritionaninformation_rni_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblmeal ALTER COLUMN meal_id SET DEFAULT nextval('public.tblmeal_meal_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblmeasurement ALTER COLUMN measurement_id SET DEFAULT nextval('public.tblmeasurement_measurement_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblnutritionalinformation ALTER COLUMN nutrition_information_id SET DEFAULT nextval('public.tblnutritionalinformation_nutrition_information_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('public.tblrecipe_recipe_id_seq'::regclass);
-
 ALTER TABLE ONLY public.tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('public.tblrecipeingredient_recipe_ingredient_id_seq'::regclass);

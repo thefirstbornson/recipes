@@ -40,7 +40,7 @@ public class Recipe {
 
     @ManyToOne
     @JoinColumn(name = "cuisine_id", nullable = false)
-    private Cuisine cousine;
+    private Cuisine cuisine;
 
     @Column(name="rating")
     private int rating;
@@ -70,12 +70,12 @@ public class Recipe {
     private Set<Meal> meals;
     @Column(name="imagepath")
     private String imagepath;
-    @OneToMany(mappedBy ="recipe",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="recipe",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<RecipeIngredient> recipeIngredients ;
 
-    public Recipe(String name, String description, String instructions, int cooktime,
-                  int rating, String imagepath,Level level, Cuisine cousine,Set<Course> courses,
-                  Set<FoodCategory> foodCategories, Set<Meal> meals,  List<RecipeIngredient> recipeIngredients ) {
+    public Recipe(long id, String name, String description, String instructions, int cooktime,
+                  int rating, String imagepath, Level level, Cuisine cuisine, Set<Course> courses,
+                  Set<FoodCategory> foodCategories, Set<Meal> meals, List<RecipeIngredient> recipeIngredients ) {
         this.name = name;
         this.description = description;
         this.instructions = instructions;
@@ -83,16 +83,14 @@ public class Recipe {
         this.rating = rating;
         this.imagepath = imagepath;
         this.level=level;
-        this.cousine=cousine;
+        this.cuisine = cuisine;
         this.courses=courses;
         this.foodCategories=foodCategories;
         this.meals=meals;
         for(RecipeIngredient  recipeIngredient : recipeIngredients) {
             recipeIngredient.setRecipe(this);
         }
-        this.recipeIngredients = recipeIngredients.stream().collect(Collectors.toSet());
-
-
+        this.recipeIngredients = new HashSet<>(recipeIngredients);
     }
 
 }

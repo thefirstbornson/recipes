@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,12 +26,12 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
     private Set<IngredientNutritionalInformation> ingredientNutritionalInformations;
 
-    public Ingredient(String name, IngredientNutritionalInformation ... ingredientNutritionalInformationSet) {
+    public Ingredient(String name, List<IngredientNutritionalInformation> ingredientNutritionalInformationList) {
         this.name = name;
-        for(IngredientNutritionalInformation ingredientNutritionalInformation : ingredientNutritionalInformationSet) {
+        for(IngredientNutritionalInformation ingredientNutritionalInformation : ingredientNutritionalInformationList) {
             ingredientNutritionalInformation.setIngredient(this);
         }
-        this.ingredientNutritionalInformations = Stream.of(ingredientNutritionalInformationSet).collect(Collectors.toSet());
+        this.ingredientNutritionalInformations = new HashSet<>(ingredientNutritionalInformationList);
     }
 
 }

@@ -1,88 +1,121 @@
 package ru.otus.recipes.service;
 
 
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.*;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.repository.*;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
-    private final RecipeIngredientRepository recipeIngredientRepository;
-    private final IngredientRepository ingredientRepository;
-    private final NutritionalInformationRepository nutritionalInformationRepository;
+    private final IngredientService ingredientService;
     private final LevelRepository levelRepository;
     private final CourseRepository courseRepository;
     private final CuisineRepository cuisineRepository;
     private final FoodCategoryRepository foodCategoryRepository;
     private final MealRepository mealRepository;
     private final MeasurementRepository measurementRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeIngredientRepository recipeIngredientRepository, IngredientRepository ingredientRepository, NutritionalInformationRepository nutritionalInformationRepository, LevelRepository levelRepository, CourseRepository courseRepository, CuisineRepository cuisineRepository, FoodCategoryRepository foodCategoryRepository, MealRepository mealRepository, MeasurementRepository measurementRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeIngredientRepository recipeIngredientRepository,
+                             IngredientService ingredientService, LevelRepository levelRepository, CourseRepository courseRepository,
+                             CuisineRepository cuisineRepository,
+                             FoodCategoryRepository foodCategoryRepository, MealRepository mealRepository,
+                             MeasurementRepository measurementRepository, IngredientRepository ingredientRepository) {
         this.recipeRepository = recipeRepository;
-        this.recipeIngredientRepository = recipeIngredientRepository;
-        this.ingredientRepository = ingredientRepository;
-        this.nutritionalInformationRepository = nutritionalInformationRepository;
+        this.ingredientService = ingredientService;
         this.levelRepository = levelRepository;
         this.courseRepository = courseRepository;
         this.cuisineRepository = cuisineRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.mealRepository = mealRepository;
         this.measurementRepository = measurementRepository;
+        this.recipeIngredientRepository = recipeIngredientRepository;
+
     }
 
     @Override
     @Transactional
-    public Recipe createRecipe(RecipeDto recipeDto) {
+    public Recipe createRecipe(RecipeDto recipeDto) throws EmptyResultDataAccessException {
+        Level level = levelRepository.getOne(recipeDto.getLevelId());
+        Cuisine cuisine=cuisineRepository.getOne(recipeDto.getCuisineId());
+        List<Course> courseList = courseRepository.findByIdIn(recipeDto.getCourseIdList());
+        List<FoodCategory> foodCategoryList = foodCategoryRepository.findByIdIn(recipeDto.getFoodCategoryIdList());
+        List<Meal> mealList = mealRepository.findByIdIn(recipeDto.getMealIdList());
+        List<RecipeIngredient> recipeIngredientList = extractRecipeIngredientListFromMap(recipeDto.getIngredientIdAndAmountMeasurementMap());
+        Recipe recipe = new Recipe(recipeDto.getId(), recipeDto.getName(), recipeDto.getDescription(), recipeDto.getInstructions(), recipeDto.getCooktime(),
+                recipeDto.getRating(), recipeDto.getImagepath(), level,cuisine, new HashSet<>(courseList), new HashSet<>(foodCategoryList),
+                new HashSet<>(mealList),recipeIngredientList);
+        return recipeRepository.save(recipe);
+    }
 
-//        NutritionalInformation fat =  nutritionalInformationRepository.findById(1L).get();
-//        NutritionalInformation protein = nutritionalInformationRepository.findById(2L).get();
-//        NutritionalInformation carbohydrate = nutritionalInformationRepository.findById(3L).get();
-
-        Ingredient ingredient1 = ingredientRepository.getOne(1L);
-        Ingredient ingredient2 = ingredientRepository.getOne(2L);
-        Ingredient ingredient3 = ingredientRepository.getOne(3L);
-        Ingredient ingredient4 = ingredientRepository.getOne(4L);
-
-        Level level = levelRepository.getOne(1l);
-        Cuisine cuisine=cuisineRepository.getOne(1L);
-
-        Course course = courseRepository.getOne(1L);
-        Course course1 = courseRepository.getOne(2L);
-
-        FoodCategory foodCategory=foodCategoryRepository.getOne(1L);
-        FoodCategory foodCategory1=foodCategoryRepository.getOne(2L);
-
-        Meal meal = mealRepository.getOne(1L);
-
-        Measurement measurement= measurementRepository.getOne(1L);
-
-        Recipe recipe = new Recipe("рис с тунцом", "быстрое и вкусное блюдо ",
-                "1. Сварить рис, 2. Обжарить лук, морковь, консервированный тунец, 3. добавить рис к зажарке",
-                20, 1, "",
-                level,cuisine, new HashSet<>(Arrays.asList(course,course1)),
-                new HashSet<>(Arrays.asList(foodCategory,foodCategory1)),
-                new HashSet<>(Arrays.asList(meal)),
-                Arrays.asList(new RecipeIngredient(ingredient1,1,measurement), new RecipeIngredient(ingredient2,1,measurement)));
-
-
-        recipeRepository.save(recipe);
-        return null;
+    private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String,Map<String ,String>> ingredinentMeasureAmountMap) {
+        List<Ingredient> ingredientList = ingredientService.findAllIngredients(
+                ingredinentMeasureAmountMap
+                .keySet()
+                .stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList())
+        );
+        List<Measurement> measurementList = measurementRepository.findByIdIn(
+                ingredinentMeasureAmountMap
+                .values()
+                .stream()
+                .map(m->Long.parseLong(m.get("measurement_id")))
+                .collect(Collectors.toList())
+        );
+        return ingredientList.stream()
+                .map(ingredient -> new RecipeIngredient(
+                        ingredient,
+                        Integer.parseInt(
+                                ingredinentMeasureAmountMap
+                                .get(String.valueOf(ingredient.getId())).get("amount")
+                                ),
+                        measurementList.stream()
+                                .filter(m->Long.parseLong(ingredinentMeasureAmountMap
+                                        .get(String.valueOf(ingredient.getId())).get("measurement_id"))==m.getId())
+                                .findAny()
+                                .orElseThrow(()->new EmptyResultDataAccessException(
+                                        String.format("No %s entity exists!",
+                                                Measurement.class.getTypeName()), 1
+                                        )
+                                )
+                        )
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Recipe getRecipe(long id) {
-        return recipeRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public Recipe updateRecipe(RecipeDto recipeDto) {
+        return createRecipe(recipeDto);
     }
 
+    @Override
+    @Transactional
+    public void deleteRecipeById(long id) throws EmptyResultDataAccessException {
+        recipeIngredientRepository.deleteByRecipeId(id);
+        recipeRepository.deleteById(id);
+    }
 
+    @Override
+    public Recipe findRecipeById(long id) throws EmptyResultDataAccessException{
+        return recipeRepository.findById(id)
+                .orElseThrow(()->new EmptyResultDataAccessException(
+                        String.format("No %s entity with id %s exists!",Recipe.class.getTypeName(), (int)id), 1)
+                );
+    }
+
+    @Override
+    public List<Recipe> findAllRecipes() {
+        return recipeRepository.findAll();
+    }
 }

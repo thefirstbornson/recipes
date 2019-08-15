@@ -18,11 +18,11 @@ public class RecipeIngredient  {
     @Column(name="recipe_ingredient_id")
     private long id;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "recipe_id", nullable=false)
     private Recipe recipe;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "ingredient_id", nullable=false)
     private Ingredient ingredient;
 
