@@ -1,6 +1,11 @@
 package ru.otus.recipes.dto;
 
-public class RecipeIngredientDto {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class RecipeIngredientDto extends AbstractDto{
     private long id;
     private IngredientDto ingredient;
     private int amount;

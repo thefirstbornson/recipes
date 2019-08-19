@@ -6,6 +6,6 @@ import ru.otus.recipes.domain.NutritionalInformation;
 
 import java.util.List;
 
-public interface NutritionalInformationRepository extends JpaRepository<NutritionalInformation,Long> {
-    List<NutritionalInformation> findByIdIn(List<Long> ids);
+public interface NutritionalInformationRepository  extends  CommonRepository<NutritionalInformation> {
+
 }

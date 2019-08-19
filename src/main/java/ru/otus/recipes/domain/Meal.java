@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tblmeal")
 
-public class Meal {
+public class Meal extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="meal_id")

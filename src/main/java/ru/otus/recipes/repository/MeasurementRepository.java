@@ -6,6 +6,5 @@ import ru.otus.recipes.domain.Measurement;
 
 import java.util.List;
 
-public interface MeasurementRepository extends JpaRepository<Measurement,Long> {
-    List<Measurement> findByIdIn(List<Long> ids);
+public interface MeasurementRepository extends  CommonRepository<Measurement> {
 }

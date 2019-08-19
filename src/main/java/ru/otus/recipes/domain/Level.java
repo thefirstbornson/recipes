@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Table(name="tbllevel")
-public class Level {
+public class Level extends AbstractEntity {
     @Id
     @Column(name="level_id")
     private long id;

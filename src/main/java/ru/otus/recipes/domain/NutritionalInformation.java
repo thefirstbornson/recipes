@@ -10,7 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "tblnutritionalinformation")
-public class NutritionalInformation {
+public class NutritionalInformation extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="nutrition_information_id")

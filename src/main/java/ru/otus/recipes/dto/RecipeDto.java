@@ -2,14 +2,15 @@ package ru.otus.recipes.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-public class RecipeDto {
+public class RecipeDto extends AbstractDto {
     private long id;
     private String name;
     private String description;

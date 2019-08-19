@@ -1,4 +1,9 @@
 package ru.otus.recipes.dto;
 
-public class MealDto {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class MealDto extends AbstractDto {
 }
