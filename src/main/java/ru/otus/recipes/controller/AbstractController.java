@@ -1,32 +1,35 @@
 package ru.otus.recipes.controller;
 
+import lombok.Getter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.recipes.domain.AbstractEntity;
+import ru.otus.recipes.dto.AbstractDto;
 import ru.otus.recipes.service.CommonService;
 
-import javax.lang.model.type.ErrorType;
-import java.util.List;
-
-public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<E>>
-        implements CommonController<E> {
+@Getter
+public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<E>, D extends AbstractDto>
+        implements CommonController<D> {
 
     private final S service;
+    private Class<E> entityClass;
 
     @Autowired
-    protected AbstractController(S service) {
+    private ModelMapper modelMapper;
+
+    protected AbstractController(S service, Class<E> entityClass) {
         this.service = service;
+        this.entityClass = entityClass;
     }
 
     @Override
-    public ResponseEntity<?> save(@RequestBody E entity) {
-       service.save(entity);
-       return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
+    public ResponseEntity<?> save(@RequestBody D dto) {
+        service.save(modelMapper.map(dto, entityClass));
+        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 
 //    @Override
@@ -35,8 +38,8 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
 //    }
 
     @Override
-    public ResponseEntity<?> update(@PathVariable("id") long id,@RequestBody E entity) {
-        service.save(entity);
+    public ResponseEntity<?> update(@PathVariable("id") long id,@RequestBody D dto) {
+        this.save(dto);
         return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.OK);
     }
 
@@ -46,17 +49,24 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
     }
 
     @Override
-    public ResponseEntity<List<E>> getAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<?> getAll() {
+       return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
     }
 
     @Override
-    public void delete(@PathVariable("id") long id) {
-       service.deleteById(id);
+    public  ResponseEntity<?> delete(@PathVariable("id") long id) {
+        service.deleteById(id);
+        return new ResponseEntity<>(
+                "{\"status\":\"deleted\"}",
+                HttpStatus.OK
+        );
     }
 
     @Override
-    public void deleteAll() {
+    public  ResponseEntity<?> deleteAll() {
         service.deleteAll();
-    }
+        return new ResponseEntity<>(
+                "{\"status\":\"deleted\"}",
+                HttpStatus.OK
+        );    }
 }

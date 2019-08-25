@@ -1,18 +1,16 @@
 package ru.otus.recipes.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "tblrecipeingredient")
 
-public class RecipeIngredient  {
+public class RecipeIngredient  extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="recipe_ingredient_id")

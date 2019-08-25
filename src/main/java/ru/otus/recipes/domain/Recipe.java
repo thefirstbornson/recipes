@@ -1,9 +1,7 @@
 package ru.otus.recipes.domain;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -11,12 +9,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "tblrecipe")
-public class Recipe {
+public class Recipe  extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="recipe_id")
@@ -92,5 +90,4 @@ public class Recipe {
         }
         this.recipeIngredients = new HashSet<>(recipeIngredients);
     }
-
 }

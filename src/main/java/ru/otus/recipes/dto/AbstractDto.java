@@ -1,7 +1,10 @@
 package ru.otus.recipes.dto;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
-abstract class AbstractDto implements Serializable {
+@Data
+public abstract class AbstractDto implements Serializable {
     private long id;
 }

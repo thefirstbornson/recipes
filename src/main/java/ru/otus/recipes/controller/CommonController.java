@@ -3,30 +3,31 @@ package ru.otus.recipes.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.recipes.domain.AbstractEntity;
+import ru.otus.recipes.dto.AbstractDto;
 
 import java.util.List;
 
 
-public interface CommonController<E extends AbstractEntity> {
+public interface CommonController<D extends AbstractDto> {
 
     @PostMapping
-    ResponseEntity<?> save(@RequestBody E entity);
+    ResponseEntity<?> save(@RequestBody D dto);
 
 //    @PostMapping
 //    ResponseEntity<?> saveAll(@RequestBody List<E> entities);
 
     @PutMapping("/{id}")
-    ResponseEntity<?> update(@PathVariable("id") long id,@RequestBody E entity);
+    ResponseEntity<?> update(@PathVariable("id") long id,@RequestBody D dto);
 
     @GetMapping("/{id}")
     ResponseEntity<?> get(@PathVariable("id") long id);
 
     @GetMapping
-    ResponseEntity<List<E>> getAll();
+    ResponseEntity<?> getAll();
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable("id") long id);
+    ResponseEntity<?> delete(@PathVariable("id") long id);
 
     @DeleteMapping
-    void deleteAll();
+    ResponseEntity<?> deleteAll();
 }

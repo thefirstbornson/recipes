@@ -1,8 +1,10 @@
 package ru.otus.recipes;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import ru.otus.recipes.domain.Recipe;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.service.RecipeService;
@@ -33,10 +35,12 @@ public class RecipesApplication {
 
         RecipeDto recipeDto = new RecipeDto(0,"1","2","3",30,1,1,1,"",
                 ingredients, Arrays.asList(1L,2L),Arrays.asList(1L,2L),Arrays.asList(1L,2L));
+        Recipe recipe = recipeService.save(recipeDto);
+    }
 
-        Recipe recipe = recipeService.createRecipe(recipeDto);
-
-
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
 }
