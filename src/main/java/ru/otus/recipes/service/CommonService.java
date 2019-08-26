@@ -1,20 +1,21 @@
 package ru.otus.recipes.service;
 
 import ru.otus.recipes.domain.AbstractEntity;
+import ru.otus.recipes.dto.AbstractDto;
 
 import java.util.List;
 import java.util.Optional;
 
 
-public interface CommonService<E extends AbstractEntity> {
+public interface CommonService< D extends AbstractDto,E extends AbstractEntity> {
 
-    E save(E entity);
+    D save(D dto);
 
-    List<E> saveAll(List<E> entities);
+    List<D> saveAll(List<D> dtoList);
 
-    E update(E entity);
+    D update(D dto);
 
-    E findById(Long id);
+    D findById(Long id);
 
     List<E> findAll();
 

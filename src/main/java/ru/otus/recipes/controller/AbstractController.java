@@ -12,7 +12,7 @@ import ru.otus.recipes.dto.AbstractDto;
 import ru.otus.recipes.service.CommonService;
 
 @Getter
-public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<E>, D extends AbstractDto>
+public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<D,E>, D extends AbstractDto>
         implements CommonController<D> {
 
     private final S service;
@@ -28,7 +28,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
 
     @Override
     public ResponseEntity<?> save(@RequestBody D dto) {
-        service.save(modelMapper.map(dto, entityClass));
+        service.save(dto);
         return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 

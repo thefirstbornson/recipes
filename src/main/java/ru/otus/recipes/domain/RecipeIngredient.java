@@ -4,8 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "tblrecipeingredient")

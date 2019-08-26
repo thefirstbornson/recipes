@@ -22,15 +22,4 @@ public class RecipeController {
         this.conversionDtoServcie = conversionDtoServcie;
     }
 
-    @Override
-    public ResponseEntity<List<RecipeDto>> getAll() {
-        List<Recipe> recipes = super.getService().findAll();
-        List<RecipeDto> recipeDtoList =recipes.stream().map(conversionDtoServcie::toDto).collect(Collectors.toList());
-        return  ResponseEntity.ok(recipeDtoList);
-    }
-
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<String> handleServerException(EmptyResultDataAccessException e){
-        return new ResponseEntity<>("{}", HttpStatus.OK);
-    }
 }

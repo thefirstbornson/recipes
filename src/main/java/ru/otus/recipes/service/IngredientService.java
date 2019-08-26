@@ -5,8 +5,27 @@ import ru.otus.recipes.dto.IngredientDto;
 
 import java.util.List;
 
-public interface IngredientService extends AbstractService {
-//    Ingredient createIngredient ( IngredientDto ingredientDto);
-//    Ingredient findIngredientById(long id);
-//    List<Ingredient> findAllIngredients(List<Long> ingredientIds);
+@Service
+public class IngredientService extends AbstractService <IngredientDto, Ingredient,  IngredientRepository, IngredientMapper>{
+    @Autowired
+    private final IngredientNutritionalInformationRepository ingredientNutritionalInformationRepository;
+
+    public IngredientService(IngredientRepository ingredientRepository,
+                             IngredientNutritionalInformationRepository ingredientNutritionalInformationRepository,
+                             IngredientMapper ingredientMapper) {
+        super(ingredientRepository, ingredientMapper);
+        this.ingredientNutritionalInformationRepository = ingredientNutritionalInformationRepository;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        ingredientNutritionalInformationRepository.deleteByIngredientId(id);
+        super.getRepository().deleteById(id);
+    }
+
+    @Override
+    public void deleteAll() {
+        ingredientNutritionalInformationRepository.deleteAll();
+        super.getRepository().deleteAll();
+    }
 }

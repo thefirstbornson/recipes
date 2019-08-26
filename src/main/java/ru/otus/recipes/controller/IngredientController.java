@@ -12,14 +12,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController extends AbstractController<Ingredient, IngredientService, IngredientDto>{
-
     protected IngredientController(IngredientService service) {
         super(service, Ingredient.class);
     }
 
-    @Override
-    public ResponseEntity<List<IngredientDto>> getAll() {
-        List<Ingredient> recipes = super.getService().findAll();
-        List<IngredientDto> recipeDtoList =recipes.stream().map(conversionDtoServcie::convertToDto).collect(Collectors.toList());
-        return  ResponseEntity.ok(recipeDtoList);
 }

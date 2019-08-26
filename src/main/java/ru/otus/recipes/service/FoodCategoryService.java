@@ -1,14 +1,16 @@
 package ru.otus.recipes.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.otus.recipes.domain.Cuisine;
 import ru.otus.recipes.domain.FoodCategory;
-import ru.otus.recipes.repository.CuisineRepository;
+import ru.otus.recipes.dto.FoodCategoryDto;
 import ru.otus.recipes.repository.FoodCategoryRepository;
+import ru.otus.recipes.service.dtoconversion.FoodCategoryMapper;
 
 @Service
-public class FoodCategoryService extends AbstractService <FoodCategory, FoodCategoryRepository>{
-    public FoodCategoryService(FoodCategoryRepository repository) {
-        super(repository);
+public class FoodCategoryService extends AbstractService <FoodCategoryDto, FoodCategory, FoodCategoryRepository, FoodCategoryMapper>{
+    @Autowired
+    public FoodCategoryService(FoodCategoryRepository repository , FoodCategoryMapper foodCategoryMapper) {
+        super(repository, foodCategoryMapper);
     }
 }
