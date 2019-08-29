@@ -12,5 +12,5 @@ import java.util.Map;
 @Data
 public class IngredientDto extends AbstractDto {
     private String name;
-    private HashMap<String,String> nutritionalIdsndAmountMap;
+    private Map<Long,Integer> nutritionalIdsndAmountMap;
 }

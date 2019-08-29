@@ -1,12 +1,10 @@
-package ru.otus.recipes.service.dtoconversion;
+package ru.otus.recipes.service.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.*;
-import ru.otus.recipes.dto.IngredientDto;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.repository.*;
 
@@ -93,7 +91,7 @@ public class RecipeMapper extends AbstractMapper<RecipeDto,Recipe> {
 
 
     private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String, Map<String ,Long>> ingredinentMeasureAmountMap) {
-        List<Ingredient> ingredientList = ingredientRepository.findByIdIn(new ArrayList<Long>(ingredinentMeasureAmountMap.keySet()
+        List<Ingredient> ingredientList = ingredientRepository.findByIdIn(new ArrayList<>(ingredinentMeasureAmountMap.keySet()
                 .stream()
                 .map(Long::valueOf)
                 .collect(Collectors.toList())));

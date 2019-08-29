@@ -12,18 +12,18 @@ import java.util.HashMap;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-class IngredientServiceImplTest {
+class IngredientServiceTest {
     @Autowired
     private IngredientService ingredientService;
 
     @Test
     void createIngredient() {
-        HashMap<String,String> nutritionalAmountMap= new HashMap<>();
-        nutritionalAmountMap.put("1","1");
-        nutritionalAmountMap.put("2","1");
-        nutritionalAmountMap.put("3","1");
-        IngredientDto ingredientDto = new IngredientDto(1,"яйцо",nutritionalAmountMap);
-        Ingredient ingredient = ingredientService.createIngredient(ingredientDto);
-        System.out.println(ingredient);
+//        HashMap<String,String> nutritionalAmountMap= new HashMap<>();
+//        nutritionalAmountMap.put("1","1");
+//        nutritionalAmountMap.put("2","1");
+//        nutritionalAmountMap.put("3","1");
+//        IngredientDto ingredientDto = new IngredientDto(1,"яйцо",nutritionalAmountMap);
+//        Ingredient ingredient = ingredientService.createIngredient(ingredientDto);
+//        System.out.println(ingredient);
     }
 }

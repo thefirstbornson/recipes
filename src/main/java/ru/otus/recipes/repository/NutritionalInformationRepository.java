@@ -7,5 +7,4 @@ import ru.otus.recipes.domain.NutritionalInformation;
 import java.util.List;
 
 public interface NutritionalInformationRepository  extends  CommonRepository<NutritionalInformation> {
-
 }

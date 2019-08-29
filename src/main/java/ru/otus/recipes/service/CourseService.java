@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.Course;
 import ru.otus.recipes.dto.CourseDto;
 import ru.otus.recipes.repository.CourseRepository;
-import ru.otus.recipes.service.dtoconversion.CourseMapper;
+import ru.otus.recipes.service.mapper.CourseMapper;
 
 @Service
 public class CourseService extends AbstractService <CourseDto, Course, CourseRepository, CourseMapper>{
     @Autowired
     public CourseService(CourseRepository repository, CourseMapper courseMapper) {
-        super(repository, courseMapper);
+        super(repository, courseMapper, Course.class);
     }
 }

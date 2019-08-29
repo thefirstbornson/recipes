@@ -1,9 +1,7 @@
-package ru.otus.recipes.service.dtoconversion;
+package ru.otus.recipes.service.mapper;
 
 import org.springframework.stereotype.Service;
-import ru.otus.recipes.domain.Measurement;
 import ru.otus.recipes.domain.NutritionalInformation;
-import ru.otus.recipes.dto.MeasurementDto;
 import ru.otus.recipes.dto.NutritionalInformationDto;
 
 @Service

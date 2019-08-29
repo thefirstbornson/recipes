@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.Level;
 import ru.otus.recipes.dto.LevelDto;
 import ru.otus.recipes.repository.LevelRepository;
-import ru.otus.recipes.service.dtoconversion.LevelMapper;
+import ru.otus.recipes.service.mapper.LevelMapper;
 
 @Service
 public class LevelService extends AbstractService <LevelDto,Level,  LevelRepository, LevelMapper>{
     @Autowired
     public LevelService( LevelRepository repository, LevelMapper levelMapper) {
-        super(repository, levelMapper);
+        super(repository, levelMapper, Level.class);
     }
 }

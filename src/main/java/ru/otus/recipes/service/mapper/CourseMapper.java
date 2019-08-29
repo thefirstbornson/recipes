@@ -1,11 +1,7 @@
-package ru.otus.recipes.service.dtoconversion;
+package ru.otus.recipes.service.mapper;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.otus.recipes.domain.AbstractEntity;
 import ru.otus.recipes.domain.Course;
-import ru.otus.recipes.dto.AbstractDto;
 import ru.otus.recipes.dto.CourseDto;
 
 @Service

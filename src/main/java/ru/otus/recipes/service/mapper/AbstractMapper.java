@@ -1,4 +1,4 @@
-package ru.otus.recipes.service.dtoconversion;
+package ru.otus.recipes.service.mapper;
 
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
