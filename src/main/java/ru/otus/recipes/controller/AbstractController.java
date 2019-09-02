@@ -47,7 +47,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
         try {
             return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, String.format("Can not find entity with id  %d", id), ex);
+            throw new ResponseStatusException(HttpStatus.OK, String.format("Can not find entity with id  %d", id), ex);
         }
     }
 
@@ -56,7 +56,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
         try {
             return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
-            throw new ResponseStatusException( HttpStatus.NO_CONTENT, "Can not find entities", ex);
+            throw new ResponseStatusException( HttpStatus.OK, "Can not find entities", ex);
         }
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
             service.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
-            throw new ResponseStatusException( HttpStatus.NO_CONTENT, String.format("Can not delete entity with %d",id), ex);
+            throw new ResponseStatusException( HttpStatus.OK, String.format("Can not delete entity with %d",id), ex);
         }
     }
 
@@ -76,7 +76,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
             service.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
-            throw new ResponseStatusException( HttpStatus.NO_CONTENT, "Can not delete entities", ex);
+            throw new ResponseStatusException( HttpStatus.OK, "Can not delete entities", ex);
         }
     }
 }

@@ -5,6 +5,10 @@ spring:
     password: 123
     platform: postgresql
     initialization-mode: always
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     properties:
@@ -14,3 +18,7 @@ spring:
         jdbc.lob.non_contextual_creation: true
         ddl-auto: none
     generate-ddl: false
+server:
+  error:
+    include-stacktrace: always
+
