@@ -2,7 +2,6 @@ package ru.otus.recipes.dto;
 
 import lombok.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

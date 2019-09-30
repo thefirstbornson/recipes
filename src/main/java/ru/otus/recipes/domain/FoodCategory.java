@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
 @Table(name = "tblfoodcategory")
 public class FoodCategory extends AbstractEntity{
     @Id
@@ -17,4 +18,5 @@ public class FoodCategory extends AbstractEntity{
     private long id;
     @Column(name="food_category")
     private String foodCategory;
+
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.*;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.repository.*;
-
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,8 +14,8 @@ import java.util.stream.Collectors;
 import static java.lang.Math.toIntExact;
 
 @Service
-public class RecipeMapper extends AbstractMapper<RecipeDto,Recipe> {
-    private final  IngredientRepository ingredientRepository;
+public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
+    private final IngredientRepository ingredientRepository;
     private final LevelRepository levelRepository;
     private final CourseRepository courseRepository;
     private final CuisineRepository cuisineRepository;

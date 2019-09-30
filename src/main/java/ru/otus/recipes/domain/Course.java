@@ -1,10 +1,12 @@
 package ru.otus.recipes.domain;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 
-
+@ToString
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor

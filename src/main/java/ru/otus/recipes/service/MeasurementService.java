@@ -8,7 +8,7 @@ import ru.otus.recipes.repository.MeasurementRepository;
 import ru.otus.recipes.service.mapper.MeasurementMapper;
 
 @Service
-public class MeasurementService extends AbstractService <MeasurementDto, Measurement,  MeasurementRepository, MeasurementMapper>{
+public class MeasurementService extends AbstractService <MeasurementDto, Measurement, MeasurementRepository, MeasurementMapper>{
     @Autowired
     public MeasurementService( MeasurementRepository repository, MeasurementMapper measurementMapper) {
         super(repository, measurementMapper, Measurement.class);

@@ -8,17 +8,22 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: false
         jdbc.lob.non_contextual_creation: true
         ddl-auto: none
     generate-ddl: false
 server:
   error:
-    include-stacktrace: always
+    include-stacktrace: never
+logging:
+  level:
+    org.springframework.web: ERROR
+    ru.otus: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
 

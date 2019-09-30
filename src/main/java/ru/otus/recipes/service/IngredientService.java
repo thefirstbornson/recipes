@@ -1,5 +1,7 @@
 package ru.otus.recipes.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import ru.otus.recipes.service.mapper.IngredientMapper;
 public class IngredientService extends AbstractService <IngredientDto, Ingredient,  IngredientRepository, IngredientMapper>{
 
     private final IngredientNutritionalInformationRepository ingredientNutritionalInformationRepository;
+    private final Logger log = LoggerFactory.getLogger(Ingredient.class);
 
     @Autowired
     public IngredientService(IngredientRepository ingredientRepository,
@@ -28,10 +31,12 @@ public class IngredientService extends AbstractService <IngredientDto, Ingredien
     @Override
     public void deleteById(Long id) throws EntityNotFoundException {
         try {
+            log.info(String.format("Start removing %s entity from join table", Ingredient.class));
             ingredientNutritionalInformationRepository.deleteByIngredientId(id);
+            log.info("Removal from join table successful");
             super.getRepository().deleteById(id);
         } catch (EmptyResultDataAccessException e){
-            e.printStackTrace();
+            log.error("Empty result returned",e);
             throw new EntityNotFoundException(String.format("No %s entities found!", Ingredient.class.getTypeName()));
         }
     }
@@ -39,10 +44,12 @@ public class IngredientService extends AbstractService <IngredientDto, Ingredien
     @Override
     public void deleteAll() throws EntityNotFoundException {
         try {
+            log.info(String.format("Start removing %s entities from join table", Ingredient.class));
             ingredientNutritionalInformationRepository.deleteAll();
+            log.info("Removal from join table successful");
             super.getRepository().deleteAll();
         } catch (IllegalArgumentException e){
-            e.printStackTrace();
+            log.error(String.format("Error returned while removing %s entity ", Ingredient.class),e);
             throw new EntityNotFoundException(String.format("No %s entities found!", Recipe.class.getTypeName()));
         }
     }
