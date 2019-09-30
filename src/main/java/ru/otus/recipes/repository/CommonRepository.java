@@ -1,7 +1,6 @@
 package ru.otus.recipes.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import ru.otus.recipes.domain.AbstractEntity;
 

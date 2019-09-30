@@ -6,8 +6,6 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -22,7 +20,7 @@ public class Ingredient extends AbstractEntity {
     long id;
     @Column(name="name")
     private String name;
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ingredient", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<IngredientNutritionalInformation> ingredientNutritionalInformations;
 
     public Ingredient(String name, List<IngredientNutritionalInformation> ingredientNutritionalInformationList) {
@@ -32,5 +30,4 @@ public class Ingredient extends AbstractEntity {
         }
         this.ingredientNutritionalInformations = new HashSet<>(ingredientNutritionalInformationList);
     }
-
 }

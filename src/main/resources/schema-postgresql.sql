@@ -1,5 +1,4 @@
 DROP SEQUENCE IF EXISTS tblrecipeingredient_id_seq CASCADE;
-DROP SEQUENCE IF EXISTS tblrecipeingredient_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblrecipeingredient_recipe_ingredient_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 DROP SEQUENCE IF EXISTS tblcourse_course_id_seq CASCADE;
@@ -7,7 +6,6 @@ DROP SEQUENCE IF EXISTS tblcuisine_cuisine_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblfoodcategory_food_category_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblingredient_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblingredient_ingredient_id_seq CASCADE;
-DROP SEQUENCE IF EXISTS tblingrediente_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblingredientnutritionaninformation_rni_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblmeal_meal_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblmeasurement_measurement_id_seq CASCADE;
@@ -113,16 +111,6 @@ CREATE TABLE public.tblingredient (
 
 ALTER TABLE public.tblingredient OWNER TO postgres;
 
-CREATE SEQUENCE public.tblingredient_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.tblingredient_id_seq OWNER TO postgres;
-
 CREATE SEQUENCE public.tblingredient_ingredient_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -134,16 +122,6 @@ CREATE SEQUENCE public.tblingredient_ingredient_id_seq
 ALTER TABLE public.tblingredient_ingredient_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.tblingredient_ingredient_id_seq OWNED BY public.tblingredient.ingredient_id;
-
-CREATE SEQUENCE public.tblingrediente_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.tblingrediente_id_seq OWNER TO postgres;
 
 CREATE TABLE public.tblingredientnutritionaninformation (
                                                             rni_id bigint NOT NULL,

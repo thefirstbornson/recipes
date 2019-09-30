@@ -9,6 +9,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tblnutritionalinformation")
 public class NutritionalInformation extends AbstractEntity {

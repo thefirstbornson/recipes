@@ -6,7 +6,7 @@ import ru.otus.recipes.dto.CourseDto;
 
 @Service
 public class CourseMapper extends AbstractMapper<CourseDto, Course> {
-    CourseMapper() {
+    public CourseMapper() {
         super(Course.class, CourseDto.class);
     }
 }
