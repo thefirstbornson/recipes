@@ -6,7 +6,6 @@ import ru.otus.recipes.service.mapper.CourseMapper;
 
 @TestConfiguration
 public class RecipeTestConfiguration {
-
         @Bean
         public CourseMapper courseMapper() {
             return new CourseMapper();
