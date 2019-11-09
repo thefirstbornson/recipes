@@ -56,7 +56,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
             return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
             log.error("Get request failed", ex);
-            throw new ResponseStatusException(HttpStatus.OK, String.format("Can not find entity with id  %d", id), ex);
+            throw new ResponseStatusException(HttpStatus.OK, String.format("Can not find entity with id %d", id), ex);
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
             return new ResponseEntity<>("Removal was successful",HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
             log.error("Delete request failed", ex);
-            throw new ResponseStatusException( HttpStatus.OK, String.format("Can not delete entity with %d",id), ex);
+            throw new ResponseStatusException( HttpStatus.OK, String.format("Can not delete entity with id %d",id), ex);
         }
     }
 

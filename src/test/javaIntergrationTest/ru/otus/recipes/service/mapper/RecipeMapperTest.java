@@ -38,6 +38,8 @@ class RecipeMapperTest {
     RecipeIngredientRepository recipeIngredientRepository;
     @Autowired
     MeasurementRepository measurementRepository;
+    @Autowired
+    private RecipeMapper recipeMapper;
 
     @BeforeEach
     void setUp()
@@ -67,9 +69,6 @@ class RecipeMapperTest {
         recipeDto = new RecipeDto(0,"","","",30,1,1,1,"",
                 ingredients, Collections.singletonList(1L), Collections.singletonList(1L), Collections.singletonList(1L));
     }
-
-    @Autowired
-    private RecipeMapper recipeMapper;
 
     @Test
     void toDto() {

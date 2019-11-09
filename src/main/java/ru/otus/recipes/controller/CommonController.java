@@ -11,7 +11,6 @@ public interface CommonController<D extends AbstractDto> {
     @PostMapping
     ResponseEntity<?> save(@RequestBody D dto);
 
-
     @PutMapping("/{id}")
     ResponseEntity<?> update(@PathVariable("id") long id,@RequestBody D dto);
 
