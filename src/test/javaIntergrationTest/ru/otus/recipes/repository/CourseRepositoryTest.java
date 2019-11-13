@@ -36,4 +36,6 @@ class CourseRepositoryTest {
         courseRepository.save(course);
         assertTrue(course.getId()>0);
     }
+
+
 }

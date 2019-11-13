@@ -1,4 +1,5 @@
 DROP SEQUENCE IF EXISTS tblrecipeingredient_id_seq CASCADE;
+DROP SEQUENCE IF EXISTS mng_mealrecipe_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS tblrecipeingredient_recipe_ingredient_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 DROP SEQUENCE IF EXISTS tblcourse_course_id_seq CASCADE;
@@ -23,10 +24,12 @@ DROP TABLE IF EXISTS tbllevel CASCADE;
 DROP TABLE IF EXISTS tblmeal CASCADE;
 DROP TABLE IF EXISTS tblnutritionalinformation CASCADE;
 DROP TABLE IF EXISTS tblrecipe CASCADE;
+DROP TABLE IF EXISTS mng_mealrecipe CASCADE;
 DROP TABLE IF EXISTS tblrecipecourse CASCADE;
 DROP TABLE IF EXISTS tblrecipefoodcategory CASCADE;
 DROP TABLE IF EXISTS tblrecipeingredient CASCADE;
 DROP TABLE IF EXISTS tblrecipemeals CASCADE;
+DROP TABLE IF EXISTS mngmealreciperecipes CASCADE;
 
 CREATE SEQUENCE public.hibernate_sequence
     START WITH 1
@@ -122,6 +125,7 @@ CREATE SEQUENCE public.tblingredient_ingredient_id_seq
 ALTER TABLE public.tblingredient_ingredient_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.tblingredient_ingredient_id_seq OWNED BY public.tblingredient.ingredient_id;
+
 
 CREATE TABLE public.tblingredientnutritionaninformation (
                                                             rni_id bigint NOT NULL,
@@ -236,6 +240,21 @@ CREATE TABLE public.tblrecipe (
                                   rating integer
 );
 
+CREATE SEQUENCE mng_mealrecipe_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.mng_mealrecipe
+(
+    id bigserial NOT NULL,
+    meal_id bigint NOT NULL,
+    CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (id)
+);
+
+
 
 ALTER TABLE public.tblrecipe OWNER TO postgres;
 
@@ -316,6 +335,14 @@ CREATE TABLE public.tblrecipemeals (
                                        meal_id bigint NOT NULL
 );
 
+CREATE TABLE public.mngmealreciperecipes(
+                                     mealrecipe_id bigint NOT NULL,
+                                     recipe_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.mng_mealrecipe OWNER to postgres;
+
 ALTER TABLE ONLY public.tblcourse
     ADD CONSTRAINT tblcourse_pkey PRIMARY KEY (course_id);
 
@@ -364,7 +391,6 @@ ALTER TABLE ONLY public.tblrecipemeals
 ALTER TABLE ONLY public.tblrecipecourse
     ADD CONSTRAINT fk3dv61nxdrwpp6be6tjc5p37uf FOREIGN KEY (recipe_id) REFERENCES public.tblrecipe(recipe_id);
 
-
 ALTER TABLE ONLY public.tblrecipecourse
     ADD CONSTRAINT fk4ay8lsegi073o0o2irqnfg6q5 FOREIGN KEY (course_id) REFERENCES public.tblcourse(course_id);
 
@@ -399,8 +425,8 @@ ALTER TABLE ONLY public.tblrecipeingredient
 ALTER TABLE ONLY public.tblrecipefoodcategory
     ADD CONSTRAINT fksu4nfv25lilhw6eg0j3gtcnsn FOREIGN KEY (recipe_id) REFERENCES public.tblrecipe(recipe_id);
 
-
-ALTER TABLE public.tblrecipemeals OWNER TO postgres;
+ALTER TABLE ONLY public.mng_mealrecipe
+    ADD CONSTRAINT meal_id_fk FOREIGN KEY (meal_id) REFERENCES public.tblmeal(meal_id);
 
 ALTER TABLE ONLY public.tbllevel ALTER COLUMN level_id SET DEFAULT nextval('public.tbllevel_level_id_seq'::regclass);
 ALTER TABLE ONLY public.tblcourse ALTER COLUMN course_id SET DEFAULT nextval('public.tblcourse_course_id_seq'::regclass);
@@ -413,3 +439,4 @@ ALTER TABLE ONLY public.tblmeasurement ALTER COLUMN measurement_id SET DEFAULT n
 ALTER TABLE ONLY public.tblnutritionalinformation ALTER COLUMN nutrition_information_id SET DEFAULT nextval('public.tblnutritionalinformation_nutrition_information_id_seq'::regclass);
 ALTER TABLE ONLY public.tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('public.tblrecipe_recipe_id_seq'::regclass);
 ALTER TABLE ONLY public.tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('public.tblrecipeingredient_recipe_ingredient_id_seq'::regclass);
+ALTER TABLE ONLY public.mng_mealrecipe ALTER COLUMN id SET DEFAULT nextval('public.mng_mealrecipe_id_seq'::regclass);

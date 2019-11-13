@@ -1,4 +1,5 @@
 DROP SEQUENCE IF EXISTS tblrecipeingredient_id_seq;
+DROP SEQUENCE IF EXISTS mng_mealrecipe_id_seq;
 DROP SEQUENCE IF EXISTS tblrecipeingredient_recipe_ingredient_id_seq ;
 DROP SEQUENCE IF EXISTS hibernate_sequence ;
 DROP SEQUENCE IF EXISTS tblcourse_course_id_seq ;
@@ -14,6 +15,7 @@ DROP SEQUENCE IF EXISTS tblrecipe_id_seq ;
 DROP SEQUENCE IF EXISTS tblrecipe_recipe_id_seq ;
 
 DROP TABLE IF EXISTS tblcourse CASCADE;
+DROP TABLE IF EXISTS mng_mealrecipe CASCADE;
 DROP TABLE IF EXISTS tblcuisine CASCADE;
 DROP TABLE IF EXISTS tblfoodcategory CASCADE;
 DROP TABLE IF EXISTS tblingredient CASCADE;
@@ -28,59 +30,60 @@ DROP TABLE IF EXISTS tblrecipefoodcategory CASCADE;
 DROP TABLE IF EXISTS tblrecipeingredient CASCADE;
 DROP TABLE IF EXISTS tblrecipemeals CASCADE;
 
--- CREATE SEQUENCE hibernate_sequence
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE hibernate_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 CREATE TABLE tblcourse (
                                   course_id bigserial NOT NULL,
                                   course varchar(255)
 );
 
--- CREATE SEQUENCE tblcourse_course_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblcourse_course_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblcuisine (
                                    cuisine_id bigserial NOT NULL,
                                    cuisine varchar(255)
 );
 
--- CREATE SEQUENCE tblcuisine_cuisine_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblcuisine_cuisine_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblfoodcategory (
                                         food_category_id bigserial NOT NULL,
                                         food_category varchar(255)
 );
 
--- CREATE SEQUENCE tblfoodcategory_food_category_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblfoodcategory_food_category_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblingredient (
                                       ingredient_id bigserial NOT NULL,
                                       name varchar(255)
 );
 
--- CREATE SEQUENCE tblingredient_ingredient_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblingredient_ingredient_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblingredientnutritionaninformation (
                                                             rni_id bigserial NOT NULL,
@@ -89,59 +92,59 @@ CREATE TABLE tblingredientnutritionaninformation (
                                                             ni_id bigint
 );
 
--- CREATE SEQUENCE tblingredientnutritionaninformation_rni_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblingredientnutritionaninformation_rni_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tbllevel (
     level_id bigserial NOT NULL
 );
 
--- CREATE SEQUENCE tbllevel_level_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tbllevel_level_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblmeal (
                                 meal_id bigserial NOT NULL,
                                 meal varchar(255)
 );
 
--- CREATE SEQUENCE tblmeal_meal_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblmeal_meal_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblmeasurement (
                                        measurement_id bigserial NOT NULL,
                                        name varchar(255)
 );
 
--- CREATE SEQUENCE tblmeasurement_measurement_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblmeasurement_measurement_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblnutritionalinformation (
                                                   nutrition_information_id bigserial NOT NULL,
                                                   name varchar(255)
 );
 
--- CREATE SEQUENCE tblnutritionalinformation_nutrition_information_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblnutritionalinformation_nutrition_information_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblrecipe (
                                   recipe_id bigserial NOT NULL,
@@ -155,19 +158,19 @@ CREATE TABLE tblrecipe (
                                   rating integer
 );
 
--- CREATE SEQUENCE tblrecipe_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
---
--- CREATE SEQUENCE tblrecipe_recipe_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblrecipe_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE tblrecipe_recipe_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblrecipecourse (
                                         recipe_id bigint NOT NULL,
@@ -180,73 +183,94 @@ CREATE TABLE tblrecipefoodcategory (
 );
 
 CREATE TABLE tblrecipeingredient (
-                                            recipe_ingredient_id bigint NOT NULL,
+                                            recipe_ingredient_id bigserial NOT NULL,
                                             amount integer,
                                             ingredient_id bigint NOT NULL,
                                             measurement_id bigint,
                                             recipe_id bigint NOT NULL
 );
 
--- CREATE SEQUENCE tblrecipeingredient_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
---
--- CREATE SEQUENCE tblrecipeingredient_recipe_ingredient_id_seq
---     START WITH 1
---     INCREMENT BY 1
---     NO MINVALUE
---     NO MAXVALUE
---     CACHE 1;
+CREATE SEQUENCE tblrecipeingredient_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE tblrecipeingredient_recipe_ingredient_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE tblrecipemeals (
                                        recipe_id bigint NOT NULL,
                                        meal_id bigint NOT NULL
 );
 
--- ALTER TABLE tblcourse
---     ADD CONSTRAINT tblcourse_pkey PRIMARY KEY (course_id);
---
--- ALTER TABLE tblcuisine
---     ADD CONSTRAINT tblcuisine_pkey PRIMARY KEY (cuisine_id);
---
--- ALTER TABLE tblfoodcategory
---     ADD CONSTRAINT tblfoodcategory_pkey PRIMARY KEY (food_category_id);
---
--- ALTER TABLE tblingredient
---     ADD CONSTRAINT tblingredient_pkey PRIMARY KEY (ingredient_id);
---
--- ALTER TABLE tblingredientnutritionaninformation
---     ADD CONSTRAINT tblingredientnutritionaninformation_pkey PRIMARY KEY (rni_id);
---
--- ALTER TABLE tbllevel
---     ADD CONSTRAINT tbllevel_pkey PRIMARY KEY (level_id);
---
--- ALTER TABLE tblmeal
---     ADD CONSTRAINT tblmeal_pkey PRIMARY KEY (meal_id);
---
--- ALTER TABLE tblmeasurement
---     ADD CONSTRAINT tblmeasurement_pkey PRIMARY KEY (measurement_id);
---
--- ALTER TABLE tblnutritionalinformation
---     ADD CONSTRAINT tblnutritionalinformation_pkey PRIMARY KEY (nutrition_information_id);
---
--- ALTER TABLE tblrecipe
---     ADD CONSTRAINT tblrecipe_pkey PRIMARY KEY (recipe_id);
---
--- ALTER TABLE tblrecipecourse
---     ADD CONSTRAINT tblrecipecourse_pkey PRIMARY KEY (recipe_id, course_id);
---
--- ALTER TABLE tblrecipefoodcategory
---     ADD CONSTRAINT tblrecipefoodcategory_pkey PRIMARY KEY (recipe_id, food_category_id);
---
--- ALTER TABLE tblrecipeingredient
---     ADD CONSTRAINT tblrecipeingredient_pkey PRIMARY KEY (recipe_ingredient_id);
---
--- ALTER TABLE tblrecipemeals
---     ADD CONSTRAINT tblrecipemeals_pkey PRIMARY KEY (recipe_id, meal_id);
+CREATE TABLE mngmealreciperecipes(
+                                     mealrecipe_id bigint NOT NULL,
+                                     recipe_id bigint NOT NULL
+);
+
+CREATE SEQUENCE mng_mealrecipe_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE mng_mealrecipe
+(
+    id bigserial NOT NULL,
+    meal_id bigint NOT NULL,
+    CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (id),
+    CONSTRAINT meal_id_fk FOREIGN KEY (meal_id)
+        REFERENCES tblmeal (meal_id)
+);
+
+ALTER TABLE tblcourse
+    ADD CONSTRAINT tblcourse_pkey PRIMARY KEY (course_id);
+
+ALTER TABLE tblcuisine
+    ADD CONSTRAINT tblcuisine_pkey PRIMARY KEY (cuisine_id);
+
+ALTER TABLE tblfoodcategory
+    ADD CONSTRAINT tblfoodcategory_pkey PRIMARY KEY (food_category_id);
+
+ALTER TABLE tblingredient
+    ADD CONSTRAINT tblingredient_pkey PRIMARY KEY (ingredient_id);
+
+ALTER TABLE tblingredientnutritionaninformation
+    ADD CONSTRAINT tblingredientnutritionaninformation_pkey PRIMARY KEY (rni_id);
+
+ALTER TABLE tbllevel
+    ADD CONSTRAINT tbllevel_pkey PRIMARY KEY (level_id);
+
+ALTER TABLE tblmeal
+    ADD CONSTRAINT tblmeal_pkey PRIMARY KEY (meal_id);
+
+ALTER TABLE tblmeasurement
+    ADD CONSTRAINT tblmeasurement_pkey PRIMARY KEY (measurement_id);
+
+ALTER TABLE tblnutritionalinformation
+    ADD CONSTRAINT tblnutritionalinformation_pkey PRIMARY KEY (nutrition_information_id);
+
+ALTER TABLE tblrecipe
+    ADD CONSTRAINT tblrecipe_pkey PRIMARY KEY (recipe_id);
+
+ALTER TABLE tblrecipecourse
+    ADD CONSTRAINT tblrecipecourse_pkey PRIMARY KEY (recipe_id, course_id);
+
+ALTER TABLE tblrecipefoodcategory
+    ADD CONSTRAINT tblrecipefoodcategory_pkey PRIMARY KEY (recipe_id, food_category_id);
+
+ALTER TABLE tblrecipeingredient
+    ADD CONSTRAINT tblrecipeingredient_pkey PRIMARY KEY (recipe_ingredient_id);
+
+ALTER TABLE tblrecipemeals
+    ADD CONSTRAINT tblrecipemeals_pkey PRIMARY KEY (recipe_id, meal_id);
 
 ALTER TABLE tblrecipemeals
     ADD CONSTRAINT fk3dhyy6h711whxlp5iwokkswmv FOREIGN KEY (meal_id) REFERENCES tblmeal(meal_id);
@@ -260,7 +284,6 @@ ALTER TABLE tblrecipecourse
 
 ALTER TABLE tblingredientnutritionaninformation
     ADD CONSTRAINT fk7puwcsh398il6es57menv3ay1 FOREIGN KEY (ingredient_id) REFERENCES tblingredient(ingredient_id);
-
 
 ALTER TABLE tblingredientnutritionaninformation
     ADD CONSTRAINT fk9xmr3i1umipvquuynb0v49t63 FOREIGN KEY (ni_id) REFERENCES tblnutritionalinformation(nutrition_information_id);
@@ -289,14 +312,15 @@ ALTER TABLE tblrecipeingredient
 ALTER TABLE tblrecipefoodcategory
     ADD CONSTRAINT fksu4nfv25lilhw6eg0j3gtcnsn FOREIGN KEY (recipe_id) REFERENCES tblrecipe(recipe_id);
 
--- ALTER TABLE tbllevel ALTER COLUMN level_id SET DEFAULT nextval('tbllevel_level_id_seq'::regclass);
--- ALTER TABLE tblcourse ALTER COLUMN course_id SET DEFAULT nextval('tblcourse_course_id_seq'::regclass);
--- ALTER TABLE tblcuisine ALTER COLUMN cuisine_id SET DEFAULT nextval('tblcuisine_cuisine_id_seq'::regclass);
--- ALTER TABLE tblfoodcategory ALTER COLUMN food_category_id SET DEFAULT nextval('tblfoodcategory_food_category_id_seq'::regclass);
--- ALTER TABLE tblingredient ALTER COLUMN ingredient_id SET DEFAULT nextval('tblingredient_ingredient_id_seq'::regclass);
--- ALTER TABLE tblingredientnutritionaninformation ALTER COLUMN rni_id SET DEFAULT nextval('tblingredientnutritionaninformation_rni_id_seq'::regclass);
--- ALTER TABLE tblmeal ALTER COLUMN meal_id SET DEFAULT nextval('tblmeal_meal_id_seq'::regclass);
--- ALTER TABLE tblmeasurement ALTER COLUMN measurement_id SET DEFAULT nextval('tblmeasurement_measurement_id_seq'::regclass);
--- ALTER TABLE tblnutritionalinformation ALTER COLUMN nutrition_information_id SET DEFAULT nextval('tblnutritionalinformation_nutrition_information_id_seq'::regclass);
--- ALTER TABLE tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('tblrecipe_recipe_id_seq'::regclass);
--- ALTER TABLE tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('tblrecipeingredient_recipe_ingredient_id_seq'::regclass);
+ALTER TABLE tbllevel ALTER COLUMN level_id SET DEFAULT nextval('tbllevel_level_id_seq');
+ALTER TABLE tblcourse ALTER COLUMN course_id SET DEFAULT nextval('tblcourse_course_id_seq');
+ALTER TABLE tblcuisine ALTER COLUMN cuisine_id SET DEFAULT nextval('tblcuisine_cuisine_id_seq');
+ALTER TABLE tblfoodcategory ALTER COLUMN food_category_id SET DEFAULT nextval('tblfoodcategory_food_category_id_seq');
+ALTER TABLE tblingredient ALTER COLUMN ingredient_id SET DEFAULT nextval('tblingredient_ingredient_id_seq');
+ALTER TABLE tblingredientnutritionaninformation ALTER COLUMN rni_id SET DEFAULT nextval('tblingredientnutritionaninformation_rni_id_seq');
+ALTER TABLE tblmeal ALTER COLUMN meal_id SET DEFAULT nextval('tblmeal_meal_id_seq');
+ALTER TABLE tblmeasurement ALTER COLUMN measurement_id SET DEFAULT nextval('tblmeasurement_measurement_id_seq');
+ALTER TABLE tblnutritionalinformation ALTER COLUMN nutrition_information_id SET DEFAULT nextval('tblnutritionalinformation_nutrition_information_id_seq');
+ALTER TABLE tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('tblrecipe_recipe_id_seq');
+ALTER TABLE tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('tblrecipeingredient_recipe_ingredient_id_seq');
+ALTER TABLE ONLY public.mng_mealrecipe ALTER COLUMN id SET DEFAULT nextval('mng_mealrecipe_id_seq');
