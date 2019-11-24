@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Cuisine;
 import ru.otus.recipes.dto.CuisineDto;
@@ -18,6 +17,7 @@ import ru.otus.recipes.service.mapper.CuisineMapper;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -25,34 +25,34 @@ import static org.mockito.ArgumentMatchers.anyLong;
 class CuisineServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
-    private Cuisine persistedCuisine;
-    private CuisineDto cuisineDto;
-    private CuisineDto persistedCuisineDto;
+    private Cuisine persistedEntity;
+    private CuisineDto dto;
+    private CuisineDto persistedDto;
 
     @MockBean
-    private CuisineRepository cuisineRepository;
+    private CuisineRepository repository;
     @MockBean
-    private CuisineMapper cuisineMapper;
-    private CuisineService cuisineService;
+    private CuisineMapper mapper;
+    private CuisineService service;
 
     @BeforeEach
     void setUp() {
-        cuisineService =new CuisineService(cuisineRepository, cuisineMapper);
+        service =new CuisineService(repository, mapper);
         Cuisine cuisine = new Cuisine(0, "CuisineName");
-        cuisineDto = new CuisineDto("CuisineName");
-        persistedCuisine = new Cuisine(ID,"CuisineName");
-        persistedCuisineDto = new CuisineDto("CuisineName");
-        Mockito.when(cuisineMapper.toEntity(any(CuisineDto.class))).thenReturn(cuisine);
+        dto = new CuisineDto("CuisineName");
+        persistedEntity = new Cuisine(ID,"CuisineName");
+        persistedDto = new CuisineDto("CuisineName");
+        Mockito.when(mapper.toEntity(any(CuisineDto.class))).thenReturn(cuisine);
     }
 
     @Test
     @DisplayName("Saving the Cuisine entity")
     void save() throws EntityExistsException {
-        persistedCuisineDto.setId(DTO_ID);
-        Mockito.when(cuisineRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(cuisineRepository.save(any(Cuisine.class))).thenReturn(persistedCuisine);
-        Mockito.when(cuisineMapper.toDto(any(Cuisine.class))).thenReturn(persistedCuisineDto);
-        assertEquals(DTO_ID,cuisineService.save(cuisineDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(Cuisine.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Cuisine.class))).thenReturn(persistedDto);
+        assertEquals(DTO_ID, service.save(dto).getId());
     }
 
     @Test
@@ -60,20 +60,42 @@ class CuisineServiceTest {
     void update() throws EntityNotFoundException {
         Cuisine persistedCuisine = new Cuisine(1,"CuisineName");
         persistedCuisine.setCuisine("newCuisineName");
-        persistedCuisineDto.setCuisine("newCuisineName");
-        Mockito.when(cuisineRepository.findById(anyLong())).thenReturn(Optional.of(persistedCuisine));
-        Mockito.when(cuisineRepository.save(any(Cuisine.class))).thenReturn(persistedCuisine);
-        Mockito.when(cuisineMapper.toDto(any(Cuisine.class))).thenReturn(persistedCuisineDto);
-        assertEquals("newCuisineName",cuisineService.update(cuisineDto).getCuisine());
+        persistedDto.setCuisine("newCuisineName");
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedCuisine));
+        Mockito.when(repository.save(any(Cuisine.class))).thenReturn(persistedCuisine);
+        Mockito.when(mapper.toDto(any(Cuisine.class))).thenReturn(persistedDto);
+        assertEquals("newCuisineName", service.update(dto).getCuisine());
     }
 
     @Test
     @DisplayName("Finding the Cuisine entity by id")
     void findById() throws EntityNotFoundException {
-        persistedCuisineDto.setId(DTO_ID);
-        Mockito.when(cuisineRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedCuisine));
-        Mockito.when(cuisineMapper.toDto(any(Cuisine.class))).thenReturn(persistedCuisineDto);
-        CuisineDto resultDto = cuisineService.findById(1L);
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(Cuisine.class))).thenReturn(persistedDto);
+        CuisineDto resultDto = service.findById(1L);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

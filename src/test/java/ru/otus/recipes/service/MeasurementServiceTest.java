@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Measurement;
 import ru.otus.recipes.dto.MeasurementDto;
@@ -18,6 +17,7 @@ import ru.otus.recipes.service.mapper.MeasurementMapper;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -25,54 +25,76 @@ import static org.mockito.ArgumentMatchers.anyLong;
 class MeasurementServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
-    private Measurement persistedMeasurement;
-    private MeasurementDto MeasurementDto;
-    private MeasurementDto persistedMeasurementDto;
+    private Measurement persistedEntity;
+    private MeasurementDto dto;
+    private MeasurementDto persistedDto;
 
     @MockBean
-    private MeasurementRepository measurementRepository;
+    private MeasurementRepository repository;
     @MockBean
-    private MeasurementMapper measurementMapper;
-    private MeasurementService measurementService;
+    private MeasurementMapper mapper;
+    private MeasurementService service;
 
     @BeforeEach
     void setUp() {
-        measurementService = new MeasurementService(measurementRepository, measurementMapper);
+        service = new MeasurementService(repository, mapper);
         Measurement Measurement = new Measurement(0, "MeasurementName");
-        MeasurementDto = new MeasurementDto("MeasurementName");
-        persistedMeasurement = new Measurement(ID,"MeasurementName");
-        persistedMeasurementDto = new MeasurementDto("MeasurementName");
-        Mockito.when(measurementMapper.toEntity(any(MeasurementDto.class))).thenReturn(Measurement);
+        dto = new MeasurementDto("MeasurementName");
+        persistedEntity = new Measurement(ID,"MeasurementName");
+        persistedDto = new MeasurementDto("MeasurementName");
+        Mockito.when(mapper.toEntity(any(MeasurementDto.class))).thenReturn(Measurement);
     }
 
     @Test
     @DisplayName("Saving the Measurement entity")
     void save() throws EntityExistsException {
-        persistedMeasurementDto.setId(DTO_ID);
-        Mockito.when(measurementRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(measurementRepository.save(any(Measurement.class))).thenReturn(persistedMeasurement);
-        Mockito.when(measurementMapper.toDto(any(Measurement.class))).thenReturn(persistedMeasurementDto);
-        assertEquals(1,measurementService.save(MeasurementDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(Measurement.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Measurement.class))).thenReturn(persistedDto);
+        assertEquals(1, service.save(dto).getId());
     }
 
     @Test
     @DisplayName("Updating the Measurement entity")
     void update() throws EntityNotFoundException {
-        persistedMeasurement.setName("newMeasurementName");
+        persistedEntity.setName("newMeasurementName");
         MeasurementDto persistedMeasurementDto = new MeasurementDto("newMeasurementName");
-        Mockito.when(measurementRepository.findById(anyLong())).thenReturn(Optional.of(persistedMeasurement));
-        Mockito.when(measurementRepository.save(any(Measurement.class))).thenReturn(persistedMeasurement);
-        Mockito.when(measurementMapper.toDto(any(Measurement.class))).thenReturn(persistedMeasurementDto);
-        assertEquals("newMeasurementName",measurementService.update(MeasurementDto).getName());
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(Measurement.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Measurement.class))).thenReturn(persistedMeasurementDto);
+        assertEquals("newMeasurementName", service.update(dto).getName());
     }
 
     @Test
     @DisplayName("Finding the Measurement entity by id")
     void findById() throws EntityNotFoundException {
-        persistedMeasurementDto.setId(DTO_ID);
-        Mockito.when(measurementRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedMeasurement));
-        Mockito.when(measurementMapper.toDto(any(Measurement.class))).thenReturn(persistedMeasurementDto);
-        MeasurementDto resultDto = measurementService.findById(ID);
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(Measurement.class))).thenReturn(persistedDto);
+        MeasurementDto resultDto = service.findById(ID);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        dto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

@@ -7,12 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.*;
-import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.exception.EntityExistsException;
-import ru.otus.recipes.exception.EntityMapperException;
 import ru.otus.recipes.service.RecipeService;
 import ru.otus.recipes.service.mapper.MealRecipeMapper;
 
@@ -44,14 +41,14 @@ class CommonTest {
     MealRecipeMapper mealRecipeMapper;
 
     @BeforeEach
-    public void setUp(){
+    void setUp(){
 
 
     }
 
     @Test
 //    @Transactional
-    public void saveMealRecipeTest() throws EntityExistsException {
+    void saveMealRecipeTest() throws EntityExistsException {
         Map<String, Map<String,Long>> ingredients = new HashMap<>();
         ingredients.put(String.valueOf(1),  new HashMap<>(){{
             put( "measurement_id", 1L );
@@ -64,11 +61,9 @@ class CommonTest {
 
         RecipeDto recipeDto = new RecipeDto(0,"1","2","3",30,1,1,1,"",
                 ingredients, Arrays.asList(1L,2L),Arrays.asList(1L,2L),Arrays.asList(1L,2L));
-        try {
+
             RecipeDto recipe = recipeService.save(recipeDto);
-        } catch (EntityMapperException e) {
-            e.printStackTrace();
-        }
+
 
         MealRecipe mealRecipe = new MealRecipe();
         mealRecipe.setMeal(mealRepository.findById(1L).get());

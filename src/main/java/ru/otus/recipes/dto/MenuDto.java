@@ -12,6 +12,5 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuDto extends AbstractDto{
-    private Long id;
     private Set<MealRecipeDto> mealRecipes ;
 }

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Meal;
 import ru.otus.recipes.dto.MealDto;
@@ -18,6 +17,7 @@ import ru.otus.recipes.service.mapper.MealMapper;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -25,53 +25,75 @@ import static org.mockito.ArgumentMatchers.anyLong;
 class MealServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
-    private Meal persistedMeal;
-    private MealDto MealDto;
-    private MealDto persistedMealDto;
+    private Meal persistedEntity;
+    private MealDto dto;
+    private MealDto persistedDto;
 
     @MockBean
-    private MealRepository mealRepository;
+    private MealRepository repository;
     @MockBean
-    private MealMapper mealMapper;
-    private MealService mealService;
+    private MealMapper mapper;
+    private MealService service;
 
     @BeforeEach
     void setUp() {
-        mealService = new MealService(mealRepository, mealMapper);
+        service = new MealService(repository, mapper);
         Meal Meal = new Meal(0, "MealName");
-        MealDto = new MealDto("MealName");
-        persistedMeal = new Meal(ID,"MealName");
-        persistedMealDto = new MealDto("MealName");
-        Mockito.when(mealMapper.toEntity(any(MealDto.class))).thenReturn(Meal);
+        dto = new MealDto("MealName");
+        persistedEntity = new Meal(ID,"MealName");
+        persistedDto = new MealDto("MealName");
+        Mockito.when(mapper.toEntity(any(MealDto.class))).thenReturn(Meal);
     }
 
     @Test
     @DisplayName("Saving the Meal entity")
     void save() throws EntityExistsException {
-        persistedMealDto.setId(DTO_ID);
-        Mockito.when(mealRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(mealRepository.save(any(Meal.class))).thenReturn(persistedMeal);
-        Mockito.when(mealMapper.toDto(any(Meal.class))).thenReturn(persistedMealDto);
-        assertEquals(DTO_ID,mealService.save(MealDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(Meal.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Meal.class))).thenReturn(persistedDto);
+        assertEquals(DTO_ID, service.save(dto).getId());
     }
 
     @Test
     @DisplayName("Updating the Meal entity")
     void update() throws EntityNotFoundException {
-       persistedMealDto.setMeal("newMealName");
-        Mockito.when(mealRepository.findById(anyLong())).thenReturn(Optional.of(persistedMeal));
-        Mockito.when(mealRepository.save(any(Meal.class))).thenReturn(persistedMeal);
-        Mockito.when(mealMapper.toDto(any(Meal.class))).thenReturn(persistedMealDto);
-        assertEquals("newMealName",mealService.update(MealDto).getMeal());
+       persistedDto.setMeal("newMealName");
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(Meal.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Meal.class))).thenReturn(persistedDto);
+        assertEquals("newMealName", service.update(dto).getMeal());
     }
 
     @Test
     @DisplayName("Finding the Meal entity by id")
     void findById() throws EntityNotFoundException {
-        persistedMealDto.setId(DTO_ID);
-        Mockito.when(mealRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedMeal));
-        Mockito.when(mealMapper.toDto(any(Meal.class))).thenReturn(persistedMealDto);
-        MealDto resultDto = mealService.findById(ID);
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(Meal.class))).thenReturn(persistedDto);
+        MealDto resultDto = service.findById(ID);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        dto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

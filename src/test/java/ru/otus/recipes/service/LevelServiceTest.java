@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Level;
 import ru.otus.recipes.dto.LevelDto;
@@ -18,6 +17,7 @@ import ru.otus.recipes.service.mapper.LevelMapper;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -26,54 +26,74 @@ class LevelServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
     private static final Long DTO_ID_UPDATE =2L;
-    private Level persistedLevel;
-    private LevelDto LevelDto;
-    private LevelDto persistedLevelDto;
+    private Level persistedEntity;
+    private LevelDto dto;
+    private LevelDto persistedDto;
 
     @MockBean
-    private LevelRepository levelRepository;
+    private LevelRepository repository;
     @MockBean
-    private LevelMapper levelMapper;
-    @Bean
-    LevelService LevelService() {
-        return new LevelService(levelRepository, levelMapper);
-    }
+    private LevelMapper mapper;
+    private LevelService service;
 
     @BeforeEach
     void setUp() {
+        service = new LevelService(repository, mapper);
         Level Level = new Level(0);
-        LevelDto = new LevelDto(0);
-        persistedLevel = new Level(ID);
-        persistedLevelDto = new LevelDto(DTO_ID);
-        Mockito.when(levelMapper.toEntity(any(LevelDto.class))).thenReturn(Level);
+        dto = new LevelDto(0);
+        persistedEntity = new Level(ID);
+        persistedDto = new LevelDto(DTO_ID);
+        Mockito.when(mapper.toEntity(any(LevelDto.class))).thenReturn(Level);
     }
 
     @Test
     @DisplayName("Saving the Level entity")
     void save() throws EntityExistsException {
-        persistedLevelDto.setId(DTO_ID);
-        Mockito.when(levelRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(levelRepository.save(any(Level.class))).thenReturn(persistedLevel);
-        Mockito.when(levelMapper.toDto(any(Level.class))).thenReturn(persistedLevelDto);
-        assertEquals(1,LevelService().save(LevelDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(Level.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Level.class))).thenReturn(persistedDto);
+        assertEquals(1, service.save(dto).getId());
     }
 
     @Test
     @DisplayName("Updating the Level entity")
     void update() throws EntityNotFoundException {
-        persistedLevelDto.setId(DTO_ID_UPDATE);
-        Mockito.when(levelRepository.findById(anyLong())).thenReturn(Optional.of(persistedLevel));
-        Mockito.when(levelRepository.save(any(Level.class))).thenReturn(persistedLevel);
-        Mockito.when(levelMapper.toDto(any(Level.class))).thenReturn(persistedLevelDto);
-        assertEquals(DTO_ID_UPDATE,LevelService().update(LevelDto).getId());
+        persistedDto.setId(DTO_ID_UPDATE);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(Level.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Level.class))).thenReturn(persistedDto);
+        assertEquals(DTO_ID_UPDATE, service.update(dto).getId());
     }
 
     @Test
     @DisplayName("Finding the Level entity by id")
     void findById() throws EntityNotFoundException {
-        Mockito.when(levelRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedLevel));
-        Mockito.when(levelMapper.toDto(any(Level.class))).thenReturn(persistedLevelDto);
-        LevelDto resultDto = LevelService().findById(ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(Level.class))).thenReturn(persistedDto);
+        LevelDto resultDto = service.findById(ID);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

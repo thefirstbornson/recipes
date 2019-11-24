@@ -42,7 +42,6 @@ public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> 
     @PostConstruct
     public void setupMapper() {
         mapper.createTypeMap(MealRecipe.class, MealRecipeDto.class)
-//                .addMappings(m -> m.skip(MealRecipeDto::setMeal))
                 .addMappings(m -> m.skip(MealRecipeDto::setRecipes))
                 .addMappings(m -> m.skip(MealRecipeDto::setMenuId))
                 .setPostConverter(toDtoConverter());
@@ -55,7 +54,6 @@ public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> 
 
     @Override
     void mapSpecificFields(MealRecipe source, MealRecipeDto destination) {
-//        destination.setMeal(mealMapper.toDto(source.getMeal()));
         List<RecipeDto> recipeDtoList = source.getRecipes().stream().map(recipeMapper::toDto).collect(Collectors.toList());
         destination.setRecipes(new HashSet<>(recipeDtoList));
         Optional<Menu> menu = Optional.ofNullable(source.getMenu());

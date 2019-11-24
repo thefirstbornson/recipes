@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.FoodCategory;
 import ru.otus.recipes.dto.FoodCategoryDto;
@@ -18,6 +17,7 @@ import ru.otus.recipes.service.mapper.FoodCategoryMapper;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -25,53 +25,75 @@ import static org.mockito.ArgumentMatchers.anyLong;
 class FoodCategoryServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
-    private FoodCategory persistedFoodCategory;
-    private FoodCategoryDto FoodCategoryDto;
-    private FoodCategoryDto persistedFoodCategoryDto;
+    private FoodCategory persistedEntity;
+    private FoodCategoryDto dto;
+    private FoodCategoryDto persistedDto;
 
     @MockBean
-    private FoodCategoryRepository FoodCategoryRepository;
+    private FoodCategoryRepository repository;
     @MockBean
-    private FoodCategoryMapper FoodCategoryMapper;
-    private FoodCategoryService foodCategoryService;
+    private FoodCategoryMapper mapper;
+    private FoodCategoryService service;
 
     @BeforeEach
     void setUp() {
-        foodCategoryService= new  FoodCategoryService(FoodCategoryRepository, FoodCategoryMapper);
+        service = new  FoodCategoryService(repository, mapper);
         FoodCategory FoodCategory = new FoodCategory(0, "FoodCategoryName");
-        FoodCategoryDto = new FoodCategoryDto("FoodCategoryName");
-        persistedFoodCategory = new FoodCategory(ID,"FoodCategoryName");
-        persistedFoodCategoryDto = new FoodCategoryDto("FoodCategoryName");
-        Mockito.when(FoodCategoryMapper.toEntity(any(FoodCategoryDto.class))).thenReturn(FoodCategory);
+        dto = new FoodCategoryDto("FoodCategoryName");
+        persistedEntity = new FoodCategory(ID,"FoodCategoryName");
+        persistedDto = new FoodCategoryDto("FoodCategoryName");
+        Mockito.when(mapper.toEntity(any(FoodCategoryDto.class))).thenReturn(FoodCategory);
     }
 
     @Test
     @DisplayName("Saving the FoodCategory entity")
     void save() throws EntityExistsException {
-        persistedFoodCategoryDto.setId(DTO_ID);
-        Mockito.when(FoodCategoryRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(FoodCategoryRepository.save(any(FoodCategory.class))).thenReturn(persistedFoodCategory);
-        Mockito.when(FoodCategoryMapper.toDto(any(FoodCategory.class))).thenReturn(persistedFoodCategoryDto);
-        assertEquals(1,foodCategoryService.save(FoodCategoryDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(FoodCategory.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(FoodCategory.class))).thenReturn(persistedDto);
+        assertEquals(1, service.save(dto).getId());
     }
 
     @Test
     @DisplayName("Updating the FoodCategory entity")
     void update() throws EntityNotFoundException {
-        persistedFoodCategoryDto.setFoodCategory("newFoodCategoryName");
-        Mockito.when(FoodCategoryRepository.findById(anyLong())).thenReturn(Optional.of(persistedFoodCategory));
-        Mockito.when(FoodCategoryRepository.save(any(FoodCategory.class))).thenReturn(persistedFoodCategory);
-        Mockito.when(FoodCategoryMapper.toDto(any(FoodCategory.class))).thenReturn(persistedFoodCategoryDto);
-        assertEquals("newFoodCategoryName",foodCategoryService.update(FoodCategoryDto).getFoodCategory());
+        persistedDto.setFoodCategory("newFoodCategoryName");
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(FoodCategory.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(FoodCategory.class))).thenReturn(persistedDto);
+        assertEquals("newFoodCategoryName", service.update(dto).getFoodCategory());
     }
 
     @Test
     @DisplayName("Finding the FoodCategory entity by id")
     void findById() throws EntityNotFoundException {
-        persistedFoodCategoryDto.setId(DTO_ID);
-        Mockito.when(FoodCategoryRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedFoodCategory));
-        Mockito.when(FoodCategoryMapper.toDto(any(FoodCategory.class))).thenReturn(persistedFoodCategoryDto);
-        FoodCategoryDto resultDto = foodCategoryService.findById(1L);
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(FoodCategory.class))).thenReturn(persistedDto);
+        FoodCategoryDto resultDto = service.findById(1L);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

@@ -12,14 +12,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.recipes.domain.Meal;
-import ru.otus.recipes.dto.MealDto;
 import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.RecipeDto;
-import ru.otus.recipes.exception.EntityMapperException;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.service.MealRecipeService;
-import ru.otus.recipes.service.RecipeService;
 
 import java.util.*;
 
@@ -44,9 +41,9 @@ class MealRecipeControllerTest {
     private static final Integer CUISINE_ID = 1;
     private static final Integer RATING = 1;
     private static final String IMAGE_PATH = "testImagePath";
-    private static final List<Long> COURSE_ID_LIST = Arrays.asList(1L);
-    private static final List<Long> FOOD_CATEGORY_ID_LIST = Arrays.asList(1L);
-    private static final List<Long> MEAL_ID_LIST = Arrays.asList(1L);
+    private static final List<Long> COURSE_ID_LIST = Collections.singletonList(1L);
+    private static final List<Long> FOOD_CATEGORY_ID_LIST = Collections.singletonList(1L);
+    private static final List<Long> MEAL_ID_LIST = Collections.singletonList(1L);
     private static final Long AMOUNT = 300L;
     private static final Long MEASUREMENT_ID = 1L;
     private static final String URL_TEMPLATE = "/meal-recipes";
@@ -63,14 +60,12 @@ class MealRecipeControllerTest {
             "\"ingredientIdAndMeasurementIdAmountMap\":{\"1\":{\"amount\":300,\"measurement_id\":1}},\"courseIdList\":[1]," +
             "\"foodCategoryIdList\":[1],\"mealIdList\":[1]}],\"menuId\":null}";
     private static final String EXPECTED_CONTENT_AFTER_DELETE ="Removal was successful";
-    private static final String ERROR_DELETE_ENTITY_MESSAGE = "Can not delete entity with id ";
-    private static final String ERROR_GET_ENTITY_MESSAGE = "Can not find entity with id ";
-    private static final String ERROR_SAVE_ENTITY_MESSAGE = "Can not save entity";
-    private static final String ERROR_UPDATE_ENTITY_MESSAGE = "Can not update entity";
+    private static final String ERROR_ENTITY_NOT_FOUND_MESSAGE = "Can not find entity";
+    private static final String ERROR_ENTITY_EXISTS_MESSAGE = "Can not save entity";
     private static final long NONEXISTENT_DTO_ID = 0L;
     private static final Long DTO_ID = 1L;
-    public static final Long MEAL_DTO_ID=1L;
-    public static final Long MEAL_DTO_ID_UPDATE=2L;
+    private static final Long MEAL_DTO_ID=1L;
+    private static final Long MEAL_DTO_ID_UPDATE=2L;
     private MealRecipeDto dto;
 
     @Autowired
@@ -108,19 +103,6 @@ class MealRecipeControllerTest {
     }
 
     @Test
-    @DisplayName("Возврат ошибки сохранения recipe при неправильном маппинге")
-    void saveCourseExpectedException() throws Exception {
-        String jsonToSave = objectMapper.writeValueAsString(dto);
-        given(service.save(any())).willThrow(new EntityMapperException("TestException", new MappingException(Collections.singletonList(new ErrorMessage("TestError")))));
-        mockMvc.perform(post(URL_TEMPLATE)
-                .contentType(APPLICATION_JSON)
-                .content(jsonToSave))
-                .andExpect(status().reason(containsString(ERROR_SAVE_ENTITY_MESSAGE)))
-                .andExpect(status().isNotImplemented());
-    }
-
-
-    @Test
     @DisplayName("Обновление recipe")
     void updateCourse() throws Exception {
         dto.setId(DTO_ID);
@@ -135,18 +117,6 @@ class MealRecipeControllerTest {
     }
 
     @Test
-    @DisplayName("Возврат ошибки обновления recipe при неправильном маппинге")
-    void updateCourseExpectedException() throws Exception {
-        String jsonToSave = objectMapper.writeValueAsString(dto);
-        given(service.update(any())).willThrow(new EntityMapperException("TestException", new MappingException(Collections.singletonList(new ErrorMessage("TestError")))));
-        mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
-                .contentType(APPLICATION_JSON)
-                .content(jsonToSave))
-                .andExpect(status().reason(containsString(ERROR_UPDATE_ENTITY_MESSAGE)))
-                .andExpect(status().isNotImplemented());
-    }
-
-    @Test
     @DisplayName("Получение recipe")
     void getCourse() throws Exception {
         dto.setId(DTO_ID);
@@ -156,15 +126,6 @@ class MealRecipeControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("Возврат ошибки получения recipe при ненайденном recipe id")
-    void getCourseExpectedException() throws Exception {
-        dto.setId(NONEXISTENT_DTO_ID);
-        given(service.findById(any())).willThrow(new EntityNotFoundException("TestException"));
-        mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-               .andExpect(status().reason(containsString(ERROR_GET_ENTITY_MESSAGE + NONEXISTENT_DTO_ID)))
-               .andExpect(status().isOk());
-    }
 
     @Test
     @DisplayName("Удаление recipe")
@@ -176,12 +137,46 @@ class MealRecipeControllerTest {
     }
 
     @Test
-    @DisplayName("Возврат ошибки удаления recipe при ненайденном recipe id: "+NONEXISTENT_DTO_ID)
-    void deleteCourseExpectedException() throws Exception {
+    @DisplayName("Возврат ошибки сохранения существующей entity")
+    void saveEntityExpectedException() throws Exception {
+        String jsonToSave = objectMapper.writeValueAsString(dto);
+        given(service.save(any())).willThrow(new EntityExistsException(ERROR_ENTITY_EXISTS_MESSAGE));
+        mockMvc.perform(post(URL_TEMPLATE)
+                .contentType(APPLICATION_JSON)
+                .content(jsonToSave))
+                .andExpect(content().string(ERROR_ENTITY_EXISTS_MESSAGE))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("Возврат ошибки обновления entity при ненайденном entity id")
+    void updateEntityExpectedException() throws Exception {
+        String jsonToSave = objectMapper.writeValueAsString(dto);
+        given(service.update(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
+        mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
+                .contentType(APPLICATION_JSON)
+                .content(jsonToSave))
+                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Возврат ошибки поиска entity при ненайденном entity id")
+    void getEntityExpectedException() throws Exception {
         dto.setId(NONEXISTENT_DTO_ID);
-        doThrow(new EntityNotFoundException("TestException")).when(service).deleteById(any());
+        given(service.findById(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
+        mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
+                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Возврат ошибки удаления entiy при ненайденном entity id")
+    void deleteEntityExpectedException() throws Exception {
+        dto.setId(NONEXISTENT_DTO_ID);
+        doThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE)).when(service).deleteById(any());
         mockMvc.perform(delete(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(status().reason(containsString(ERROR_DELETE_ENTITY_MESSAGE + NONEXISTENT_DTO_ID)))
-                .andExpect(status().isOk());
+                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(status().isNotFound());
     }
 }

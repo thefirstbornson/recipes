@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Course;
+import ru.otus.recipes.domain.Cuisine;
 import ru.otus.recipes.dto.CourseDto;
 import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
@@ -24,55 +24,77 @@ import static org.mockito.ArgumentMatchers.*;
 class CourseServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
-    private Course persistedCourse;
-    private CourseDto courseDto;
-    private CourseDto persistedCourseDto;
+    private Course persistedEntity;
+    private CourseDto dto;
+    private CourseDto persistedDto;
 
     @MockBean
-    private CourseRepository courseRepository;
+    private CourseRepository repository;
     @MockBean
-    private CourseMapper courseMapper;
-
-    private CourseService courseService;
+    private CourseMapper mapper;
+    private CourseService service;
 
     @BeforeEach
     void setUp() {
-        courseService= new CourseService(courseRepository,courseMapper);
+        service = new CourseService(repository, mapper);
         Course course = new Course(0, "courseName");
-        courseDto = new CourseDto("courseName");
-        persistedCourse = new Course(ID,"courseName");
-        persistedCourseDto = new CourseDto("courseName");
-        Mockito.when(courseMapper.toEntity(any(CourseDto.class))).thenReturn(course);
+        dto = new CourseDto("courseName");
+        persistedEntity = new Course(ID,"courseName");
+        persistedDto = new CourseDto("courseName");
+        Mockito.when(mapper.toEntity(any(CourseDto.class))).thenReturn(course);
+//        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(Course.class))).thenReturn(persistedEntity);
     }
 
     @Test
-    @DisplayName("Saving the course entity")
+    @DisplayName("Сохранение course entity")
     void save() throws EntityExistsException {
-        persistedCourseDto.setId(DTO_ID);
-        Mockito.when(courseRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(courseRepository.save(any(Course.class))).thenReturn(persistedCourse);
-        Mockito.when(courseMapper.toDto(any(Course.class))).thenReturn(persistedCourseDto);
-        assertEquals(DTO_ID,courseService.save(courseDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(mapper.toDto(any(Course.class))).thenReturn(persistedDto);
+        assertEquals(DTO_ID, service.save(dto).getId());
     }
 
     @Test
-    @DisplayName("Updating the course entity")
+    @DisplayName("Обновление course entity")
     void update() throws EntityNotFoundException {
-        persistedCourse.setCourse("newCourseName");
+        persistedDto.setCourse("newCourseName");
         CourseDto persistedCourseDto = new CourseDto("newCourseName");
-        Mockito.when(courseRepository.findById(anyLong())).thenReturn(Optional.of(persistedCourse));
-        Mockito.when(courseRepository.save(any(Course.class))).thenReturn(persistedCourse);
-        Mockito.when(courseMapper.toDto(any(Course.class))).thenReturn(persistedCourseDto);
-        assertEquals("newCourseName",courseService.update(courseDto).getCourse());
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(Course.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Course.class))).thenReturn(persistedCourseDto);
+        assertEquals("newCourseName",service.update(dto).getCourse());
     }
 
     @Test
-    @DisplayName("Finding the course entity by id")
+    @DisplayName("Поиск course entity by id")
     void findById() throws EntityNotFoundException {
-        persistedCourseDto.setId(DTO_ID);
-        Mockito.when(courseRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedCourse));
-        Mockito.when(courseMapper.toDto(any(Course.class))).thenReturn(persistedCourseDto);
-        CourseDto resultDto = courseService.findById(1L);
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(Course.class))).thenReturn(persistedDto);
+        CourseDto resultDto = service.findById(1L);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

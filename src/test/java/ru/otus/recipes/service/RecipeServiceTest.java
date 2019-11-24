@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Recipe;
 import ru.otus.recipes.dto.RecipeDto;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -37,57 +37,79 @@ class RecipeServiceTest {
     private static final Integer CUISINE_ID = 1;
     private static final Integer RATING = 1;
     private static final String IMAGE_PATH = "testImagePath";
-    private Recipe persistedRecipe;
-    private RecipeDto recipeDto;
-    private RecipeDto persistedRecipeDto;
+    private Recipe persistedEntity;
+    private RecipeDto dto;
+    private RecipeDto persistedDto;
 
     @MockBean
-    private RecipeRepository recipeRepository;
+    private RecipeRepository repository;
     @MockBean
-    private RecipeMapper recipeMapper;
+    private RecipeMapper mapper;
     @MockBean
     private RecipeIngredientRepository recipeIngredientRepository;
-    private RecipeService recipeService;
+    private RecipeService service;
 
     @BeforeEach
     void setUp() {
-        recipeService = new RecipeService(recipeRepository, recipeIngredientRepository, recipeMapper);
+        service = new RecipeService(repository, recipeIngredientRepository, mapper);
         Recipe recipe = new Recipe();
-        recipeDto = new RecipeDto(0,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME,LEVEL_ID,CUISINE_ID,RATING,IMAGE_PATH,
+        dto = new RecipeDto(0,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME,LEVEL_ID,CUISINE_ID,RATING,IMAGE_PATH,
                 new HashMap<>(), Arrays.asList(1L,2L),Arrays.asList(1L,2L),Arrays.asList(1L,2L));
-        persistedRecipe = new Recipe();
-        persistedRecipeDto = new RecipeDto(DTO_ID,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME,LEVEL_ID,CUISINE_ID,RATING,IMAGE_PATH,
+        persistedEntity = new Recipe();
+        persistedDto = new RecipeDto(DTO_ID,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME,LEVEL_ID,CUISINE_ID,RATING,IMAGE_PATH,
                 new HashMap<>(), Arrays.asList(1L,2L),Arrays.asList(1L,2L),Arrays.asList(1L,2L));
-        Mockito.when(recipeMapper.toEntity(any(RecipeDto.class))).thenReturn(recipe);
+        Mockito.when(mapper.toEntity(any(RecipeDto.class))).thenReturn(recipe);
     }
 
     @Test
     @DisplayName("Saving the Recipe entity")
     void save() throws EntityExistsException {
-        persistedRecipeDto.setId(DTO_ID);
-        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(persistedRecipe);
-        Mockito.when(recipeMapper.toDto(any(Recipe.class))).thenReturn(persistedRecipeDto);
-        assertEquals(DTO_ID,recipeService.save(recipeDto).getId());
+        persistedDto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(Recipe.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Recipe.class))).thenReturn(persistedDto);
+        assertEquals(DTO_ID, service.save(dto).getId());
     }
 
     @Test
     @DisplayName("Updating the Recipe entity")
     void update() throws EntityNotFoundException {
-        persistedRecipeDto.setName("newRecipeName");
-        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(persistedRecipe));
-        Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(persistedRecipe);
-        Mockito.when(recipeMapper.toDto(any(Recipe.class))).thenReturn(persistedRecipeDto);
-        assertEquals("newRecipeName",recipeService.update(recipeDto).getName());
+        persistedDto.setName("newRecipeName");
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(Recipe.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(Recipe.class))).thenReturn(persistedDto);
+        assertEquals("newRecipeName", service.update(dto).getName());
     }
 
     @Test
     @DisplayName("Finding the Recipe entity by id")
     void findById() throws EntityNotFoundException {
-        persistedRecipeDto.setId(1);
-        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedRecipe));
-        Mockito.when(recipeMapper.toDto(any(Recipe.class))).thenReturn(persistedRecipeDto);
-        RecipeDto resultDto = recipeService.findById(1L);
+        persistedDto.setId(1);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(Recipe.class))).thenReturn(persistedDto);
+        RecipeDto resultDto = service.findById(1L);
         assertEquals(DTO_ID,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        dto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }

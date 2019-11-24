@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.NutritionalInformation;
 import ru.otus.recipes.dto.NutritionalInformationDto;
@@ -18,6 +17,7 @@ import ru.otus.recipes.service.mapper.NutritionalInformationMapper;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -25,55 +25,77 @@ import static org.mockito.ArgumentMatchers.anyLong;
 class NutritionalInformationServiceTest {
     private static final Long ID =1L;
     private static final Long DTO_ID =1L;
-    private NutritionalInformation persistedNutritionalInformation;
-    private NutritionalInformationDto NutritionalInformationDto;
-    private NutritionalInformationDto persistedNutritionalInformationDto;
+    private NutritionalInformation persistedEntity;
+    private NutritionalInformationDto dto;
+    private NutritionalInformationDto persistedDto;
 
     @MockBean
-    private NutritionalInformationRepository nutritionalInformationRepository;
+    private NutritionalInformationRepository repository;
     @MockBean
-    private NutritionalInformationMapper nutritionalInformationMapper;
-    NutritionalInformationService nutritionalInformationService;
+    private NutritionalInformationMapper mapper;
+    private NutritionalInformationService service;
 
     @BeforeEach
     void setUp() {
-        nutritionalInformationService =
-                new NutritionalInformationService(nutritionalInformationRepository, nutritionalInformationMapper);
+        service =
+                new NutritionalInformationService(repository, mapper);
         NutritionalInformation NutritionalInformation = new NutritionalInformation("NutritionalInformationName");
-        NutritionalInformationDto = new NutritionalInformationDto("NutritionalInformationName");
-        persistedNutritionalInformation = new NutritionalInformation("NutritionalInformationName");
-        persistedNutritionalInformationDto = new NutritionalInformationDto("NutritionalInformationName");
-        Mockito.when(nutritionalInformationMapper.toEntity(any(NutritionalInformationDto.class))).thenReturn(NutritionalInformation);
+        dto = new NutritionalInformationDto("NutritionalInformationName");
+        persistedEntity = new NutritionalInformation("NutritionalInformationName");
+        persistedDto = new NutritionalInformationDto("NutritionalInformationName");
+        Mockito.when(mapper.toEntity(any(NutritionalInformationDto.class))).thenReturn(NutritionalInformation);
     }
 
     @Test
     @DisplayName("Saving the NutritionalInformation entity")
     void save() throws EntityExistsException {
-        persistedNutritionalInformationDto.setId(1L);
-        Mockito.when(nutritionalInformationRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Mockito.when(nutritionalInformationRepository.save(any(NutritionalInformation.class))).thenReturn(persistedNutritionalInformation);
-        Mockito.when(nutritionalInformationMapper.toDto(any(NutritionalInformation.class))).thenReturn(persistedNutritionalInformationDto);
-        assertEquals(1,nutritionalInformationService.save(NutritionalInformationDto).getId());
+        persistedDto.setId(1L);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(any(NutritionalInformation.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(NutritionalInformation.class))).thenReturn(persistedDto);
+        assertEquals(1, service.save(dto).getId());
     }
 
     @Test
     @DisplayName("Updating the NutritionalInformation entity")
     void update() throws EntityNotFoundException {
-        persistedNutritionalInformation.setNutrition("newNutritionalInformationName");
+        persistedEntity.setNutrition("newNutritionalInformationName");
         NutritionalInformationDto persistedNutritionalInformationDto = new NutritionalInformationDto("newNutritionalInformationName");
-        Mockito.when(nutritionalInformationRepository.findById(anyLong())).thenReturn(Optional.of(persistedNutritionalInformation));
-        Mockito.when(nutritionalInformationRepository.save(any(NutritionalInformation.class))).thenReturn(persistedNutritionalInformation);
-        Mockito.when(nutritionalInformationMapper.toDto(any(NutritionalInformation.class))).thenReturn(persistedNutritionalInformationDto);
-        assertEquals("newNutritionalInformationName",nutritionalInformationService.update(NutritionalInformationDto).getNutrition());
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        Mockito.when(repository.save(any(NutritionalInformation.class))).thenReturn(persistedEntity);
+        Mockito.when(mapper.toDto(any(NutritionalInformation.class))).thenReturn(persistedNutritionalInformationDto);
+        assertEquals("newNutritionalInformationName", service.update(dto).getNutrition());
     }
 
     @Test
     @DisplayName("Finding the NutritionalInformation entity by id")
     void findById() throws EntityNotFoundException {
-        persistedNutritionalInformationDto.setId(1);
-        Mockito.when(nutritionalInformationRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedNutritionalInformation));
-        Mockito.when(nutritionalInformationMapper.toDto(any(NutritionalInformation.class))).thenReturn(persistedNutritionalInformationDto);
-        NutritionalInformationDto resultDto = nutritionalInformationService.findById(1L);
+        persistedDto.setId(1);
+        Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
+        Mockito.when(mapper.toDto(any(NutritionalInformation.class))).thenReturn(persistedDto);
+        NutritionalInformationDto resultDto = service.findById(1L);
         assertEquals(1L,resultDto.getId());
+    }
+
+    @Test
+    @DisplayName("Ошибка при сохранении существующей entity")
+    void saveEntityExistsException() {
+        dto.setId(DTO_ID);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
+        assertThrows(EntityExistsException.class, () -> service.save(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при обновлении несуществующей entity")
+    void updateEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.update(dto));
+    }
+
+    @Test
+    @DisplayName("Ошибка при поиске несуществующей entity")
+    void findByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
 }
