@@ -59,5 +59,15 @@ INSERT INTO public.tblingredientnutritionaninformation (rni_id, amount, ingredie
 INSERT INTO public.tblingredientnutritionaninformation (rni_id, amount, ingredient_id, ni_id) VALUES (12, 1, 4, 1);
 ALTER SEQUENCE tblingredientnutritionaninformation_rni_id_seq RESTART WITH 13;
 
+INSERT INTO tblrecipe(name,description,instructions,cooktime,imagepath,rating,level_id,cuisine_id)
+VALUES ('testRecipe','testDescriptioin','testInstructions',30,'testImagePath',5,1,1);
+INSERT INTO tblrecipecourse(recipe_id, course_id) VALUES (1,1);
+INSERT INTO tblrecipefoodcategory(recipe_id, food_category_id) VALUES (1,1);
+INSERT INTO tblrecipemeals(recipe_id, meal_id) VALUES (1,1);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (300,1,1,1);
+INSERT INTO mng_mealrecipe(meal_id, menu_id) VALUES (1, null);
+INSERT INTO mng_mealreciperecipes(mealrecipe_id, recipe_id) VALUES (1,1)
+
 
 

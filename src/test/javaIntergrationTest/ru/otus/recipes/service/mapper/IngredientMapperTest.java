@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.Ingredient;
 import ru.otus.recipes.domain.IngredientNutritionalInformation;
 import ru.otus.recipes.domain.NutritionalInformation;
@@ -17,7 +19,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+        properties = {"spring.h2.console.enabled=true"})
+@TestPropertySource("classpath:application-test.properties")
+@Transactional
 class IngredientMapperTest {
 
     private static final Long NUTRITIONAL_INFORMATION_ID =1L;

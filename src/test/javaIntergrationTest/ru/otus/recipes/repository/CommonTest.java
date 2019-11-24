@@ -1,30 +1,31 @@
 package ru.otus.recipes.repository;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.*;
+import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.RecipeDto;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityMapperException;
 import ru.otus.recipes.service.RecipeService;
-import ru.otus.recipes.service.mapper.RecipeMapper;
+import ru.otus.recipes.service.mapper.MealRecipeMapper;
 
 import javax.persistence.EntityManager;
 import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.assertj.core.util.DateUtil.now;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-//@ComponentScan({"ru.otus.recipes.repository"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+        properties = {"spring.h2.console.enabled=true"})
 @TestPropertySource("classpath:application-test.properties")
-class MealRecipeTest {
+class CommonTest {
     @Autowired
     RecipeRepository recipeRepository;
     @Autowired
@@ -32,9 +33,15 @@ class MealRecipeTest {
     @Autowired
     MealRecipeRepository mealRecipeRepository;
     @Autowired
+    MenuRepository menuRepository;
+    @Autowired
+    DailyMenuRepository dailyMenuRepository;
+    @Autowired
     RecipeService recipeService;
     @Autowired
     EntityManager entityManager;
+    @Autowired
+    MealRecipeMapper mealRecipeMapper;
 
     @BeforeEach
     public void setUp(){
@@ -43,7 +50,8 @@ class MealRecipeTest {
     }
 
     @Test
-    public void saveMealRecipeTest(){
+//    @Transactional
+    public void saveMealRecipeTest() throws EntityExistsException {
         Map<String, Map<String,Long>> ingredients = new HashMap<>();
         ingredients.put(String.valueOf(1),  new HashMap<>(){{
             put( "measurement_id", 1L );
@@ -66,10 +74,28 @@ class MealRecipeTest {
         mealRecipe.setMeal(mealRepository.findById(1L).get());
         HashSet<Recipe> recipes = new HashSet<>(Collections.singletonList(recipeRepository.findById(1L).get()));
         mealRecipe.setRecipes(recipes);
+        mealRecipe.setMenu(null);
         mealRecipeRepository.save(mealRecipe);
         MealRecipe mealRecipe1 = mealRecipeRepository.findById(1L).get();
-        Assert.assertTrue(mealRecipe1.getRecipes().isEmpty());
 
+        Menu menu = new Menu();
+        HashSet<MealRecipe> mealRecipes = new HashSet<>(Collections.singletonList(mealRecipe1));
+        menu.setMealRecipes(mealRecipes);
+        menu = menuRepository.save(menu);
+        menu.getMealRecipes().clear();
+
+//        menuRepository.delete(menu);
+
+        DailyMenu dailyMenu = new DailyMenu();
+        dailyMenu.setMenu(menu);
+        dailyMenu.setDate(now());
+        dailyMenuRepository.save(dailyMenu);
+
+//        MealRecipeDto mealRecipeDtoFromEntity = mealRecipeMapper.toDto(mealRecipe1);
+//        MealRecipe mealRecipe2 = mealRecipeMapper.toEntity(mealRecipeDtoFromEntity);
+//        mealRecipeRepository.save(mealRecipe2);
+
+//        Assert.assertFalse(mealRecipe1.getRecipes().isEmpty());
     }
 
 

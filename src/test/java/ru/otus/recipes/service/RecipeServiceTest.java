@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Recipe;
 import ru.otus.recipes.dto.RecipeDto;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.RecipeIngredientRepository;
 import ru.otus.recipes.repository.RecipeRepository;
@@ -18,6 +19,7 @@ import ru.otus.recipes.service.mapper.RecipeMapper;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,8 +27,18 @@ import static org.mockito.ArgumentMatchers.anyLong;
 
 @ExtendWith(SpringExtension.class)
 class RecipeServiceTest {
+    private static final Long ID =1L;
+    private static final Long DTO_ID =1L;
+    private static final String RECIPE_NAME = "testRecipe";
+    private static final String RECIPE_DESCRIPTION = "testDescription";
+    private static final String INSTRUCTIONS = "testInstructions";
+    private static final Integer COOK_TIME = 30;
+    private static final Integer LEVEL_ID = 1;
+    private static final Integer CUISINE_ID = 1;
+    private static final Integer RATING = 1;
+    private static final String IMAGE_PATH = "testImagePath";
     private Recipe persistedRecipe;
-    private RecipeDto RecipeDto;
+    private RecipeDto recipeDto;
     private RecipeDto persistedRecipeDto;
 
     @MockBean
@@ -35,38 +47,38 @@ class RecipeServiceTest {
     private RecipeMapper recipeMapper;
     @MockBean
     private RecipeIngredientRepository recipeIngredientRepository;
-    @Bean
-    RecipeService RecipeService() {
-        return new RecipeService(recipeRepository, recipeIngredientRepository, recipeMapper);
-    }
+    private RecipeService recipeService;
 
     @BeforeEach
     void setUp() {
+        recipeService = new RecipeService(recipeRepository, recipeIngredientRepository, recipeMapper);
         Recipe recipe = new Recipe();
-        RecipeDto = new RecipeDto(0,"1","2","3",30,1,1,1,"",
+        recipeDto = new RecipeDto(0,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME,LEVEL_ID,CUISINE_ID,RATING,IMAGE_PATH,
                 new HashMap<>(), Arrays.asList(1L,2L),Arrays.asList(1L,2L),Arrays.asList(1L,2L));
         persistedRecipe = new Recipe();
-        persistedRecipeDto = new RecipeDto(1,"1","2","3",30,1,1,1,"",
+        persistedRecipeDto = new RecipeDto(DTO_ID,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME,LEVEL_ID,CUISINE_ID,RATING,IMAGE_PATH,
                 new HashMap<>(), Arrays.asList(1L,2L),Arrays.asList(1L,2L),Arrays.asList(1L,2L));
         Mockito.when(recipeMapper.toEntity(any(RecipeDto.class))).thenReturn(recipe);
     }
 
     @Test
     @DisplayName("Saving the Recipe entity")
-    void save() {
-        persistedRecipeDto.setId(1L);
+    void save() throws EntityExistsException {
+        persistedRecipeDto.setId(DTO_ID);
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(persistedRecipe);
         Mockito.when(recipeMapper.toDto(any(Recipe.class))).thenReturn(persistedRecipeDto);
-        assertEquals(1,RecipeService().save(RecipeDto).getId());
+        assertEquals(DTO_ID,recipeService.save(recipeDto).getId());
     }
 
     @Test
     @DisplayName("Updating the Recipe entity")
-    void update() {
+    void update() throws EntityNotFoundException {
         persistedRecipeDto.setName("newRecipeName");
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(persistedRecipe));
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(persistedRecipe);
         Mockito.when(recipeMapper.toDto(any(Recipe.class))).thenReturn(persistedRecipeDto);
-        assertEquals("newRecipeName",RecipeService().update(RecipeDto).getName());
+        assertEquals("newRecipeName",recipeService.update(recipeDto).getName());
     }
 
     @Test
@@ -75,7 +87,7 @@ class RecipeServiceTest {
         persistedRecipeDto.setId(1);
         Mockito.when(recipeRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedRecipe));
         Mockito.when(recipeMapper.toDto(any(Recipe.class))).thenReturn(persistedRecipeDto);
-        RecipeDto resultDto = RecipeService().findById(1L);
-        assertEquals(1L,resultDto.getId());
+        RecipeDto resultDto = recipeService.findById(1L);
+        assertEquals(DTO_ID,resultDto.getId());
     }
 }

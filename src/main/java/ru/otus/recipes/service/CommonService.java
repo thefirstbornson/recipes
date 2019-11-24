@@ -2,6 +2,7 @@ package ru.otus.recipes.service;
 
 import ru.otus.recipes.domain.AbstractEntity;
 import ru.otus.recipes.dto.AbstractDto;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityMapperException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 
@@ -10,11 +11,11 @@ import java.util.List;
 
 public interface CommonService< D extends AbstractDto,E extends AbstractEntity> {
 
-    D save(D dto) throws EntityMapperException;
+    D save(D dto) throws EntityMapperException, EntityExistsException;
 
     List<D> saveAll(List<D> dtoList);
 
-    D update(D dto) throws EntityMapperException;
+    D update(D dto) throws EntityMapperException, EntityNotFoundException;
 
     D findById(Long id) throws EntityNotFoundException;
 

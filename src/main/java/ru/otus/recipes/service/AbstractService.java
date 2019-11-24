@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.AbstractEntity;
 import ru.otus.recipes.dto.AbstractDto;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityMapperException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.CommonRepository;
@@ -35,11 +36,14 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
 
     @Override
     @Transactional
-    public D save(D dto) throws EntityMapperException {
+    public D save(D dto) throws EntityMapperException, EntityExistsException {
         log.info(String.format("Start saving %s entity to database",dto.getClass().getTypeName()));
         try {
+            if (repository.findById(dto.getId()).isPresent()) {
+                throw new EntityExistsException(String.format("%s entity already exists!", entityClass.getTypeName()));
+            }
             E entity = repository.save(mapper.toEntity(dto));
-            log.info("Saving entities was successful");
+            log.info("Saving entity was successful");
             return mapper.toDto(entity);
         } catch (MappingException ex){
             log.error(String.format("Error returned while mapping %s entity ",entityClass.getTypeName()),ex);
@@ -57,11 +61,19 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     }
 
     @Override
-    public D update(D dto) throws EntityMapperException {
+    public D update(D dto) throws EntityMapperException, EntityNotFoundException {
         log.info(String.format("Start updating %s entity", dto.getClass().getTypeName()));
-        D entity =  save(dto);
-        log.info("Update entity was successful");
-        return entity;
+        if (!repository.findById(dto.getId()).isPresent()) {
+            throw new EntityNotFoundException(String.format("No %s entities found!", entityClass.getTypeName()));
+        }
+        E entity = repository.save(mapper.toEntity(dto));
+        log.info("Updating entity was successful");
+        try {
+            return mapper.toDto(entity);
+        } catch (MappingException ex){
+            log.error(String.format("Error returned while mapping %s entity ",entityClass.getTypeName()),ex);
+            throw new EntityMapperException(String.format("Can not map Dto to %s entity!", entityClass.getTypeName() ), ex);
+        }
     }
 
     @Override

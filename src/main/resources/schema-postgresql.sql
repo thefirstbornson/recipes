@@ -29,7 +29,7 @@ DROP TABLE IF EXISTS tblrecipecourse CASCADE;
 DROP TABLE IF EXISTS tblrecipefoodcategory CASCADE;
 DROP TABLE IF EXISTS tblrecipeingredient CASCADE;
 DROP TABLE IF EXISTS tblrecipemeals CASCADE;
-DROP TABLE IF EXISTS mngmealreciperecipes CASCADE;
+DROP TABLE IF EXISTS mng_mealreciperecipes CASCADE;
 
 CREATE SEQUENCE public.hibernate_sequence
     START WITH 1
@@ -335,7 +335,7 @@ CREATE TABLE public.tblrecipemeals (
                                        meal_id bigint NOT NULL
 );
 
-CREATE TABLE public.mngmealreciperecipes(
+CREATE TABLE public.mng_mealreciperecipes(
                                      mealrecipe_id bigint NOT NULL,
                                      recipe_id bigint NOT NULL
 );
@@ -440,3 +440,47 @@ ALTER TABLE ONLY public.tblnutritionalinformation ALTER COLUMN nutrition_informa
 ALTER TABLE ONLY public.tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('public.tblrecipe_recipe_id_seq'::regclass);
 ALTER TABLE ONLY public.tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('public.tblrecipeingredient_recipe_ingredient_id_seq'::regclass);
 ALTER TABLE ONLY public.mng_mealrecipe ALTER COLUMN id SET DEFAULT nextval('public.mng_mealrecipe_id_seq'::regclass);
+
+DROP SEQUENCE IF EXISTS public.mng_menu_id_seq CASCADE;
+CREATE SEQUENCE public.mng_menu_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+DROP TABLE IF EXISTS public.mng_menu CASCADE;
+CREATE TABLE public.mng_menu (
+                          menu_id bigserial NOT NULL,
+                          CONSTRAINT mng_menu_pkey PRIMARY KEY (menu_id)
+);
+ALTER TABLE public.mng_menu ALTER COLUMN menu_id SET DEFAULT nextval('mng_menu_id_seq');
+
+DROP SEQUENCE IF EXISTS public.mng_mealrecipe_id_seq CASCADE;
+CREATE SEQUENCE public.mng_mealrecipe_id_seq  START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+DROP TABLE IF EXISTS public.mng_mealrecipe CASCADE;
+CREATE TABLE public.mng_mealrecipe
+(
+    mealrecipe_id bigserial NOT NULL,
+    meal_id       bigint    NOT NULL,
+    menu_id  bigint    NULL,
+    CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (mealrecipe_id),
+    CONSTRAINT meal_id_fk FOREIGN KEY (meal_id)
+        REFERENCES public.tblmeal (meal_id),
+    CONSTRAINT menu_id_fk FOREIGN KEY (menu_id)
+        REFERENCES public.mng_menu (menu_id)
+);
+ALTER TABLE public.mng_mealrecipe ALTER COLUMN mealrecipe_id SET DEFAULT nextval('mng_mealrecipe_id_seq');
+
+DROP TABLE IF EXISTS public.mng_mealreciperecipes CASCADE;
+CREATE TABLE public.mng_mealreciperecipes(
+                                     mealrecipe_id bigint NOT NULL,
+                                     recipe_id bigint NOT NULL
+);
+
+DROP SEQUENCE IF EXISTS public.mng_dailymenu_id_seq CASCADE;
+CREATE SEQUENCE public.mng_dailymenu_id_seq  START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+DROP TABLE IF EXISTS public.mng_dailymenu CASCADE;
+CREATE TABLE public.mng_dailymenu (
+                               dailymenu_id bigserial NOT NULL,
+                               date date NOT NULL,
+                               menu_id bigint NOT NULL,
+                               CONSTRAINT mng_dailymenu_pkey PRIMARY KEY (dailymenu_id),
+                               CONSTRAINT dailymenu_menu_id_fk FOREIGN KEY (menu_id)
+                                   REFERENCES public.mng_menu (menu_id)
+);
+ALTER TABLE public.mng_dailymenu ALTER COLUMN dailymenu_id SET DEFAULT nextval('mng_dailymenu_id_seq');

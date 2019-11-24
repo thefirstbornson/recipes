@@ -14,22 +14,32 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "mng_mealrecipe")
-public class MealRecipe {
+public class MealRecipe extends AbstractEntity {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "mealrecipe_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mealRecipeSetId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "meal_id", nullable = false)
     private Meal meal;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
-            name = "mngmealreciperecipes"
+            name = "mng_mealreciperecipes"
             ,joinColumns = @JoinColumn(name="mealrecipe_id")
             ,inverseJoinColumns = @JoinColumn(name = "recipe_id" )
     )
     private Set<Recipe> recipes;
+
+    @ManyToOne
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
+
+    public MealRecipe(Long id,Meal meal, Set<Recipe> recipes) {
+        this.id = id;
+        this.meal = meal;
+        this.recipes = recipes;
+    }
 }

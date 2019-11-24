@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 import ru.otus.recipes.domain.AbstractEntity;
 import ru.otus.recipes.dto.AbstractDto;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityMapperException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.service.CommonService;
@@ -32,7 +33,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
         try {
             log.info("Save request: {}",dto.toString());
             return new ResponseEntity<>(service.save(dto), HttpStatus.CREATED);
-        } catch (EntityMapperException ex) {
+        } catch (EntityMapperException | EntityExistsException ex) {
             log.error("Save request failed", ex);
             throw new ResponseStatusException( HttpStatus.NOT_IMPLEMENTED, "Can not save entity", ex);
         }
@@ -46,6 +47,8 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
         } catch (EntityMapperException ex) {
             log.error("Update request failed", ex);
             throw new ResponseStatusException( HttpStatus.NOT_IMPLEMENTED, "Can not update entity", ex);
+        } catch (EntityNotFoundException ex) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Can not update entity", ex);
         }
     }
 

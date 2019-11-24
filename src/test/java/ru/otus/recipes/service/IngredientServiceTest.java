@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.Ingredient;
 import ru.otus.recipes.domain.IngredientNutritionalInformation;
 import ru.otus.recipes.dto.IngredientDto;
+import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.IngredientNutritionalInformationRepository;
 import ru.otus.recipes.repository.IngredientRepository;
@@ -18,6 +19,7 @@ import ru.otus.recipes.service.mapper.IngredientMapper;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +27,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 
 @ExtendWith(SpringExtension.class)
 class IngredientServiceTest {
+    private static final Long ID =1L;
+    private static final Long DTO_ID =1L;
     private Ingredient persistedIngredient;
     private ru.otus.recipes.dto.IngredientDto IngredientDto;
     private IngredientDto persistedIngredientDto;
@@ -35,13 +39,11 @@ class IngredientServiceTest {
     private IngredientMapper ingredientMapper;
     @MockBean
     private IngredientNutritionalInformationRepository ingredientNutritionalInformationRepository;
-    @Bean
-    IngredientService IngredientService() {
-        return new IngredientService(ingredientRepository, ingredientNutritionalInformationRepository, ingredientMapper);
-    }
+    private IngredientService ingredientService;
 
     @BeforeEach
     void setUp() {
+        ingredientService= new IngredientService(ingredientRepository, ingredientNutritionalInformationRepository, ingredientMapper);
         Ingredient ingredient = new Ingredient( "IngredientName", Collections.singletonList(new IngredientNutritionalInformation()));
         IngredientDto = new IngredientDto("IngredientName", new HashMap<>());
         persistedIngredient = new Ingredient("IngredientName", Collections.singletonList(new IngredientNutritionalInformation()));
@@ -51,29 +53,31 @@ class IngredientServiceTest {
 
     @Test
     @DisplayName("Saving the Ingredient entity")
-    void save() {
-        persistedIngredientDto.setId(1L);
+    void save() throws EntityExistsException {
+        persistedIngredientDto.setId(DTO_ID);
+        Mockito.when(ingredientRepository.findById(anyLong())).thenReturn(Optional.empty());
         Mockito.when(ingredientRepository.save(any(Ingredient.class))).thenReturn(persistedIngredient);
         Mockito.when(ingredientMapper.toDto(any(Ingredient.class))).thenReturn(persistedIngredientDto);
-        assertEquals(1,IngredientService().save(IngredientDto).getId());
+        assertEquals(1,ingredientService.save(IngredientDto).getId());
     }
 
     @Test
     @DisplayName("Updating the Ingredient entity")
-    void update() {
+    void update() throws EntityNotFoundException {
         persistedIngredientDto.setName("newIngredientName");
+        Mockito.when(ingredientRepository.findById(anyLong())).thenReturn(Optional.of(persistedIngredient));
         Mockito.when(ingredientRepository.save(any(Ingredient.class))).thenReturn(persistedIngredient);
         Mockito.when(ingredientMapper.toDto(any(Ingredient.class))).thenReturn(persistedIngredientDto);
-        assertEquals("newIngredientName",IngredientService().update(IngredientDto).getName());
+        assertEquals("newIngredientName",ingredientService.update(IngredientDto).getName());
     }
 
     @Test
     @DisplayName("Finding the Ingredient entity by id")
     void findById() throws EntityNotFoundException {
-        persistedIngredientDto.setId(1);
+        persistedIngredientDto.setId(DTO_ID);
         Mockito.when(ingredientRepository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedIngredient));
         Mockito.when(ingredientMapper.toDto(any(Ingredient.class))).thenReturn(persistedIngredientDto);
-        IngredientDto resultDto = IngredientService().findById(1L);
-        assertEquals(1L,resultDto.getId());
+        IngredientDto resultDto = ingredientService.findById(1L);
+        assertEquals(DTO_ID,resultDto.getId());
     }
 }

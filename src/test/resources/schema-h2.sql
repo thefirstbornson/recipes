@@ -1,5 +1,5 @@
 DROP SEQUENCE IF EXISTS tblrecipeingredient_id_seq;
-DROP SEQUENCE IF EXISTS mng_mealrecipe_id_seq;
+DROP SEQUENCE IF EXISTS tbllevel_level_id_seq;
 DROP SEQUENCE IF EXISTS tblrecipeingredient_recipe_ingredient_id_seq ;
 DROP SEQUENCE IF EXISTS hibernate_sequence ;
 DROP SEQUENCE IF EXISTS tblcourse_course_id_seq ;
@@ -14,8 +14,8 @@ DROP SEQUENCE IF EXISTS tblnutritionalinformation_nutrition_information_id_seq ;
 DROP SEQUENCE IF EXISTS tblrecipe_id_seq ;
 DROP SEQUENCE IF EXISTS tblrecipe_recipe_id_seq ;
 
+
 DROP TABLE IF EXISTS tblcourse CASCADE;
-DROP TABLE IF EXISTS mng_mealrecipe CASCADE;
 DROP TABLE IF EXISTS tblcuisine CASCADE;
 DROP TABLE IF EXISTS tblfoodcategory CASCADE;
 DROP TABLE IF EXISTS tblingredient CASCADE;
@@ -29,6 +29,7 @@ DROP TABLE IF EXISTS tblrecipecourse CASCADE;
 DROP TABLE IF EXISTS tblrecipefoodcategory CASCADE;
 DROP TABLE IF EXISTS tblrecipeingredient CASCADE;
 DROP TABLE IF EXISTS tblrecipemeals CASCADE;
+
 
 CREATE SEQUENCE hibernate_sequence
     START WITH 1
@@ -209,27 +210,6 @@ CREATE TABLE tblrecipemeals (
                                        meal_id bigint NOT NULL
 );
 
-CREATE TABLE mngmealreciperecipes(
-                                     mealrecipe_id bigint NOT NULL,
-                                     recipe_id bigint NOT NULL
-);
-
-CREATE SEQUENCE mng_mealrecipe_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-CREATE TABLE mng_mealrecipe
-(
-    id bigserial NOT NULL,
-    meal_id bigint NOT NULL,
-    CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (id),
-    CONSTRAINT meal_id_fk FOREIGN KEY (meal_id)
-        REFERENCES tblmeal (meal_id)
-);
-
 ALTER TABLE tblcourse
     ADD CONSTRAINT tblcourse_pkey PRIMARY KEY (course_id);
 
@@ -323,4 +303,49 @@ ALTER TABLE tblmeasurement ALTER COLUMN measurement_id SET DEFAULT nextval('tblm
 ALTER TABLE tblnutritionalinformation ALTER COLUMN nutrition_information_id SET DEFAULT nextval('tblnutritionalinformation_nutrition_information_id_seq');
 ALTER TABLE tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('tblrecipe_recipe_id_seq');
 ALTER TABLE tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('tblrecipeingredient_recipe_ingredient_id_seq');
-ALTER TABLE ONLY public.mng_mealrecipe ALTER COLUMN id SET DEFAULT nextval('mng_mealrecipe_id_seq');
+
+DROP SEQUENCE IF EXISTS mng_menu_id_seq;
+CREATE SEQUENCE mng_menu_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+DROP TABLE IF EXISTS mng_menu CASCADE;
+CREATE TABLE mng_menu (
+                               menu_id bigserial NOT NULL,
+                               CONSTRAINT mng_menu_pkey PRIMARY KEY (menu_id)
+);
+ALTER TABLE mng_menu ALTER COLUMN menu_id SET DEFAULT nextval('mng_menu_id_seq');
+
+DROP SEQUENCE IF EXISTS mng_mealrecipe_id_seq;
+CREATE SEQUENCE mng_mealrecipe_id_seq  START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+DROP TABLE IF EXISTS mng_mealrecipe CASCADE;
+CREATE TABLE mng_mealrecipe
+(
+    mealrecipe_id bigserial NOT NULL,
+    meal_id       bigint    NOT NULL,
+    menu_id  bigint    NULL,
+    CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (mealrecipe_id),
+    CONSTRAINT meal_id_fk FOREIGN KEY (meal_id)
+        REFERENCES tblmeal (meal_id),
+    CONSTRAINT menu_id_fk FOREIGN KEY (menu_id)
+        REFERENCES mng_menu (menu_id)
+);
+
+ALTER TABLE mng_mealrecipe ALTER COLUMN mealrecipe_id SET DEFAULT nextval('mng_mealrecipe_id_seq');
+
+DROP TABLE IF EXISTS mng_mealreciperecipes CASCADE;
+CREATE TABLE mng_mealreciperecipes(
+                                     mealrecipe_id bigint NOT NULL,
+                                     recipe_id bigint NOT NULL
+);
+
+DROP SEQUENCE IF EXISTS mng_dailymenu_id_seq;
+CREATE SEQUENCE mng_dailymenu_id_seq  START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+DROP TABLE IF EXISTS mng_dailymenu CASCADE;
+CREATE TABLE mng_dailymenu (
+                               dailymenu_id bigserial NOT NULL,
+                               date date NOT NULL,
+                               menu_id bigint NOT NULL,
+                               CONSTRAINT mng_dailymenu_pkey PRIMARY KEY (dailymenu_id),
+                               CONSTRAINT dailymenu_menu_id_fk FOREIGN KEY (menu_id)
+                                   REFERENCES mng_menu (menu_id)
+);
+ALTER TABLE mng_dailymenu ALTER COLUMN dailymenu_id SET DEFAULT nextval('mng_dailymenu_id_seq');
+

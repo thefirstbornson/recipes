@@ -6,31 +6,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.domain.Recipe;
-import ru.otus.recipes.dto.RecipeDto;
+import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.exception.EntityNotFoundException;
-import ru.otus.recipes.repository.RecipeIngredientRepository;
-import ru.otus.recipes.repository.RecipeRepository;
-import ru.otus.recipes.service.mapper.RecipeMapper;
+import ru.otus.recipes.repository.MealRecipeRepository;
+import ru.otus.recipes.service.mapper.MealRecipeMapper;
 
 @Service
-public class RecipeService  extends AbstractService <RecipeDto, Recipe, RecipeRepository, RecipeMapper> {
+public class MealRecipeService extends AbstractService <MealRecipeDto, MealRecipe, MealRecipeRepository, MealRecipeMapper> {
 
-    private final RecipeIngredientRepository recipeIngredientRepository;
-    private final Logger log = LoggerFactory.getLogger(RecipeService.class);
+    private final Logger log = LoggerFactory.getLogger(MealRecipeService.class);
 
     @Autowired
-    public RecipeService(RecipeRepository recipeRepository, RecipeIngredientRepository recipeIngredientRepository,
-                          RecipeMapper recipeMapper) {
-        super(recipeRepository, recipeMapper, Recipe.class);
-        this.recipeIngredientRepository = recipeIngredientRepository;
+    public MealRecipeService(MealRecipeRepository mealRecipeRepository, MealRecipeMapper mealRecipeMapper) {
+        super(mealRecipeRepository, mealRecipeMapper, MealRecipe.class);
     }
 
     @Override
     public void deleteById(Long id) throws EntityNotFoundException {
         try {
             log.info(String.format("Start removing %s entity from join table", Recipe.class));
-            recipeIngredientRepository.deleteByRecipeId(id);
+            super.getRepository().deleteAllMealRecipes(id);
             log.info("Removal from join table successful");
             super.getRepository().deleteById(id);
         } catch (EmptyResultDataAccessException e){
@@ -43,7 +40,7 @@ public class RecipeService  extends AbstractService <RecipeDto, Recipe, RecipeRe
     public void deleteAll() throws EntityNotFoundException {
         try {
             log.info(String.format("Start removing %s entities from join table", Recipe.class));
-            recipeIngredientRepository.deleteAll();
+            super.getRepository().deleteAllMealRecipes();
             log.info("Removal from join table successful");
             super.getRepository().deleteAll();
         } catch (IllegalArgumentException e){

@@ -24,11 +24,11 @@ public class IngredientNutritionalInformation extends AbstractEntity {
     private long id;
 
     @JsonIgnore
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "ni_id")
     private NutritionalInformation nutrition;
 
