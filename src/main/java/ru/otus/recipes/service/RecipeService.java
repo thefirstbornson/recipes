@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import ru.otus.recipes.domain.Ingredient;
 import ru.otus.recipes.domain.Recipe;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.exception.EntityNotFoundException;
@@ -28,27 +29,19 @@ public class RecipeService  extends AbstractService <RecipeDto, Recipe, RecipeRe
 
     @Override
     public void deleteById(Long id) throws EntityNotFoundException {
-        try {
-            log.info(String.format("Start removing %s entity from join table", Recipe.class));
-            recipeIngredientRepository.deleteByRecipeId(id);
-            log.info("Removal from join table successful");
-            super.getRepository().deleteById(id);
-        } catch (EmptyResultDataAccessException e){
-            e.printStackTrace();
-            throw new EntityNotFoundException(String.format("No %s entities found!", Recipe.class.getTypeName()));
-        }
+        log.info(String.format("Start removing %s entity from join table", Recipe.class));
+        Recipe recipe = super.getRepository().findById(id).orElseThrow(()->new EntityNotFoundException(
+            String.format("No %s entity with id %d found!", Recipe.class.getTypeName(),id)));
+        recipeIngredientRepository.deleteByRecipeId(id);
+        log.info("Removal from join table successful");
+        super.getRepository().delete(recipe);
     }
 
     @Override
-    public void deleteAll() throws EntityNotFoundException {
-        try {
-            log.info(String.format("Start removing %s entities from join table", Recipe.class));
-            recipeIngredientRepository.deleteAll();
-            log.info("Removal from join table successful");
-            super.getRepository().deleteAll();
-        } catch (IllegalArgumentException e){
-            e.printStackTrace();
-            throw new EntityNotFoundException(String.format("No %s entities found!", Recipe.class.getTypeName()));
-        }
+    public void deleteAll()  {
+        log.info(String.format("Start removing %s entities from join table", Recipe.class));
+        recipeIngredientRepository.deleteAll();
+        log.info("Removal from join table successful");
+        super.getRepository().deleteAll();
     }
 }

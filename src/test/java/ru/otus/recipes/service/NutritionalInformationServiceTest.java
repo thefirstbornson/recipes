@@ -47,7 +47,7 @@ class NutritionalInformationServiceTest {
     }
 
     @Test
-    @DisplayName("Saving the NutritionalInformation entity")
+    @DisplayName("Сохранение  nutritionalInformation entity")
     void save() throws EntityExistsException {
         persistedDto.setId(1L);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
@@ -57,7 +57,7 @@ class NutritionalInformationServiceTest {
     }
 
     @Test
-    @DisplayName("Updating the NutritionalInformation entity")
+    @DisplayName("Обновление nutritionalInformation entity")
     void update() throws EntityNotFoundException {
         persistedEntity.setNutrition("newNutritionalInformationName");
         NutritionalInformationDto persistedNutritionalInformationDto = new NutritionalInformationDto("newNutritionalInformationName");
@@ -68,7 +68,7 @@ class NutritionalInformationServiceTest {
     }
 
     @Test
-    @DisplayName("Finding the NutritionalInformation entity by id")
+    @DisplayName("Поиск nutritionalInformation entity по id")
     void findById() throws EntityNotFoundException {
         persistedDto.setId(1);
         Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
@@ -97,5 +97,12 @@ class NutritionalInformationServiceTest {
     void findByIdEntityNotFoundException() {
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
+    }
+
+    @Test
+    @DisplayName("Ошибка при удалении несуществующей entity")
+    void deleteByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(DTO_ID));
     }
 }

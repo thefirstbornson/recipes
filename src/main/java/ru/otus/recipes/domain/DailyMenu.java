@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "mng_dailymenu")
-public class DailyMenu {
+public class DailyMenu extends AbstractEntity{
 
     @Id
     @Column(name = "dailymenu_id")

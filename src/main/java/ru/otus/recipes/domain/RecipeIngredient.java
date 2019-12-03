@@ -17,11 +17,11 @@ public class RecipeIngredient  extends AbstractEntity {
     @Column(name="recipe_ingredient_id")
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id", nullable=false)
     private Recipe recipe;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id", nullable=false)
     private Ingredient ingredient;
 
@@ -33,6 +33,13 @@ public class RecipeIngredient  extends AbstractEntity {
     private Measurement measurement;
 
     public RecipeIngredient(Ingredient ingredient, int amount,Measurement measurement) {
+        this.ingredient = ingredient;
+        this.amount = amount;
+        this.measurement = measurement;
+    }
+
+    public RecipeIngredient(Recipe recipe, Ingredient ingredient, int amount, Measurement measurement) {
+        this.recipe = recipe;
         this.ingredient = ingredient;
         this.amount = amount;
         this.measurement = measurement;

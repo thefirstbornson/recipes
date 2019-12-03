@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import ru.otus.recipes.domain.DailyMenu;
 
 @Repository
-public interface DailyMenuRepository extends JpaRepository<DailyMenu, Long> {
+public interface DailyMenuRepository extends CommonRepository<DailyMenu> {
 }
 

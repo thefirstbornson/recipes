@@ -30,27 +30,19 @@ public class IngredientService extends AbstractService <IngredientDto, Ingredien
 
     @Override
     public void deleteById(Long id) throws EntityNotFoundException {
-        try {
             log.info(String.format("Start removing %s entity from join table", Ingredient.class));
+            Ingredient ingredient = super.getRepository().findById(id).orElseThrow(()->new EntityNotFoundException(
+                    String.format("No %s entity with id %d found!", Ingredient.class.getTypeName(),id)));
             ingredientNutritionalInformationRepository.deleteByIngredientId(id);
             log.info("Removal from join table successful");
-            super.getRepository().deleteById(id);
-        } catch (EmptyResultDataAccessException e){
-            log.error("Empty result returned",e);
-            throw new EntityNotFoundException(String.format("No %s entities found!", Ingredient.class.getTypeName()));
-        }
+            super.getRepository().delete(ingredient);
     }
 
     @Override
-    public void deleteAll() throws EntityNotFoundException {
-        try {
+    public void deleteAll() {
             log.info(String.format("Start removing %s entities from join table", Ingredient.class));
             ingredientNutritionalInformationRepository.deleteAll();
             log.info("Removal from join table successful");
             super.getRepository().deleteAll();
-        } catch (IllegalArgumentException e){
-            log.error(String.format("Error returned while removing %s entity ", Ingredient.class),e);
-            throw new EntityNotFoundException(String.format("No %s entities found!", Recipe.class.getTypeName()));
-        }
     }
 }

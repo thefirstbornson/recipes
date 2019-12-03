@@ -8,6 +8,7 @@ import ru.otus.recipes.domain.*;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.repository.*;
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,20 +76,19 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
 
     @Override
     void mapSpecificFields(RecipeDto source, Recipe destination) {
-        destination.setLevel( levelRepository.getOne(source.getLevelId()));
+        destination.setLevel(levelRepository.getOne(source.getLevelId()));
         destination.setCuisine(cuisineRepository.getOne(source.getCuisineId()));
         destination.setCourses(new HashSet<>(courseRepository.findByIdIn(source.getCourseIdList())));
         destination.setFoodCategories(new HashSet<>(foodCategoryRepository.findByIdIn(source.getFoodCategoryIdList())));
         destination.setMeals(new HashSet<>(mealRepository.findByIdIn(source.getMealIdList())));
-        List<RecipeIngredient> recipeIngredientList = extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap());
-        for(RecipeIngredient  recipeIngredient : recipeIngredientList) {
-            recipeIngredient.setRecipe(destination);
-        }
+        List<RecipeIngredient> recipeIngredientList =
+                extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap(),destination);
         destination.setRecipeIngredients(new HashSet<>(recipeIngredientList));
     }
 
 
-    private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String, Map<String ,Long>> ingredinentMeasureAmountMap) {
+    private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String, Map<String ,Long>> ingredinentMeasureAmountMap,
+                                                                      Recipe recipe) {
         List<Ingredient> ingredientList = ingredientRepository.findByIdIn(new ArrayList<>(ingredinentMeasureAmountMap.keySet()
                 .stream()
                 .map(Long::valueOf)
@@ -103,6 +103,7 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         );
         return ingredientList.stream()
                 .map(ingredient -> new RecipeIngredient(
+                                recipe,
                                 ingredient,
                                 toIntExact(
                                         ingredinentMeasureAmountMap
@@ -112,10 +113,8 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
                                         .filter(m->ingredinentMeasureAmountMap
                                                 .get(String.valueOf(ingredient.getId())).get("measurement_id")==m.getId())
                                         .findAny()
-                                        .orElseThrow(()->new EmptyResultDataAccessException(
-                                                        String.format("No %s entity exists!",
-                                                                Measurement.class.getTypeName()), 1
-                                                )
+                                        .orElseThrow(()->new EntityNotFoundException(
+                                                String.format("No %s entity exists!",Measurement.class.getTypeName()))
                                         )
                         )
                 )

@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.*;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.exception.EntityExistsException;
+import ru.otus.recipes.exception.EntityNotFoundException;
+import ru.otus.recipes.service.MenuService;
 import ru.otus.recipes.service.RecipeService;
 import ru.otus.recipes.service.mapper.MealRecipeMapper;
 
@@ -36,6 +39,8 @@ class CommonTest {
     @Autowired
     RecipeService recipeService;
     @Autowired
+    MenuService menuService;
+    @Autowired
     EntityManager entityManager;
     @Autowired
     MealRecipeMapper mealRecipeMapper;
@@ -47,8 +52,8 @@ class CommonTest {
     }
 
     @Test
-//    @Transactional
-    void saveMealRecipeTest() throws EntityExistsException {
+    @Transactional
+    void saveMealRecipeTest() throws EntityExistsException, EntityNotFoundException {
         Map<String, Map<String,Long>> ingredients = new HashMap<>();
         ingredients.put(String.valueOf(1),  new HashMap<>(){{
             put( "measurement_id", 1L );
@@ -79,12 +84,14 @@ class CommonTest {
         menu = menuRepository.save(menu);
         menu.getMealRecipes().clear();
 
+        menuService.deleteById(menu.getId());
 //        menuRepository.delete(menu);
 
         DailyMenu dailyMenu = new DailyMenu();
         dailyMenu.setMenu(menu);
         dailyMenu.setDate(now());
         dailyMenuRepository.save(dailyMenu);
+
 
 //        MealRecipeDto mealRecipeDtoFromEntity = mealRecipeMapper.toDto(mealRecipe1);
 //        MealRecipe mealRecipe2 = mealRecipeMapper.toEntity(mealRecipeDtoFromEntity);

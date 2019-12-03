@@ -67,7 +67,7 @@ class CourseServiceTest {
     }
 
     @Test
-    @DisplayName("Поиск course entity by id")
+    @DisplayName("Поиск course entity по id")
     void findById() throws EntityNotFoundException {
         persistedDto.setId(DTO_ID);
         Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
@@ -97,4 +97,13 @@ class CourseServiceTest {
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
     }
+
+    @Test
+    @DisplayName("Ошибка при удалении несуществующей entity")
+    void deleteByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(DTO_ID));
+    }
+
+
 }

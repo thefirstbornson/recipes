@@ -52,7 +52,7 @@ class IngredientServiceTest {
     }
 
     @Test
-    @DisplayName("Saving the Ingredient entity")
+    @DisplayName("Сохранение  Ingredient entity")
     void save() throws EntityExistsException {
         persistedDto.setId(DTO_ID);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
@@ -62,7 +62,7 @@ class IngredientServiceTest {
     }
 
     @Test
-    @DisplayName("Updating the Ingredient entity")
+    @DisplayName("Обновление ingredient entity")
     void update() throws EntityNotFoundException {
         persistedDto.setName("newIngredientName");
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
@@ -72,7 +72,7 @@ class IngredientServiceTest {
     }
 
     @Test
-    @DisplayName("Finding the Ingredient entity by id")
+    @DisplayName("Поиск Ingredient entity by id")
     void findById() throws EntityNotFoundException {
         persistedDto.setId(DTO_ID);
         Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
@@ -101,5 +101,12 @@ class IngredientServiceTest {
     void findByIdEntityNotFoundException() {
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
+    }
+
+    @Test
+    @DisplayName("Ошибка при удалении несуществующей entity")
+    void deleteByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(DTO_ID));
     }
 }

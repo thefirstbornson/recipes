@@ -25,27 +25,28 @@ public class MealRecipeService extends AbstractService <MealRecipeDto, MealRecip
 
     @Override
     public void deleteById(Long id) throws EntityNotFoundException {
-        try {
-            log.info(String.format("Start removing %s entity from join table", Recipe.class));
+            log.info(String.format("Start removing %s entity from join table", MealRecipe.class));
             super.getRepository().deleteAllMealRecipes(id);
             log.info("Removal from join table successful");
-            super.getRepository().deleteById(id);
-        } catch (EmptyResultDataAccessException e){
-            e.printStackTrace();
-            throw new EntityNotFoundException(String.format("No %s entities found!", Recipe.class.getTypeName()));
-        }
+            super.deleteById(id);
+//            super.getRepository().deleteById(id);
     }
 
     @Override
-    public void deleteAll() throws EntityNotFoundException {
-        try {
-            log.info(String.format("Start removing %s entities from join table", Recipe.class));
+    public void deleteAll() {
+            log.info(String.format("Start removing %s entities from join table", MealRecipe.class));
             super.getRepository().deleteAllMealRecipes();
             log.info("Removal from join table successful");
             super.getRepository().deleteAll();
-        } catch (IllegalArgumentException e){
-            e.printStackTrace();
-            throw new EntityNotFoundException(String.format("No %s entities found!", Recipe.class.getTypeName()));
-        }
+    }
+
+    Integer deleteMenuFromMealRecipes (Long menuId){
+        log.info(String.format("Start removing menu from %s entities", MealRecipe.class));
+        return super.getRepository().deleteMenuFromMealRecipes(menuId);
+    }
+
+    Integer deleteAllMenusFromMealRecipes (){
+        log.info(String.format("Start removing menus  from %s entities", MealRecipe.class));
+        return super.getRepository().deleteAllMenusFromMealRecipes();
     }
 }

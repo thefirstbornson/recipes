@@ -47,7 +47,7 @@ class LevelServiceTest {
     }
 
     @Test
-    @DisplayName("Saving the Level entity")
+    @DisplayName("Сохранение  Level entity")
     void save() throws EntityExistsException {
         persistedDto.setId(DTO_ID);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
@@ -57,7 +57,7 @@ class LevelServiceTest {
     }
 
     @Test
-    @DisplayName("Updating the Level entity")
+    @DisplayName("Обновление level entity")
     void update() throws EntityNotFoundException {
         persistedDto.setId(DTO_ID_UPDATE);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
@@ -67,7 +67,7 @@ class LevelServiceTest {
     }
 
     @Test
-    @DisplayName("Finding the Level entity by id")
+    @DisplayName("Поиск Level entity по id")
     void findById() throws EntityNotFoundException {
         Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
         Mockito.when(mapper.toDto(any(Level.class))).thenReturn(persistedDto);
@@ -95,5 +95,12 @@ class LevelServiceTest {
     void findByIdEntityNotFoundException() {
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
+    }
+
+    @Test
+    @DisplayName("Ошибка при удалении несуществующей entity")
+    void deleteByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(DTO_ID));
     }
 }

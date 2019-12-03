@@ -46,7 +46,7 @@ class MeasurementServiceTest {
     }
 
     @Test
-    @DisplayName("Saving the Measurement entity")
+    @DisplayName("Сохранение  Measurement entity")
     void save() throws EntityExistsException {
         persistedDto.setId(DTO_ID);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
@@ -56,7 +56,7 @@ class MeasurementServiceTest {
     }
 
     @Test
-    @DisplayName("Updating the Measurement entity")
+    @DisplayName("Обновление measurement entity")
     void update() throws EntityNotFoundException {
         persistedEntity.setName("newMeasurementName");
         MeasurementDto persistedMeasurementDto = new MeasurementDto("newMeasurementName");
@@ -67,7 +67,7 @@ class MeasurementServiceTest {
     }
 
     @Test
-    @DisplayName("Finding the Measurement entity by id")
+    @DisplayName("Поиск Measurement entity по id")
     void findById() throws EntityNotFoundException {
         persistedDto.setId(DTO_ID);
         Mockito.when(repository.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(persistedEntity));
@@ -96,5 +96,12 @@ class MeasurementServiceTest {
     void findByIdEntityNotFoundException() {
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> service.findById(DTO_ID));
+    }
+
+    @Test
+    @DisplayName("Ошибка при удалении несуществующей entity")
+    void deleteByIdEntityNotFoundException() {
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(DTO_ID));
     }
 }

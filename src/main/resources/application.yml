@@ -12,7 +12,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     properties:
       hibernate:
-        show_sql: false
+        show_sql: true
         format_sql: false
         jdbc.lob.non_contextual_creation: true
         ddl-auto: none

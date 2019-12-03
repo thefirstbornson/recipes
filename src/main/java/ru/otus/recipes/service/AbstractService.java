@@ -88,24 +88,15 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     @Override
     public void deleteById(Long id) throws EntityNotFoundException {
         log.info(String.format("Start removing %s entity with id %d from database", entityClass.getTypeName(),id));
-        try {
-            repository.deleteById(id);
-        } catch (EmptyResultDataAccessException e){
-            log.error("Empty result returned",e);
-            throw new EntityNotFoundException(String.format("No %s entities found!", entityClass.getTypeName()));
-        }
+        repository.delete(repository.findById(id).orElseThrow(()->new EntityNotFoundException(
+                String.format("No %s entity with id %d found!", entityClass.getTypeName(),id))));
         log.info("Removal entity was successful");
     }
 
     @Override
-    public void deleteAll() throws EntityNotFoundException {
+    public void deleteAll() {
         log.info("Start removing all entities from database");
-        try {
-            repository.deleteAll();
-        } catch (IllegalArgumentException e){
-            log.error("Empty result returned",e);
-            throw new EntityNotFoundException(String.format("No %s entities found!", entityClass.getTypeName()));
-        }
+        repository.deleteAll();
         log.info("Removal entities was successful");
     }
 

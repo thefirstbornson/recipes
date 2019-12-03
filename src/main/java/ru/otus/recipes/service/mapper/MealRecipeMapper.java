@@ -21,18 +21,16 @@ import java.util.stream.Collectors;
 @Service
 public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> {
     private final ModelMapper mapper;
-    private final MealMapper mealMapper;
     private final RecipeMapper recipeMapper;
     private final MealRepository mealRepository;
     private final RecipeRepository recipeRepository;
     private final MenuRepository menuRepository;
 
-
     MealRecipeMapper(ModelMapper mapper, NutritionalInformationRepository nutritionalInformationRepository,
-                     MealMapper mealMapper, RecipeMapper recipeMapper, MealRepository mealRepository, RecipeRepository recipeRepository, MenuRepository menuRepository) {
+                     RecipeMapper recipeMapper, MealRepository mealRepository,
+                     RecipeRepository recipeRepository, MenuRepository menuRepository) {
         super(MealRecipe.class, MealRecipeDto.class);
         this.mapper = mapper;
-        this.mealMapper = mealMapper;
         this.recipeMapper = recipeMapper;
         this.mealRepository = mealRepository;
         this.recipeRepository = recipeRepository;
