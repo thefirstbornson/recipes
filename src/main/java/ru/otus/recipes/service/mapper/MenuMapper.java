@@ -9,6 +9,7 @@ import ru.otus.recipes.dto.MenuDto;
 import ru.otus.recipes.repository.MealRecipeRepository;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
     void mapSpecificFields(Menu source, MenuDto destination) {
         if (Optional.ofNullable(source.getMealRecipes()).isPresent()) {
         List<MealRecipeDto> mealRecipeDtoList = source.getMealRecipes().stream().map(mealRecipeMapper::toDto).collect(Collectors.toList());
-        destination.setMealRecipes(new HashSet<>(mealRecipeDtoList));
+        destination.setMealRecipes(mealRecipeDtoList);
         } else {
             destination.setMealRecipes(null);
         }
@@ -55,7 +56,7 @@ public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
                     .stream()
                     .map(MealRecipeDto::getId)
                     .collect(Collectors.toList()));
-            destination.setMealRecipes(new HashSet<>(mealRecipeList));
+            destination.setMealRecipes(mealRecipeList);
         } else {
             destination.setMealRecipes(null);
         }

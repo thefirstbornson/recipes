@@ -30,7 +30,6 @@ INSERT INTO public.tbllevel (level_id) VALUES (1);
 INSERT INTO public.tbllevel (level_id) VALUES (2);
 INSERT INTO public.tbllevel (level_id) VALUES (3);
 
-
 INSERT INTO public.tblmeal (meal_id, meal) VALUES (1, 'завтрак');
 INSERT INTO public.tblmeal (meal_id, meal) VALUES (2, 'обед');
 INSERT INTO public.tblmeal (meal_id, meal) VALUES (3, 'ужин');

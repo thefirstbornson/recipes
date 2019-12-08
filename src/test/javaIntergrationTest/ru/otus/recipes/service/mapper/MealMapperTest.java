@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class MealMapperTest {
 
-    private final Meal meal = new Meal(0, "mealName");
+    private final Meal meal = new Meal(0L, "mealName");
     private final MealDto mealDto = new MealDto("mealName");
 
     @Autowired

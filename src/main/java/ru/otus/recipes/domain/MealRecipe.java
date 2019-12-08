@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -31,15 +32,21 @@ public class MealRecipe extends AbstractEntity {
             ,joinColumns = @JoinColumn(name="mealrecipe_id")
             ,inverseJoinColumns = @JoinColumn(name = "recipe_id" )
     )
-    private Set<Recipe> recipes;
+    private List<Recipe> recipes;
 
     @ManyToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
-    public MealRecipe(Long id,Meal meal, Set<Recipe> recipes) {
+    public MealRecipe(Long id,Meal meal, List<Recipe> recipes) {
         this.id = id;
         this.meal = meal;
         this.recipes = recipes;
+    }
+
+    public MealRecipe(Meal meal, List<Recipe> recipes, Menu menu) {
+        this.meal = meal;
+        this.recipes = recipes;
+        this.menu = menu;
     }
 }

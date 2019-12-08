@@ -87,7 +87,7 @@ class MenuControllerTest {
                 ingredientIdAndMeasurementIdAmountMap, COURSE_ID_LIST,FOOD_CATEGORY_ID_LIST,MEAL_ID_LIST);
         MealRecipeDto mealRecipeDto = new MealRecipeDto(MEAL_ID, new HashSet<>(List.of(recipeDto)),null);
         mealRecipeDto.setId(DTO_ID);
-        dto = new MenuDto(new HashSet<>(List.of(mealRecipeDto)));
+        dto = new MenuDto(List.of(mealRecipeDto));
         dto.setId(DTO_ID);
     }
 
@@ -109,7 +109,7 @@ class MenuControllerTest {
     void updateCourse() throws Exception {
         MealRecipeDto mealRecipeDtoUpdate = new MealRecipeDto(MEAL_ID, new HashSet<>(List.of(recipeDto)),null);
         mealRecipeDtoUpdate.setId(MEAL_RECIPE_DTO_ID_UPDATE);
-        dto.setMealRecipes(new HashSet<>(List.of(mealRecipeDtoUpdate)));
+        dto.setMealRecipes(List.of(mealRecipeDtoUpdate));
         String jsonToSave = objectMapper.writeValueAsString(dto);
         given(service.update(any())).willReturn(dto);
         mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)

@@ -38,11 +38,11 @@ class MealServiceTest {
     @BeforeEach
     void setUp() {
         service = new MealService(repository, mapper);
-        Meal Meal = new Meal(0, "MealName");
+        Meal meal = new Meal(0L, "MealName");
         dto = new MealDto("MealName");
         persistedEntity = new Meal(ID,"MealName");
         persistedDto = new MealDto("MealName");
-        Mockito.when(mapper.toEntity(any(MealDto.class))).thenReturn(Meal);
+        Mockito.when(mapper.toEntity(any(MealDto.class))).thenReturn(meal);
     }
 
     @Test

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,5 +14,5 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuDto extends AbstractDto{
-    private Set<MealRecipeDto> mealRecipes ;
+    private List<MealRecipeDto> mealRecipes ;
 }

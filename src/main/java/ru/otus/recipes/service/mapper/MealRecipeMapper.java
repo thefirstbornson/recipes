@@ -13,6 +13,7 @@ import ru.otus.recipes.repository.NutritionalInformationRepository;
 import ru.otus.recipes.repository.RecipeRepository;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +65,7 @@ public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> 
         destination.setMeal(mealRepository.getOne(source.getMealId()));
         List<Recipe> recipes = recipeRepository.findByIdIn(source.getRecipes()
                 .stream().map(RecipeDto::getId).collect(Collectors.toList()));
-        destination.setRecipes(new HashSet<>(recipes));
+        destination.setRecipes(new ArrayList<>(recipes));
         destination.setMenu(Optional.ofNullable(source.getMenuId()).isPresent() ? menuRepository.getOne(source.getMenuId()): null);
     }
 }

@@ -60,7 +60,7 @@ class DailyMenuServiceTest {
                 new RecipeDto(1, RECIPE_NAME, RECIPE_DESCRIPTION, INSTRUCTIONS, COOK_TIME, LEVEL_ID, CUISINE_ID, RATING, IMAGE_PATH,
                         new HashMap<>(), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L));
         MealRecipeDto mealRecipeDto = new MealRecipeDto(DTO_ID, new HashSet<>(List.of(recipeDto)),null);
-        Menu menu = new Menu(ID, new HashSet<>(List.of(mealRecipe)));
+        Menu menu = new Menu(ID, List.of(mealRecipe));
 //        MenuDto menuDto = new MenuDto(new HashSet<>(List.of(mealRecipeDto)));
 //        menuDto.setId(DTO_ID);
         persistedEntity = new DailyMenu(ID,Calendar.getInstance().getTime(),menu);

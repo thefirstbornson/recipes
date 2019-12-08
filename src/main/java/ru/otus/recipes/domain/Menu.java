@@ -1,11 +1,10 @@
 package ru.otus.recipes.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -20,8 +19,8 @@ public class Menu extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy ="menu")
-    private Set<MealRecipe> mealRecipes ;
+    @OneToMany(mappedBy ="menu",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<MealRecipe> mealRecipes ;
 
 //    @OneToOne(mappedBy = "menu", optional = false, fetch = FetchType.LAZY)
 //    private DailyMenu dailyMenu;

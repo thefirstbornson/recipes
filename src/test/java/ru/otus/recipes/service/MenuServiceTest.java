@@ -63,8 +63,8 @@ class MenuServiceTest {
                 new RecipeDto(1, RECIPE_NAME, RECIPE_DESCRIPTION, INSTRUCTIONS, COOK_TIME, LEVEL_ID, CUISINE_ID, RATING, IMAGE_PATH,
                         new HashMap<>(), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L));
         MealRecipeDto mealRecipeDto = new MealRecipeDto(DTO_ID, new HashSet<>(List.of(recipeDto)),null);
-        persistedEntity = new Menu(ID, new HashSet<>(List.of(mealRecipe)));
-        dto = new MenuDto(new HashSet<>(List.of(mealRecipeDto)));
+        persistedEntity = new Menu(ID, List.of(mealRecipe));
+        dto = new MenuDto(List.of(mealRecipeDto));
         dto.setId(DTO_ID);
         Menu menu = new Menu();
         Mockito.when(mapper.toEntity(any(MenuDto.class))).thenReturn(menu);
@@ -84,7 +84,7 @@ class MenuServiceTest {
     void update() throws EntityNotFoundException {
         MealRecipeDto mealRecipeDto = new MealRecipeDto();
         mealRecipeDto.setId(ID_UPDATE);
-        dto.setMealRecipes(new HashSet<>(List.of(mealRecipeDto)));
+        dto.setMealRecipes(List.of(mealRecipeDto));
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
         Mockito.when(repository.save(any(Menu.class))).thenReturn(persistedEntity);
         Mockito.when(mapper.toDto(any(Menu.class))).thenReturn(dto);

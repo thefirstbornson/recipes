@@ -31,19 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers  = DailyMenuController.class)
 class DailyMenuControllerTest {
 
-    private static final String NAME = "testRecipe";
-    private static final String DESCRIPTION = "testDescription";
-    private static final String INSTRUCTIONS = "testInstructions";
-    private static final Integer COOK_TIME = 30;
-    private static final Integer LEVEL_ID = 1;
-    private static final Integer CUISINE_ID = 1;
-    private static final Integer RATING = 1;
-    private static final String IMAGE_PATH = "testImagePath";
-    private static final List<Long> COURSE_ID_LIST = Collections.singletonList(1L);
-    private static final List<Long> FOOD_CATEGORY_ID_LIST = Collections.singletonList(1L);
-    private static final List<Long> MEAL_ID_LIST = Collections.singletonList(1L);
-    private static final Long AMOUNT = 300L;
-    private static final Long MEASUREMENT_ID = 1L;
     private static final Date NOW = Calendar.getInstance().getTime();
     private static final String NOW_STRING = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(NOW);
     private static final String URL_TEMPLATE = "/daily-menus";
@@ -54,7 +41,6 @@ class DailyMenuControllerTest {
     private static final String ERROR_ENTITY_EXISTS_MESSAGE = "Can not save entity";
     private static final long NONEXISTENT_DTO_ID = 0L;
     private static final Long DTO_ID = 1L;
-    private static final Long MEAL_ID =1L;
     private static final Long MENU_DTO_ID_UPDATE=2L;
     private DailyMenuDto dto;
 

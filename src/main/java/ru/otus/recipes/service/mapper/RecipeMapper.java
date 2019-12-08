@@ -83,7 +83,7 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         destination.setMeals(new HashSet<>(mealRepository.findByIdIn(source.getMealIdList())));
         List<RecipeIngredient> recipeIngredientList =
                 extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap(),destination);
-        destination.setRecipeIngredients(new HashSet<>(recipeIngredientList));
+        destination.setRecipeIngredients(new ArrayList<>(recipeIngredientList));
     }
 
 

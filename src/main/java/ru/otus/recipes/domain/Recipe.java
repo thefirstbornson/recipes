@@ -4,6 +4,7 @@ package ru.otus.recipes.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class Recipe  extends AbstractEntity{
     @Column(name="imagepath")
     private String imagepath;
     @OneToMany(mappedBy ="recipe",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<RecipeIngredient> recipeIngredients ;
+    private List<RecipeIngredient> recipeIngredients ;
 
     public Recipe(long id, String name, String description, String instructions, int cooktime,
                   int rating, String imagepath, Level level, Cuisine cuisine, Set<Course> courses,
@@ -90,6 +91,6 @@ public class Recipe  extends AbstractEntity{
         for(RecipeIngredient  recipeIngredient : recipeIngredients) {
             recipeIngredient.setRecipe(this);
         }
-        this.recipeIngredients = new HashSet<>(recipeIngredients);
+        this.recipeIngredients = new ArrayList<>(recipeIngredients);
     }
 }

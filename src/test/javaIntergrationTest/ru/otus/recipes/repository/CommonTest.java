@@ -15,6 +15,9 @@ import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.service.MenuService;
 import ru.otus.recipes.service.RecipeService;
 import ru.otus.recipes.service.mapper.MealRecipeMapper;
+import ru.otus.recipes.service.mapper.MenuMapper;
+import ru.otus.recipes.service.strategy.RandomStrategy;
+import ru.otus.recipes.service.strategy.Strategy;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -44,6 +47,8 @@ class CommonTest {
     EntityManager entityManager;
     @Autowired
     MealRecipeMapper mealRecipeMapper;
+    @Autowired
+    MenuMapper menuMapper;
 
     @BeforeEach
     void setUp(){
@@ -72,17 +77,17 @@ class CommonTest {
 
         MealRecipe mealRecipe = new MealRecipe();
         mealRecipe.setMeal(mealRepository.findById(1L).get());
-        HashSet<Recipe> recipes = new HashSet<>(Collections.singletonList(recipeRepository.findById(1L).get()));
+        List<Recipe> recipes = new ArrayList<>(Collections.singletonList(recipeRepository.findById(1L).get()));
         mealRecipe.setRecipes(recipes);
         mealRecipe.setMenu(null);
         mealRecipeRepository.save(mealRecipe);
         MealRecipe mealRecipe1 = mealRecipeRepository.findById(1L).get();
 
         Menu menu = new Menu();
-        HashSet<MealRecipe> mealRecipes = new HashSet<>(Collections.singletonList(mealRecipe1));
+        List<MealRecipe> mealRecipes = Collections.singletonList(mealRecipe1);
         menu.setMealRecipes(mealRecipes);
         menu = menuRepository.save(menu);
-        menu.getMealRecipes().clear();
+//        menu.getMealRecipes().clear();
 
         menuService.deleteById(menu.getId());
 //        menuRepository.delete(menu);
@@ -100,5 +105,13 @@ class CommonTest {
 //        Assert.assertFalse(mealRecipe1.getRecipes().isEmpty());
     }
 
-
+    @Test
+    @Transactional
+    void strategyTest(){
+        List<Meal> mealList = mealRepository.findAll();
+        Strategy strategy = new RandomStrategy(mealList, recipeRepository);
+        Menu menu = strategy.createMenu();
+        menuRepository.save(menu);
+        System.out.println(menuMapper.toDto(menu));
+    }
 }
