@@ -12,11 +12,11 @@ import ru.otus.recipes.domain.MealRecipe;
 @Transactional
 public interface MealRecipeRepository extends CommonRepository<MealRecipe> {
     @Modifying
-    @Query(value = "DELETE FROM mng_mealreciperecipes WHERE mealrecipe_id = ?1", nativeQuery = true)
+    @Query(value = "DELETE FROM mng_mealreciperecipe WHERE mealrecipe_id = ?1", nativeQuery = true)
     int deleteAllMealRecipes(Long mealRecipeId );
 
     @Modifying
-    @Query(value = "DELETE FROM mng_mealreciperecipes",nativeQuery = true)
+    @Query(value = "DELETE FROM mng_mealreciperecipe",nativeQuery = true)
     int deleteAllMealRecipes();
 
     @Modifying

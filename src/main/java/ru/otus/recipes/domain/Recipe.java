@@ -21,7 +21,7 @@ public class Recipe  extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="recipe_id")
-    private long id;
+    private Long id;
 
     @Column(name="name")
     private String name;
@@ -71,7 +71,7 @@ public class Recipe  extends AbstractEntity{
     private Set<Meal> meals;
     @Column(name="imagepath")
     private String imagepath;
-    @OneToMany(mappedBy ="recipe",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy ="recipe",cascade = {CascadeType.PERSIST, CascadeType.MERGE},orphanRemoval = true)
     private List<RecipeIngredient> recipeIngredients ;
 
     public Recipe(long id, String name, String description, String instructions, int cooktime,

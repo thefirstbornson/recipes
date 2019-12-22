@@ -37,15 +37,15 @@ class IngredientControllerTest {
     private static final String NAME = "testIngredient";
     private static final String UPDATED_NAME = "anotherTestIngredient";
     private static final String URL_TEMPLATE = "/ingredients";
-    private static final String EXPECTED_CONTENT ="{\"id\":1,\"name\":\"testIngredient\",\"nutritionalIdsndAmountMap\":{\"1\":10}}";
-    private static final String EXPECTED_CONTENT_AFTER_UPDATE ="{\"id\":1,\"name\":\"anotherTestIngredient\",\"nutritionalIdsndAmountMap\":{\"1\":10}}";
+    private static final String EXPECTED_CONTENT ="{\"id\":1,\"name\":\"testIngredient\",\"nutritionalIdsAndAmountMap\":{\"1\":10}}";
+    private static final String EXPECTED_CONTENT_AFTER_UPDATE ="{\"id\":1,\"name\":\"anotherTestIngredient\",\"nutritionalIdsAndAmountMap\":{\"1\":10}}";
     private static final String EXPECTED_CONTENT_AFTER_DELETE ="Removal was successful";
     private static final String ERROR_ENTITY_NOT_FOUND_MESSAGE = "Can not find entity";
     private static final String ERROR_ENTITY_EXISTS_MESSAGE = "Can not save entity";
     private static final long NONEXISTENT_DTO_ID = 0;
     private static final long DTO_ID = 1;
     private static final Long NUTRITIONAL_INFORMATION_ID =1L;
-    private static final Integer NUTRITIONAL_INFORMATION_AMOUNT =10;
+    private static final Float NUTRITIONAL_INFORMATION_AMOUNT =10f;
     private IngredientDto dto;
 
     @Autowired
@@ -59,7 +59,7 @@ class IngredientControllerTest {
 
     @BeforeEach
     void setUp(){
-        Map<Long,Integer> nutritionalInformationByAmountMap = new HashMap<>();
+        Map<Long,Float> nutritionalInformationByAmountMap = new HashMap<>();
         nutritionalInformationByAmountMap.put(NUTRITIONAL_INFORMATION_ID,NUTRITIONAL_INFORMATION_AMOUNT);
         dto =new IngredientDto(NAME, nutritionalInformationByAmountMap);
     }

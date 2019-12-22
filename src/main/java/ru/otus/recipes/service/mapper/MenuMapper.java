@@ -1,16 +1,18 @@
 package ru.otus.recipes.service.mapper;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.domain.Menu;
 import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.MenuDto;
 import ru.otus.recipes.repository.MealRecipeRepository;
+import ru.otus.recipes.service.MealRecipeService;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,13 +21,13 @@ import java.util.stream.Collectors;
 @Service
 public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
     private final ModelMapper mapper;
-    private final MealRecipeRepository mealRecipeRepository;
+    private final MealRecipeService mealRecipeService;
     private final MealRecipeMapper mealRecipeMapper;
 
-    MenuMapper(ModelMapper mapper, MealRecipeRepository mealRecipeRepository, MealRecipeMapper mealRecipeMapper) {
+    MenuMapper(ModelMapper mapper, @Lazy MealRecipeService mealRecipeService, MealRecipeMapper mealRecipeMapper) {
         super(Menu.class, MenuDto.class);
         this.mapper = mapper;
-        this.mealRecipeRepository = mealRecipeRepository;
+        this.mealRecipeService = mealRecipeService;
         this.mealRecipeMapper = mealRecipeMapper;
     }
 
@@ -41,24 +43,22 @@ public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
 
     @Override
     void mapSpecificFields(Menu source, MenuDto destination) {
-        if (Optional.ofNullable(source.getMealRecipes()).isPresent()) {
-        List<MealRecipeDto> mealRecipeDtoList = source.getMealRecipes().stream().map(mealRecipeMapper::toDto).collect(Collectors.toList());
-        destination.setMealRecipes(mealRecipeDtoList);
-        } else {
-            destination.setMealRecipes(null);
+        List<MealRecipeDto> mealRecipeDtoList = Collections.emptyList();
+        if (source.getMealRecipes()!=null) {
+            mealRecipeDtoList = source.getMealRecipes().stream().map(mealRecipeMapper::toDto).collect(Collectors.toList());
         }
+        destination.setMealRecipes(mealRecipeDtoList);
     }
 
     @Override
     void mapSpecificFields(MenuDto source, Menu destination) {
-        if (Optional.ofNullable(source.getMealRecipes()).isPresent()) {
-            List<MealRecipe> mealRecipeList = mealRecipeRepository.findByIdIn(source.getMealRecipes()
+        List<MealRecipe> mealRecipeList = Collections.emptyList();
+        if (source.getMealRecipes()!=null) {
+            mealRecipeList = mealRecipeService.getAllEntitiesById(source.getMealRecipes()
                     .stream()
                     .map(MealRecipeDto::getId)
                     .collect(Collectors.toList()));
-            destination.setMealRecipes(mealRecipeList);
-        } else {
-            destination.setMealRecipes(null);
         }
+        destination.setMealRecipes(mealRecipeList);
     }
 }

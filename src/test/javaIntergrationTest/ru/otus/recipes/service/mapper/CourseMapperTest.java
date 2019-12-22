@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 @Transactional
 class CourseMapperTest {
 
-    private final Course course = new Course(0, "courseName");
+    private final Course course = new Course(0L, "courseName");
     private final CourseDto courseDto = new CourseDto("courseName");
 
     @Autowired

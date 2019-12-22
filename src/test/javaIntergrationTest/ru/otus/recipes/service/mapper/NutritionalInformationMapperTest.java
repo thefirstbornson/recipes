@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class NutritionalInformationMapperTest {
 
-    private final NutritionalInformation nutritionalInformation = new NutritionalInformation("nutritionalInformationName");
+    private final NutritionalInformation nutritionalInformation = new NutritionalInformation(0L,"nutritionalInformationName");
     private final NutritionalInformationDto nutritionalInformationDto = new NutritionalInformationDto("nutritionalInformationName");
 
     @Autowired

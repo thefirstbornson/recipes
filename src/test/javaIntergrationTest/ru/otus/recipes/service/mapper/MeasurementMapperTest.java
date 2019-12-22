@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class MeasurementMapperTest {
 
-    private final Measurement measurement = new Measurement(0, "measurementName");
+    private final Measurement measurement = new Measurement(0L, "measurementName");
     private final MeasurementDto measurementDto = new MeasurementDto("measurementName");
 
     @Autowired

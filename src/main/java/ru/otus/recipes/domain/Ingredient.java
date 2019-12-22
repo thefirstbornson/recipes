@@ -17,10 +17,10 @@ public class Ingredient extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ingredient_id")
-    long id;
+    Long id;
     @Column(name="name")
     private String name;
-    @OneToMany(mappedBy = "ingredient", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "ingredient", cascade = {CascadeType.PERSIST, CascadeType.MERGE},orphanRemoval = true)
     private Set<IngredientNutritionalInformation> ingredientNutritionalInformations;
 
     public Ingredient(String name, List<IngredientNutritionalInformation> ingredientNutritionalInformationList) {

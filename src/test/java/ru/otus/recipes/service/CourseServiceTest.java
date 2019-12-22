@@ -37,7 +37,7 @@ class CourseServiceTest {
     @BeforeEach
     void setUp() {
         service = new CourseService(repository, mapper);
-        Course course = new Course(0, "courseName");
+        Course course = new Course(0L, "courseName");
         dto = new CourseDto("courseName");
         persistedEntity = new Course(ID,"courseName");
         persistedDto = new CourseDto("courseName");

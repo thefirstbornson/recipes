@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class LevelMapperTest {
 
-    private final Level level = new Level(0);
+    private final Level level = new Level(0L);
     private final LevelDto levelDto = new LevelDto(0);
 
     @Autowired

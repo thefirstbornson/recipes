@@ -38,7 +38,7 @@ class CuisineServiceTest {
     @BeforeEach
     void setUp() {
         service =new CuisineService(repository, mapper);
-        Cuisine cuisine = new Cuisine(0, "CuisineName");
+        Cuisine cuisine = new Cuisine(0L, "CuisineName");
         dto = new CuisineDto("CuisineName");
         persistedEntity = new Cuisine(ID,"CuisineName");
         persistedDto = new CuisineDto("CuisineName");
@@ -58,7 +58,7 @@ class CuisineServiceTest {
     @Test
     @DisplayName("Обновление cuisine entity")
     void update() throws EntityNotFoundException {
-        Cuisine persistedCuisine = new Cuisine(1,"CuisineName");
+        Cuisine persistedCuisine = new Cuisine(1L,"CuisineName");
         persistedCuisine.setCuisine("newCuisineName");
         persistedDto.setCuisine("newCuisineName");
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedCuisine));

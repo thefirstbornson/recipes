@@ -13,5 +13,5 @@ import java.util.Map;
 @NoArgsConstructor
 public class IngredientDto extends AbstractDto {
     private String name;
-    private Map<Long,Integer> nutritionalIdsndAmountMap;
+    private Map<Long,Float> nutritionalIdsAndAmountMap;
 }

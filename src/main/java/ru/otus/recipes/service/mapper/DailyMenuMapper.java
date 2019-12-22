@@ -3,28 +3,22 @@ package ru.otus.recipes.service.mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.DailyMenu;
-import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.dto.DailyMenuDto;
-import ru.otus.recipes.dto.MealRecipeDto;
-import ru.otus.recipes.repository.DailyMenuRepository;
 import ru.otus.recipes.repository.MenuRepository;
+import ru.otus.recipes.service.MenuService;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
 public class DailyMenuMapper extends AbstractMapper<DailyMenuDto, DailyMenu> {
     private final ModelMapper mapper;
-    private final MenuRepository menuRepository;
+    private final MenuService menuService;
 
-    public DailyMenuMapper(ModelMapper mapper, MenuRepository menuRepository) {
+    public DailyMenuMapper(ModelMapper mapper, MenuService menuService) {
         super(DailyMenu.class,DailyMenuDto.class);
         this.mapper = mapper;
-        this.menuRepository = menuRepository;
+        this.menuService = menuService;
     }
 
 
@@ -45,6 +39,6 @@ public class DailyMenuMapper extends AbstractMapper<DailyMenuDto, DailyMenu> {
 
     @Override
     void mapSpecificFields(DailyMenuDto source, DailyMenu destination) {
-        destination.setMenu(menuRepository.getOne(source.getMenuId()));
+        destination.setMenu(menuService.getEntityById(source.getMenuId()));
     }
 }

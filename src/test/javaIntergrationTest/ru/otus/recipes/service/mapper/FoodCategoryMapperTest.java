@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class FoodCategoryMapperTest {
 
-    private final FoodCategory foodCategory = new FoodCategory(0, "foodCategoryName");
+    private final FoodCategory foodCategory = new FoodCategory(0L, "foodCategoryName");
     private final FoodCategoryDto foodCategoryDto = new FoodCategoryDto("foodCategoryName");
 
     @Autowired

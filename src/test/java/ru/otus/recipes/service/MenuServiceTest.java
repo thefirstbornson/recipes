@@ -6,20 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.otus.recipes.domain.Meal;
 import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.domain.Menu;
-import ru.otus.recipes.dto.MealDto;
 import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.MenuDto;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
-import ru.otus.recipes.repository.MealRepository;
+import ru.otus.recipes.repository.MealRecipeRepository;
 import ru.otus.recipes.repository.MenuRepository;
-import ru.otus.recipes.service.mapper.MealMapper;
 import ru.otus.recipes.service.mapper.MenuMapper;
 
 import java.util.*;
@@ -49,14 +45,14 @@ class MenuServiceTest {
     @MockBean
     private MenuRepository repository;
     @MockBean
-    private MealRecipeService mealRecipeService;
+    private MealRecipeRepository mealRecipeRepository;
     @MockBean
     private MenuMapper mapper;
     private MenuService service;
 
     @BeforeEach
     void setUp() {
-        service = new MenuService(repository, mapper,mealRecipeService);
+        service = new MenuService(repository, mapper, mealRecipeRepository);
         MealRecipe mealRecipe = new MealRecipe();
         mealRecipe.setId(ID);
         RecipeDto recipeDto =

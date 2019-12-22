@@ -16,7 +16,7 @@ public class Cuisine extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="cuisine_id")
-    private long id;
+    private Long id;
     @Column(name="cuisine")
     private String cuisine;
 }

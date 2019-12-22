@@ -21,7 +21,7 @@ public class IngredientNutritionalInformation extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="rni_id")
-    private long id;
+    private Long id;
 
     @JsonIgnore
     @ManyToOne
@@ -33,9 +33,9 @@ public class IngredientNutritionalInformation extends AbstractEntity {
     private NutritionalInformation nutrition;
 
     @Column(name="amount")
-    private int amount;
+    private float amount;
 
-    public IngredientNutritionalInformation(NutritionalInformation nutrition, int amount) {
+    public IngredientNutritionalInformation(NutritionalInformation nutrition, float amount) {
         this.nutrition = nutrition;
         this.amount = amount;
     }

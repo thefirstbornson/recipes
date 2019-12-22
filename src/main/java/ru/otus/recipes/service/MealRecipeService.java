@@ -29,7 +29,6 @@ public class MealRecipeService extends AbstractService <MealRecipeDto, MealRecip
             super.getRepository().deleteAllMealRecipes(id);
             log.info("Removal from join table successful");
             super.deleteById(id);
-//            super.getRepository().deleteById(id);
     }
 
     @Override
@@ -38,15 +37,5 @@ public class MealRecipeService extends AbstractService <MealRecipeDto, MealRecip
             super.getRepository().deleteAllMealRecipes();
             log.info("Removal from join table successful");
             super.getRepository().deleteAll();
-    }
-
-    Integer deleteMenuFromMealRecipes (Long menuId){
-        log.info(String.format("Start removing menu from %s entities", MealRecipe.class));
-        return super.getRepository().deleteMenuFromMealRecipes(menuId);
-    }
-
-    Integer deleteAllMenusFromMealRecipes (){
-        log.info(String.format("Start removing menus  from %s entities", MealRecipe.class));
-        return super.getRepository().deleteAllMenusFromMealRecipes();
     }
 }

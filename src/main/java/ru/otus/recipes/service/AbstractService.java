@@ -12,7 +12,11 @@ import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.CommonRepository;
 import ru.otus.recipes.service.mapper.AbstractMapper;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Getter
@@ -37,7 +41,8 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     public D save(D dto) throws EntityExistsException {
         log.info(String.format("Start saving %s entity to database",dto.getClass().getTypeName()));
         if (repository.findById(dto.getId()).isPresent()) {
-            throw new EntityExistsException(String.format("%s entity already exists!", entityClass.getTypeName()));
+            throw new EntityExistsException(String.format("%s entity with id %d already exists!",
+                    entityClass.getTypeName(),dto.getId()));
         }
         E entity = repository.save(mapper.toEntity(dto));
         log.info("Saving entity was successful");
@@ -54,7 +59,7 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     }
 
     @Override
-    public D update(D dto) throws EntityNotFoundException {
+    public D update(D dto){
         log.info(String.format("Start updating %s entity", dto.getClass().getTypeName()));
         if (!repository.findById(dto.getId()).isPresent()) {
             throw new EntityNotFoundException(String.format("No %s entities found!", entityClass.getTypeName()));
@@ -65,17 +70,23 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     }
 
     @Override
-    public D findById(Long id) throws EntityNotFoundException {
+    public D findById(Long id) {
         log.info(String.format("Start getting %s entity with %d from database", entityClass.getTypeName(),id));
-        E entity = repository.findById(id).orElseThrow(()->new EntityNotFoundException(
-                String.format("No %s entity with id %d found!", entityClass.getTypeName(),id)));
+        E entity = getEntityById(id);
         log.debug("{}",entity);
         log.info("Getting entity was successful");
         return mapper.toDto(entity);
     }
 
     @Override
-    public List<D> findAll() throws EntityNotFoundException {
+    public E getEntityById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("No %s entity with id %d found!", entityClass.getTypeName(), id)));
+    }
+
+    @Override
+    public List<D> findAll() {
         log.info(String.format("Start getting %s entities from database", entityClass.getTypeName()));
         List<E> entities = repository.findAll();
         if (entities.isEmpty()) {
@@ -86,10 +97,9 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     }
 
     @Override
-    public void deleteById(Long id) throws EntityNotFoundException {
+    public void deleteById(Long id){
         log.info(String.format("Start removing %s entity with id %d from database", entityClass.getTypeName(),id));
-        repository.delete(repository.findById(id).orElseThrow(()->new EntityNotFoundException(
-                String.format("No %s entity with id %d found!", entityClass.getTypeName(),id))));
+        repository.delete(getEntityById(id));
         log.info("Removal entity was successful");
     }
 
@@ -101,14 +111,23 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     }
 
     @Override
-    public List<D> findAllByIds(List<Long> ids) throws EntityNotFoundException {
+    public List<D> findAllByIds(List<Long> ids){
         log.info(String.format("Start getting %s entities with several ids from database", entityClass.getTypeName()));
         log.debug(String.format("Entities ids: %s", ids.stream().map(String::valueOf).collect(Collectors.joining())));
-        List<E> entities =  repository.findByIdIn(ids);
-        if (entities.isEmpty()) {
-            throw new EntityNotFoundException(String.format("No %s entities found!", entityClass.getTypeName()));
-        }
+        List<E> entities = getAllEntitiesById(ids);
         log.info("Getting entities was successful");
         return entities.stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<E> getAllEntitiesById(List<Long> ids) {
+        List<E> entities =  repository.findByIdIn(ids);
+        Set<Long> entitiesIds = entities.stream().map(AbstractEntity::getId).collect(Collectors.toSet());
+        Set<Long> bd = new HashSet<>(ids);
+        bd.removeAll(entitiesIds);
+        if (!bd.isEmpty()) {
+            throw new EntityNotFoundException(String.format("No %s entities found with ids: %s !",
+                    entityClass.getTypeName(),bd.toString()));
+        }
+        return entities;
     }
 }

@@ -15,7 +15,7 @@ public class Measurement extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="measurement_id")
-    long id;
+    Long id;
     @Column(name="name")
     private String name;
 }

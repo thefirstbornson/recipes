@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class CuisineMapperTest {
 
-    private final Cuisine cuisineName = new Cuisine(0, "cuisineName");
+    private final Cuisine cuisineName = new Cuisine(0L, "cuisineName");
     private final CuisineDto cuisineDto = new CuisineDto("cuisineName");
 
     @Autowired

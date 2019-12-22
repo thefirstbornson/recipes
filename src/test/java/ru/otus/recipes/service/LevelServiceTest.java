@@ -39,7 +39,7 @@ class LevelServiceTest {
     @BeforeEach
     void setUp() {
         service = new LevelService(repository, mapper);
-        Level Level = new Level(0);
+        Level Level = new Level(0L);
         dto = new LevelDto(0);
         persistedEntity = new Level(ID);
         persistedDto = new LevelDto(DTO_ID);

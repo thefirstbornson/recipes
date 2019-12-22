@@ -38,7 +38,7 @@ class FoodCategoryServiceTest {
     @BeforeEach
     void setUp() {
         service = new  FoodCategoryService(repository, mapper);
-        FoodCategory FoodCategory = new FoodCategory(0, "FoodCategoryName");
+        FoodCategory FoodCategory = new FoodCategory(0L, "FoodCategoryName");
         dto = new FoodCategoryDto("FoodCategoryName");
         persistedEntity = new FoodCategory(ID,"FoodCategoryName");
         persistedDto = new FoodCategoryDto("FoodCategoryName");

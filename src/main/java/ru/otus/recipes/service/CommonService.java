@@ -18,6 +18,8 @@ public interface CommonService< D extends AbstractDto,E extends AbstractEntity> 
 
     D findById(Long id) throws EntityNotFoundException;
 
+    E getEntityById(Long id) throws EntityNotFoundException;
+
     List<D> findAllByIds(List<Long> Ids) throws EntityNotFoundException;
 
     List<D> findAll() throws EntityNotFoundException;

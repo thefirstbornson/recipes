@@ -1,41 +1,39 @@
 package ru.otus.recipes.service.mapper;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.domain.Menu;
 import ru.otus.recipes.domain.Recipe;
 import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.RecipeDto;
-import ru.otus.recipes.repository.MealRepository;
 import ru.otus.recipes.repository.MenuRepository;
-import ru.otus.recipes.repository.NutritionalInformationRepository;
-import ru.otus.recipes.repository.RecipeRepository;
+import ru.otus.recipes.service.MealService;
+import ru.otus.recipes.service.MenuService;
+import ru.otus.recipes.service.RecipeService;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> {
     private final ModelMapper mapper;
     private final RecipeMapper recipeMapper;
-    private final MealRepository mealRepository;
-    private final RecipeRepository recipeRepository;
-    private final MenuRepository menuRepository;
+    private final MealService mealService;
+    private final RecipeService recipeService;
+    private final MenuService menuService;
 
-    MealRecipeMapper(ModelMapper mapper, NutritionalInformationRepository nutritionalInformationRepository,
-                     RecipeMapper recipeMapper, MealRepository mealRepository,
-                     RecipeRepository recipeRepository, MenuRepository menuRepository) {
+    MealRecipeMapper(ModelMapper mapper,
+                     RecipeMapper recipeMapper, @Lazy MealService mealService,
+                     @Lazy RecipeService recipeService, @Lazy MenuService menuService) {
         super(MealRecipe.class, MealRecipeDto.class);
         this.mapper = mapper;
         this.recipeMapper = recipeMapper;
-        this.mealRepository = mealRepository;
-        this.recipeRepository = recipeRepository;
-        this.menuRepository = menuRepository;
+        this.mealService = mealService;
+        this.recipeService = recipeService;
+        this.menuService = menuService;
     }
 
     @PostConstruct
@@ -62,10 +60,13 @@ public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> 
 
     @Override
     void mapSpecificFields(MealRecipeDto source, MealRecipe destination) {
-        destination.setMeal(mealRepository.getOne(source.getMealId()));
-        List<Recipe> recipes = recipeRepository.findByIdIn(source.getRecipes()
-                .stream().map(RecipeDto::getId).collect(Collectors.toList()));
-        destination.setRecipes(new ArrayList<>(recipes));
-        destination.setMenu(Optional.ofNullable(source.getMenuId()).isPresent() ? menuRepository.getOne(source.getMenuId()): null);
+        destination.setMeal(mealService.getEntityById(source.getMealId()));
+        List<Recipe> recipes = Collections.emptyList();
+        if (source.getRecipes() !=null){
+            recipes = recipeService.getAllEntitiesById(source.getRecipes()
+                    .stream().map(RecipeDto::getId).collect(Collectors.toList()));
+        }
+        destination.setRecipes(recipes);
+        destination.setMenu(source.getMenuId() != null ? menuService.getEntityById(source.getMenuId()) : null);
     }
 }

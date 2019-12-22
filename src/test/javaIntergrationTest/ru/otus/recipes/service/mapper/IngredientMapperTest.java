@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class IngredientMapperTest {
 
     private static final Long NUTRITIONAL_INFORMATION_ID =1L;
-    private static final Integer NUTRITIONAL_INFORMATION_AMOUNT =10;
+    private static final Float NUTRITIONAL_INFORMATION_AMOUNT =10f;
     private Ingredient ingredient;
-    private  IngredientDto ingredientDto;
+    private IngredientDto ingredientDto;
 
     @Autowired
     private IngredientMapper ingredientMapper;
@@ -40,7 +40,7 @@ class IngredientMapperTest {
        NutritionalInformation nutritionalInformation = nutritionalInformationRepository.findById(NUTRITIONAL_INFORMATION_ID).get();
        IngredientNutritionalInformation ingredientNutritionalInformation = new IngredientNutritionalInformation(nutritionalInformation, 10);
        ingredient = new Ingredient("ingredientName", Collections.singletonList(ingredientNutritionalInformation));
-       Map<Long,Integer> nutritionalInformationByAmountMap = new HashMap<>();
+       Map<Long,Float> nutritionalInformationByAmountMap = new HashMap<>();
        nutritionalInformationByAmountMap.put(NUTRITIONAL_INFORMATION_ID,NUTRITIONAL_INFORMATION_AMOUNT);
        ingredientDto =new IngredientDto("ingredientName", nutritionalInformationByAmountMap);
 
@@ -55,6 +55,6 @@ class IngredientMapperTest {
     @Test
     void toDto() {
         IngredientDto IngredientDtoFromEntity = ingredientMapper.toDto(ingredient);
-        assertEquals(IngredientDtoFromEntity.getNutritionalIdsndAmountMap().get(NUTRITIONAL_INFORMATION_ID),NUTRITIONAL_INFORMATION_AMOUNT);
+        assertEquals(IngredientDtoFromEntity.getNutritionalIdsAndAmountMap().get(NUTRITIONAL_INFORMATION_ID),NUTRITIONAL_INFORMATION_AMOUNT);
     }
 }

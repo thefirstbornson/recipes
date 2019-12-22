@@ -38,6 +38,7 @@ INSERT INTO tblmeal (meal_id, meal) VALUES (3, 'ужин');
 
 INSERT INTO tblmeasurement (measurement_id, name) VALUES (1, 'гр.');
 INSERT INTO tblmeasurement (measurement_id, name) VALUES (2, 'мл.');
+INSERT INTO tblmeasurement (measurement_id, name) VALUES (3, 'шт.');
 -- ALTER SEQUENCE tblmeasurement_measurement_id_seq RESTART WITH 3;
 
 INSERT INTO tblnutritionalinformation (nutrition_information_id, name) VALUES (1, 'жир');
@@ -67,7 +68,25 @@ INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id
     VALUES (300,1,1,1);
 INSERT INTO mng_menu (menu_id) values(default) ;
 INSERT INTO mng_mealrecipe(meal_id, menu_id) VALUES (1, 1);
-INSERT INTO mng_mealreciperecipes(mealrecipe_id, recipe_id) VALUES (1,1);
+INSERT INTO mng_mealreciperecipe(mealrecipe_id, recipe_id) VALUES (1,1);
 INSERT INTO mng_dailymenu (date, menu_id) VALUES (now(),1);
 
-
+INSERT INTO tblrecipe(name,description,instructions,cooktime,imagepath,rating,level_id,cuisine_id)
+VALUES ('Фахитас с курицей и фасолью','Фахитас с курицей и фасолью',
+        'В разогретом масле обжариваем нарезанный болгарский перец, добавляем нарезанное кубиками куриное филе, слегка обжариваем, солим, добавляем нарезанный перец чили и консервированную в соусе чили фасоль, закрываем крышкой и тушим до готовности в течение 10 минут. Подаем с лавашом и сметаной.',
+        30,'',5,1,3);
+INSERT INTO tblrecipefoodcategory(recipe_id, food_category_id) VALUES (2,5);
+INSERT INTO tblrecipemeals(recipe_id, meal_id) VALUES (2,2);
+INSERT INTO tblrecipemeals(recipe_id, meal_id) VALUES (2,3);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (3,747,3,2);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (1000,429,1,2);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (4,754,3,2);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (0,939,1,2);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (800,1190,1,2);
+INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
+VALUES (0,550,1,2);

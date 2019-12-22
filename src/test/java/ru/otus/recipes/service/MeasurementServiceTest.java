@@ -38,7 +38,7 @@ class MeasurementServiceTest {
     @BeforeEach
     void setUp() {
         service = new MeasurementService(repository, mapper);
-        Measurement Measurement = new Measurement(0, "MeasurementName");
+        Measurement Measurement = new Measurement(0L, "MeasurementName");
         dto = new MeasurementDto("MeasurementName");
         persistedEntity = new Measurement(ID,"MeasurementName");
         persistedDto = new MeasurementDto("MeasurementName");

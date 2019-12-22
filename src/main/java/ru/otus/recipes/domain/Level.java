@@ -17,5 +17,5 @@ import javax.persistence.Table;
 public class Level extends AbstractEntity {
     @Id
     @Column(name="level_id")
-    private long id;
+    private Long id;
 }
