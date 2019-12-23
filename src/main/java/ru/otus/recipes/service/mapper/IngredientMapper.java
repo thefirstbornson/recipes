@@ -6,7 +6,6 @@ import ru.otus.recipes.domain.Ingredient;
 import ru.otus.recipes.domain.IngredientNutritionalInformation;
 import ru.otus.recipes.domain.NutritionalInformation;
 import ru.otus.recipes.dto.IngredientDto;
-import ru.otus.recipes.repository.NutritionalInformationRepository;
 import ru.otus.recipes.service.NutritionalInformationService;
 
 import javax.annotation.PostConstruct;
@@ -48,7 +47,7 @@ public class IngredientMapper extends AbstractMapper<IngredientDto, Ingredient> 
         List<IngredientNutritionalInformation> ingredientNutritionalInformationList = new ArrayList<>();
         if (source.getNutritionalIdsAndAmountMap() !=null){
             List<Long>  nutritionalIds = new ArrayList<>(source.getNutritionalIdsAndAmountMap().keySet());
-            List<NutritionalInformation> nutritionalInformationList = nutritionalInformationService.getAllEntitiesById(nutritionalIds);
+            List<NutritionalInformation> nutritionalInformationList = nutritionalInformationService.getAllEntitiesByIds(nutritionalIds);
             ingredientNutritionalInformationList = getIngredientNutritionalInformationList(source, nutritionalInformationList);
             ingredientNutritionalInformationList.
                     forEach(ingredientNutritionalInformation->ingredientNutritionalInformation.setIngredient(destination));

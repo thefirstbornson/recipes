@@ -74,7 +74,7 @@ class MeasurementControllerTest {
 
     @Test
     @DisplayName("Обновление measurement")
-    void updateCourse() throws Exception {
+    void updateMeasurement() throws Exception {
         dto.setId(DTO_ID);
         dto.setName(UPDATED_NAME);
         String jsonToSave = objectMapper.writeValueAsString(dto);
@@ -89,7 +89,7 @@ class MeasurementControllerTest {
 
     @Test
     @DisplayName("Получение measurement")
-    void getCourse() throws Exception {
+    void getMeasurement() throws Exception {
         dto.setId(DTO_ID);
         given(service.findById(any())).willReturn(dto);
         mockMvc.perform(get(URL_TEMPLATE+"/"+DTO_ID))
@@ -100,7 +100,7 @@ class MeasurementControllerTest {
 
     @Test
     @DisplayName("Удаление measurement")
-    void deleteCourse() throws Exception {
+    void deleteMeasurement() throws Exception {
         dto.setId(DTO_ID);
         mockMvc.perform(delete(URL_TEMPLATE+"/"+DTO_ID))
                 .andExpect(content().string(EXPECTED_CONTENT_AFTER_DELETE))
@@ -115,7 +115,7 @@ class MeasurementControllerTest {
         mockMvc.perform(post(URL_TEMPLATE)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_EXISTS_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_EXISTS_MESSAGE)))
                 .andExpect(status().isConflict());
     }
 
@@ -127,7 +127,7 @@ class MeasurementControllerTest {
         mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -137,7 +137,7 @@ class MeasurementControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         given(service.findById(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
         mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -147,7 +147,7 @@ class MeasurementControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         doThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE)).when(service).deleteById(any());
         mockMvc.perform(delete(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 }

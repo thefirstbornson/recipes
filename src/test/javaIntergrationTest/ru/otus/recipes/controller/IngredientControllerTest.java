@@ -37,15 +37,15 @@ class IngredientControllerTest {
     private static final String NAME = "testIngredient";
     private static final String UPDATED_NAME = "anotherTestIngredient";
     private static final String URL_TEMPLATE = "/ingredients";
-    private static final String EXPECTED_CONTENT ="{\"id\":1,\"name\":\"testIngredient\",\"nutritionalIdsAndAmountMap\":{\"1\":10}}";
-    private static final String EXPECTED_CONTENT_AFTER_UPDATE ="{\"id\":1,\"name\":\"anotherTestIngredient\",\"nutritionalIdsAndAmountMap\":{\"1\":10}}";
+    private static final String EXPECTED_CONTENT ="{\"id\":1,\"name\":\"testIngredient\",\"nutritionalIdsAndAmountMap\":{\"1\":10.0}}";
+    private static final String EXPECTED_CONTENT_AFTER_UPDATE ="{\"id\":1,\"name\":\"anotherTestIngredient\",\"nutritionalIdsAndAmountMap\":{\"1\":10.0}}";
     private static final String EXPECTED_CONTENT_AFTER_DELETE ="Removal was successful";
     private static final String ERROR_ENTITY_NOT_FOUND_MESSAGE = "Can not find entity";
     private static final String ERROR_ENTITY_EXISTS_MESSAGE = "Can not save entity";
     private static final long NONEXISTENT_DTO_ID = 0;
     private static final long DTO_ID = 1;
     private static final Long NUTRITIONAL_INFORMATION_ID =1L;
-    private static final Float NUTRITIONAL_INFORMATION_AMOUNT =10f;
+    private static final Float NUTRITIONAL_INFORMATION_AMOUNT =10.0f;
     private IngredientDto dto;
 
     @Autowired
@@ -66,7 +66,7 @@ class IngredientControllerTest {
 
     @Test
     @DisplayName("Сохранение ingredient")
-    void saveCourse() throws Exception {
+    void saveIngredient() throws Exception {
         String jsonToSave = objectMapper.writeValueAsString(dto);
         dto.setId(DTO_ID);
         given(service.save(any())).willReturn(dto);
@@ -79,7 +79,7 @@ class IngredientControllerTest {
 
     @Test
     @DisplayName("Обновление ingredient")
-    void updateCourse() throws Exception {
+    void updateIngredient() throws Exception {
         dto.setId(DTO_ID);
         dto.setName(UPDATED_NAME);
         String jsonToSave = objectMapper.writeValueAsString(dto);
@@ -93,7 +93,7 @@ class IngredientControllerTest {
 
     @Test
     @DisplayName("Получение ingredient")
-    void getCourse() throws Exception {
+    void getIngredient() throws Exception {
         dto.setId(DTO_ID);
         given(service.findById(any())).willReturn(dto);
         mockMvc.perform(get(URL_TEMPLATE+"/"+DTO_ID))
@@ -103,10 +103,10 @@ class IngredientControllerTest {
 
     @Test
     @DisplayName("Удаление ingredient")
-    void deleteCourse() throws Exception {
+    void deleteIngredient() throws Exception {
         dto.setId(DTO_ID);
         mockMvc.perform(delete(URL_TEMPLATE+"/"+DTO_ID))
-                .andExpect(content().string(EXPECTED_CONTENT_AFTER_DELETE))
+                .andExpect(content().string(containsString(EXPECTED_CONTENT_AFTER_DELETE)))
                 .andExpect(status().isOk());
     }
 
@@ -118,7 +118,7 @@ class IngredientControllerTest {
         mockMvc.perform(post(URL_TEMPLATE)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_EXISTS_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_EXISTS_MESSAGE)))
                 .andExpect(status().isConflict());
     }
 
@@ -130,7 +130,7 @@ class IngredientControllerTest {
         mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -140,7 +140,7 @@ class IngredientControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         given(service.findById(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
         mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -150,7 +150,7 @@ class IngredientControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         doThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE)).when(service).deleteById(any());
         mockMvc.perform(delete(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 

@@ -66,12 +66,9 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         destination.setMealIdList(source.getMeals().stream().map(Meal::getId).collect(Collectors.toList()));
         Map<String,Map<String,Long>> ingredientIdAndAmountMeasurementMap = new HashMap<>();
         source.getRecipeIngredients()
-                .forEach(recipeIngr -> ingredientIdAndAmountMeasurementMap.
-                        put(String.valueOf(recipeIngr.getIngredient().getId()),
-                                new HashMap<>(){{
-                                    put( "measurement_id", recipeIngr.getMeasurement().getId() );
-                                    put("amount", (long) recipeIngr.getAmount());
-                                }}));
+                .forEach(recipeIngr -> {ingredientIdAndAmountMeasurementMap.put(String.valueOf(recipeIngr.getIngredient().getId()),
+                                Map.of("measurement_id", recipeIngr.getMeasurement().getId(),"amount", (long) recipeIngr.getAmount()));
+                });
         destination.setIngredientIdAndMeasurementIdAmountMap(ingredientIdAndAmountMeasurementMap);
     }
 
@@ -79,9 +76,9 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
     void mapSpecificFields(RecipeDto source, Recipe destination) throws EntityNotFoundException {
         destination.setLevel(levelService.getEntityById(source.getLevelId()));
         destination.setCuisine(cuisineService.getEntityById(source.getCuisineId()));
-        destination.setCourses(new HashSet<>(courseService.getAllEntitiesById(source.getCourseIdList())));
-        destination.setFoodCategories(new HashSet<>(foodCategoryService.getAllEntitiesById(source.getFoodCategoryIdList())));
-        destination.setMeals(new HashSet<>(mealService.getAllEntitiesById(source.getMealIdList())));
+        destination.setCourses(new HashSet<>(courseService.getAllEntitiesByIds(source.getCourseIdList())));
+        destination.setFoodCategories(new HashSet<>(foodCategoryService.getAllEntitiesByIds(source.getFoodCategoryIdList())));
+        destination.setMeals(new HashSet<>(mealService.getAllEntitiesByIds(source.getMealIdList())));
         List<RecipeIngredient> recipeIngredientList =
                 extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap(),destination);
         destination.setRecipeIngredients(recipeIngredientList);

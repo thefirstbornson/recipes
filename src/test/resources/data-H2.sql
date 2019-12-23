@@ -67,7 +67,8 @@ INSERT INTO tblrecipemeals(recipe_id, meal_id) VALUES (1,1);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
     VALUES (300,1,1,1);
 INSERT INTO mng_menu (menu_id) values(default) ;
-INSERT INTO mng_mealrecipe(meal_id, menu_id) VALUES (1, 1);
+INSERT INTO mng_mealrecipe
+    (meal_id, menu_id) VALUES (1, 1);
 INSERT INTO mng_mealreciperecipe(mealrecipe_id, recipe_id) VALUES (1,1);
 INSERT INTO mng_dailymenu (date, menu_id) VALUES (now(),1);
 
@@ -79,14 +80,14 @@ INSERT INTO tblrecipefoodcategory(recipe_id, food_category_id) VALUES (2,5);
 INSERT INTO tblrecipemeals(recipe_id, meal_id) VALUES (2,2);
 INSERT INTO tblrecipemeals(recipe_id, meal_id) VALUES (2,3);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
-VALUES (3,747,3,2);
+VALUES (3,1,3,2);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
-VALUES (1000,429,1,2);
+VALUES (1000,2,1,2);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
-VALUES (4,754,3,2);
+VALUES (4,3,3,2);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
-VALUES (0,939,1,2);
+VALUES (0,4,1,2);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
-VALUES (800,1190,1,2);
+VALUES (800,1,1,2);
 INSERT INTO tblrecipeingredient(amount, ingredient_id, measurement_id, recipe_id)
-VALUES (0,550,1,2);
+VALUES (0,2,1,2);

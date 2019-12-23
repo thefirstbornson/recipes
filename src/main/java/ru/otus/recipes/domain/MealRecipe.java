@@ -28,7 +28,7 @@ public class MealRecipe extends AbstractEntity {
 
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
-            name = "mng_mealreciperecipes",
+            name = "mng_mealreciperecipe",
             joinColumns = @JoinColumn(name="mealrecipe_id"),
             inverseJoinColumns = @JoinColumn(name = "recipe_id" )
     )

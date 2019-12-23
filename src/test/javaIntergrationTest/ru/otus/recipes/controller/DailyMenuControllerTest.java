@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -74,7 +75,7 @@ class DailyMenuControllerTest {
 
     @Test
     @DisplayName("Обновление menu")
-    void updateCourse() throws Exception {
+    void updateDailyMenu() throws Exception {
         dto.setMenuId(MENU_DTO_ID_UPDATE);
         String jsonToSave = objectMapper.writeValueAsString(dto);
         given(service.update(any())).willReturn(dto);
@@ -87,7 +88,7 @@ class DailyMenuControllerTest {
 
     @Test
     @DisplayName("Получение menu")
-    void getCourse() throws Exception {
+    void getDailyMenu() throws Exception {
         given(service.findById(any())).willReturn(dto);
         mockMvc.perform(get(URL_TEMPLATE+"/"+DTO_ID))
                 .andExpect(content().string(EXPECTED_CONTENT))
@@ -97,9 +98,9 @@ class DailyMenuControllerTest {
 
     @Test
     @DisplayName("Удаление menu")
-    void deleteCourse() throws Exception {
+    void deleteDailyMenu() throws Exception {
         mockMvc.perform(delete(URL_TEMPLATE+"/"+DTO_ID))
-                .andExpect(content().string(EXPECTED_CONTENT_AFTER_DELETE))
+                .andExpect(content().string(containsString(EXPECTED_CONTENT_AFTER_DELETE)))
                 .andExpect(status().isOk());
     }
 
@@ -111,7 +112,7 @@ class DailyMenuControllerTest {
         mockMvc.perform(post(URL_TEMPLATE)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_EXISTS_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_EXISTS_MESSAGE)))
                 .andExpect(status().isConflict());
     }
 
@@ -123,7 +124,7 @@ class DailyMenuControllerTest {
         mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -133,7 +134,7 @@ class DailyMenuControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         given(service.findById(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
         mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -143,7 +144,7 @@ class DailyMenuControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         doThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE)).when(service).deleteById(any());
         mockMvc.perform(delete(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 }

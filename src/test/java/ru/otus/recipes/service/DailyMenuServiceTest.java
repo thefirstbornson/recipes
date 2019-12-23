@@ -61,10 +61,9 @@ class DailyMenuServiceTest {
                         new HashMap<>(), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L));
         MealRecipeDto mealRecipeDto = new MealRecipeDto(DTO_ID, new HashSet<>(List.of(recipeDto)),null);
         Menu menu = new Menu(ID, List.of(mealRecipe));
-//        MenuDto menuDto = new MenuDto(new HashSet<>(List.of(mealRecipeDto)));
-//        menuDto.setId(DTO_ID);
         persistedEntity = new DailyMenu(ID,Calendar.getInstance().getTime(),menu);
         dto = new DailyMenuDto(Calendar.getInstance().getTime(),DTO_ID);
+        dto.setId(1L);
 
         DailyMenu dailyMenu =  new DailyMenu(ID,Calendar.getInstance().getTime(),menu);
         Mockito.when(mapper.toEntity(any(DailyMenuDto.class))).thenReturn(dailyMenu);

@@ -1,343 +1,152 @@
-DROP SEQUENCE IF EXISTS tblrecipeingredient_id_seq;
-DROP SEQUENCE IF EXISTS tbllevel_level_id_seq;
-DROP SEQUENCE IF EXISTS tblrecipeingredient_recipe_ingredient_id_seq ;
-DROP SEQUENCE IF EXISTS hibernate_sequence ;
-DROP SEQUENCE IF EXISTS tblcourse_course_id_seq ;
-DROP SEQUENCE IF EXISTS tblcuisine_cuisine_id_seq ;
-DROP SEQUENCE IF EXISTS tblfoodcategory_food_category_id_seq ;
-DROP SEQUENCE IF EXISTS tblingredient_id_seq ;
-DROP SEQUENCE IF EXISTS tblingredient_ingredient_id_seq ;
-DROP SEQUENCE IF EXISTS tblingredientnutritionaninformation_rni_id_seq ;
-DROP SEQUENCE IF EXISTS tblmeal_meal_id_seq ;
-DROP SEQUENCE IF EXISTS tblmeasurement_measurement_id_seq ;
-DROP SEQUENCE IF EXISTS tblnutritionalinformation_nutrition_information_id_seq ;
-DROP SEQUENCE IF EXISTS tblrecipe_id_seq ;
-DROP SEQUENCE IF EXISTS tblrecipe_recipe_id_seq ;
-
 
 DROP TABLE IF EXISTS tblcourse CASCADE;
-DROP TABLE IF EXISTS tblcuisine CASCADE;
-DROP TABLE IF EXISTS tblfoodcategory CASCADE;
-DROP TABLE IF EXISTS tblingredient CASCADE;
-DROP TABLE IF EXISTS tblingredientnutritionaninformation CASCADE;
-DROP TABLE IF EXISTS tblmeasurement CASCADE;
-DROP TABLE IF EXISTS tbllevel CASCADE;
-DROP TABLE IF EXISTS tblmeal CASCADE;
-DROP TABLE IF EXISTS tblnutritionalinformation CASCADE;
-DROP TABLE IF EXISTS tblrecipe CASCADE;
-DROP TABLE IF EXISTS tblrecipecourse CASCADE;
-DROP TABLE IF EXISTS tblrecipefoodcategory CASCADE;
-DROP TABLE IF EXISTS tblrecipeingredient CASCADE;
-DROP TABLE IF EXISTS tblrecipemeals CASCADE;
-
-
-CREATE SEQUENCE hibernate_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
 CREATE TABLE tblcourse (
                                   course_id bigserial NOT NULL,
-                                  course varchar(255)
+                                  course character varying(255),
+                                  CONSTRAINT tblcourse_pkey PRIMARY KEY (course_id)
 );
-
-CREATE SEQUENCE tblcourse_course_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
+DROP TABLE IF EXISTS tblcuisine CASCADE;
 CREATE TABLE tblcuisine (
                                    cuisine_id bigserial NOT NULL,
-                                   cuisine varchar(255)
+                                   cuisine character varying(255),
+                                   CONSTRAINT tblcuisine_pkey PRIMARY KEY (cuisine_id)
 );
-
-CREATE SEQUENCE tblcuisine_cuisine_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
+DROP TABLE IF EXISTS tblfoodcategory CASCADE;
 CREATE TABLE tblfoodcategory (
                                         food_category_id bigserial NOT NULL,
-                                        food_category varchar(255)
+                                        food_category character varying(255),
+                                        CONSTRAINT tblfoodcategory_pkey PRIMARY KEY (food_category_id)
 );
 
-CREATE SEQUENCE tblfoodcategory_food_category_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
+DROP TABLE IF EXISTS tblingredient CASCADE;
 CREATE TABLE tblingredient (
                                       ingredient_id bigserial NOT NULL,
-                                      name varchar(255)
+                                      name character varying(255),
+                                      CONSTRAINT tblingredient_pkey PRIMARY KEY (ingredient_id)
 );
 
-CREATE SEQUENCE tblingredient_ingredient_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-CREATE TABLE tblingredientnutritionaninformation (
-                                                            rni_id bigserial NOT NULL,
-                                                            amount integer,
-                                                            ingredient_id bigint,
-                                                            ni_id bigint
-);
-
-CREATE SEQUENCE tblingredientnutritionaninformation_rni_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-CREATE TABLE tbllevel (
-    level_id bigserial NOT NULL
-);
-
-CREATE SEQUENCE tbllevel_level_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-CREATE TABLE tblmeal (
-                                meal_id bigserial NOT NULL,
-                                meal varchar(255)
-);
-
-CREATE SEQUENCE tblmeal_meal_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-CREATE TABLE tblmeasurement (
-                                       measurement_id bigserial NOT NULL,
-                                       name varchar(255)
-);
-
-CREATE SEQUENCE tblmeasurement_measurement_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
+DROP TABLE IF EXISTS tblnutritionalinformation CASCADE;
 CREATE TABLE tblnutritionalinformation (
                                                   nutrition_information_id bigserial NOT NULL,
-                                                  name varchar(255)
+                                                  name character varying(255),
+                                                  CONSTRAINT tblnutritionalinformation_pkey PRIMARY KEY (nutrition_information_id)
 );
 
-CREATE SEQUENCE tblnutritionalinformation_nutrition_information_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+DROP TABLE IF EXISTS tblingredientnutritionaninformation CASCADE;
+CREATE TABLE tblingredientnutritionaninformation (
+                                                            rni_id bigserial NOT NULL,
+                                                            amount real,
+                                                            ingredient_id bigint,
+                                                            ni_id bigint,
+                                                            CONSTRAINT tblingredientnutritionaninformation_pkey PRIMARY KEY (rni_id),
+                                                            CONSTRAINT fk_ni_id FOREIGN KEY (ni_id)
+                                                                REFERENCES tblnutritionalinformation(nutrition_information_id)
+);
+DROP TABLE IF EXISTS tbllevel CASCADE;
+CREATE TABLE tbllevel (
+                                 level_id bigserial NOT NULL,
+                                 CONSTRAINT tbllevel_pkey PRIMARY KEY (level_id)
+);
 
+DROP TABLE IF EXISTS tblmeal CASCADE;
+CREATE TABLE tblmeal (
+                                meal_id bigserial NOT NULL,
+                                meal character varying(255),
+                                CONSTRAINT tblmeal_pkey PRIMARY KEY (meal_id),
+                                CONSTRAINT fk_meal_id_meal_id FOREIGN KEY (meal_id) REFERENCES tblmeal(meal_id)
+);
+
+DROP TABLE IF EXISTS tblmeasurement CASCADE;
+CREATE TABLE tblmeasurement (
+                                       measurement_id bigserial NOT NULL,
+                                       name character varying(255),
+                                       CONSTRAINT tblmeasurement_pkey PRIMARY KEY (measurement_id)
+--                                        CONSTRAINT fk_measurement_id FOREIGN KEY (measurement_id)
+--                                            REFERENCES tblmeasurement(measurement_id)
+);
+
+DROP TABLE IF EXISTS tblrecipe CASCADE;
 CREATE TABLE tblrecipe (
                                   recipe_id bigserial NOT NULL,
                                   cooktime integer,
                                   cuisine_id integer,
-                                  description varchar(255),
-                                  imagepath varchar(255),
-                                  instructions varchar(255),
+                                  description character varying(255),
+                                  imagepath character varying(255),
+                                  instructions text,
                                   level_id integer,
-                                  name varchar(255),
-                                  rating integer
+                                  name character varying(255),
+                                  rating integer,
+                                  CONSTRAINT tblrecipe_pkey PRIMARY KEY (recipe_id),
+                                  CONSTRAINT fk_level_id FOREIGN KEY (level_id)
+                                      REFERENCES tbllevel(level_id),
+                                  CONSTRAINT fk_cuisine_id FOREIGN KEY (cuisine_id)
+                                      REFERENCES tblcuisine(cuisine_id)
 );
 
-CREATE SEQUENCE tblrecipe_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
-CREATE SEQUENCE tblrecipe_recipe_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
+DROP TABLE IF EXISTS tblrecipecourse CASCADE;
 CREATE TABLE tblrecipecourse (
                                         recipe_id bigint NOT NULL,
-                                        course_id bigint NOT NULL
+                                        course_id bigint NOT NULL,
+                                        CONSTRAINT tblrecipecourse_pkey PRIMARY KEY (recipe_id, course_id),
+                                        CONSTRAINT fk_course_id FOREIGN KEY (course_id)
+                                            REFERENCES tblcourse(course_id),
+                                        CONSTRAINT fk_recipe_id FOREIGN KEY (recipe_id)
+                                            REFERENCES tblrecipe(recipe_id)
 );
-
+DROP TABLE IF EXISTS tblrecipefoodcategory CASCADE;
 CREATE TABLE tblrecipefoodcategory (
                                               recipe_id bigint NOT NULL,
-                                              food_category_id bigint NOT NULL
+                                              food_category_id bigint NOT NULL,
+                                              CONSTRAINT tblrecipefoodcategory_pkey
+                                                  PRIMARY KEY (recipe_id, food_category_id),
+                                              CONSTRAINT fk_recipe_recipe_recipe_recipe_id FOREIGN KEY (recipe_id)
+                                                  REFERENCES tblrecipe(recipe_id),
+                                              CONSTRAINT fk_food_category_id FOREIGN KEY (food_category_id)
+                                                  REFERENCES tblfoodcategory(food_category_id)
 );
-
+DROP TABLE IF EXISTS tblrecipeingredient CASCADE;
 CREATE TABLE tblrecipeingredient (
-                                            recipe_ingredient_id bigserial NOT NULL,
-                                            amount integer,
-                                            ingredient_id bigint NOT NULL,
-                                            measurement_id bigint,
-                                            recipe_id bigint NOT NULL
+                                     recipe_ingredient_id bigserial NOT NULL,
+                                     amount integer,
+                                     ingredient_id bigint NOT NULL,
+                                     measurement_id bigint,
+                                     recipe_id bigint NOT NULL,
+                                     CONSTRAINT tblrecipeingredient_pkey PRIMARY KEY (recipe_ingredient_id),
+                                     CONSTRAINT fk_recipe_recipe_id FOREIGN KEY (recipe_id)
+                                         REFERENCES tblrecipe(recipe_id),
+                                     CONSTRAINT fk_ingredient_id_ingredient_id FOREIGN KEY (ingredient_id)
+                                         REFERENCES tblingredient(ingredient_id)
 );
-
-CREATE SEQUENCE tblrecipeingredient_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-CREATE SEQUENCE tblrecipeingredient_recipe_ingredient_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
+DROP TABLE IF EXISTS tblrecipemeals CASCADE;
 CREATE TABLE tblrecipemeals (
-                                       recipe_id bigint NOT NULL,
-                                       meal_id bigint NOT NULL
+                                recipe_id bigint NOT NULL,
+                                meal_id bigint NOT NULL,
+                                CONSTRAINT tblrecipemeals_pkey PRIMARY KEY (recipe_id, meal_id),
+                                CONSTRAINT fk_recipe_recipe_recipe_id FOREIGN KEY (recipe_id)
+                                    REFERENCES tblrecipe(recipe_id),
+                                CONSTRAINT fk_meal_id FOREIGN KEY (meal_id)
+                                    REFERENCES tblmeal(meal_id)
 );
 
-ALTER TABLE tblcourse
-    ADD CONSTRAINT tblcourse_pkey PRIMARY KEY (course_id);
-
-ALTER TABLE tblcuisine
-    ADD CONSTRAINT tblcuisine_pkey PRIMARY KEY (cuisine_id);
-
-ALTER TABLE tblfoodcategory
-    ADD CONSTRAINT tblfoodcategory_pkey PRIMARY KEY (food_category_id);
-
-ALTER TABLE tblingredient
-    ADD CONSTRAINT tblingredient_pkey PRIMARY KEY (ingredient_id);
-
-ALTER TABLE tblingredientnutritionaninformation
-    ADD CONSTRAINT tblingredientnutritionaninformation_pkey PRIMARY KEY (rni_id);
-
-ALTER TABLE tbllevel
-    ADD CONSTRAINT tbllevel_pkey PRIMARY KEY (level_id);
-
-ALTER TABLE tblmeal
-    ADD CONSTRAINT tblmeal_pkey PRIMARY KEY (meal_id);
-
-ALTER TABLE tblmeasurement
-    ADD CONSTRAINT tblmeasurement_pkey PRIMARY KEY (measurement_id);
-
-ALTER TABLE tblnutritionalinformation
-    ADD CONSTRAINT tblnutritionalinformation_pkey PRIMARY KEY (nutrition_information_id);
-
-ALTER TABLE tblrecipe
-    ADD CONSTRAINT tblrecipe_pkey PRIMARY KEY (recipe_id);
-
-ALTER TABLE tblrecipecourse
-    ADD CONSTRAINT tblrecipecourse_pkey PRIMARY KEY (recipe_id, course_id);
-
-ALTER TABLE tblrecipefoodcategory
-    ADD CONSTRAINT tblrecipefoodcategory_pkey PRIMARY KEY (recipe_id, food_category_id);
-
-ALTER TABLE tblrecipeingredient
-    ADD CONSTRAINT tblrecipeingredient_pkey PRIMARY KEY (recipe_ingredient_id);
-
-ALTER TABLE tblrecipemeals
-    ADD CONSTRAINT tblrecipemeals_pkey PRIMARY KEY (recipe_id, meal_id);
-
-ALTER TABLE tblrecipemeals
-    ADD CONSTRAINT fk3dhyy6h711whxlp5iwokkswmv FOREIGN KEY (meal_id) REFERENCES tblmeal(meal_id);
-
-ALTER TABLE tblrecipecourse
-    ADD CONSTRAINT fk3dv61nxdrwpp6be6tjc5p37uf FOREIGN KEY (recipe_id) REFERENCES tblrecipe(recipe_id);
-
-
-ALTER TABLE tblrecipecourse
-    ADD CONSTRAINT fk4ay8lsegi073o0o2irqnfg6q5 FOREIGN KEY (course_id) REFERENCES tblcourse(course_id);
-
-ALTER TABLE tblingredientnutritionaninformation
-    ADD CONSTRAINT fk7puwcsh398il6es57menv3ay1 FOREIGN KEY (ingredient_id) REFERENCES tblingredient(ingredient_id);
-
-ALTER TABLE tblingredientnutritionaninformation
-    ADD CONSTRAINT fk9xmr3i1umipvquuynb0v49t63 FOREIGN KEY (ni_id) REFERENCES tblnutritionalinformation(nutrition_information_id);
-
-ALTER TABLE tblrecipeingredient
-    ADD CONSTRAINT fkgd4gu80ig9dok0pqj8t6dvrv5 FOREIGN KEY (measurement_id) REFERENCES tblmeasurement(measurement_id);
-
-ALTER TABLE tblrecipe
-    ADD CONSTRAINT fkkg8srao99674ttvtehs87uonh FOREIGN KEY (level_id) REFERENCES tbllevel(level_id);
-
-ALTER TABLE tblrecipe
-    ADD CONSTRAINT fkl77bo75y9w0baiqgsm18pakax FOREIGN KEY (cuisine_id) REFERENCES tblcuisine(cuisine_id);
-
-ALTER TABLE tblrecipemeals
-    ADD CONSTRAINT fkpd5uwaw519kihlvh0xqla7k9r FOREIGN KEY (recipe_id) REFERENCES tblrecipe(recipe_id);
-
-ALTER TABLE tblrecipefoodcategory
-    ADD CONSTRAINT fkqyebjeynds0eqnf9yk8tufb7m FOREIGN KEY (food_category_id) REFERENCES tblfoodcategory(food_category_id);
-
-ALTER TABLE tblrecipeingredient
-    ADD CONSTRAINT fksh8od87j5i7unbbwqb0dqbfpc FOREIGN KEY (ingredient_id) REFERENCES tblingredient(ingredient_id);
-
-ALTER TABLE tblrecipeingredient
-    ADD CONSTRAINT fksnsnvm186r7xhob8t6p39v53k FOREIGN KEY (recipe_id) REFERENCES tblrecipe(recipe_id);
-
-ALTER TABLE tblrecipefoodcategory
-    ADD CONSTRAINT fksu4nfv25lilhw6eg0j3gtcnsn FOREIGN KEY (recipe_id) REFERENCES tblrecipe(recipe_id);
-
-ALTER TABLE tbllevel ALTER COLUMN level_id SET DEFAULT nextval('tbllevel_level_id_seq');
-ALTER TABLE tblcourse ALTER COLUMN course_id SET DEFAULT nextval('tblcourse_course_id_seq');
-ALTER TABLE tblcuisine ALTER COLUMN cuisine_id SET DEFAULT nextval('tblcuisine_cuisine_id_seq');
-ALTER TABLE tblfoodcategory ALTER COLUMN food_category_id SET DEFAULT nextval('tblfoodcategory_food_category_id_seq');
-ALTER TABLE tblingredient ALTER COLUMN ingredient_id SET DEFAULT nextval('tblingredient_ingredient_id_seq');
-ALTER TABLE tblingredientnutritionaninformation ALTER COLUMN rni_id SET DEFAULT nextval('tblingredientnutritionaninformation_rni_id_seq');
-ALTER TABLE tblmeal ALTER COLUMN meal_id SET DEFAULT nextval('tblmeal_meal_id_seq');
-ALTER TABLE tblmeasurement ALTER COLUMN measurement_id SET DEFAULT nextval('tblmeasurement_measurement_id_seq');
-ALTER TABLE tblnutritionalinformation ALTER COLUMN nutrition_information_id SET DEFAULT nextval('tblnutritionalinformation_nutrition_information_id_seq');
-ALTER TABLE tblrecipe ALTER COLUMN recipe_id SET DEFAULT nextval('tblrecipe_recipe_id_seq');
-ALTER TABLE tblrecipeingredient ALTER COLUMN recipe_ingredient_id SET DEFAULT nextval('tblrecipeingredient_recipe_ingredient_id_seq');
-
-DROP SEQUENCE IF EXISTS mng_menu_id_seq;
-CREATE SEQUENCE mng_menu_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 DROP TABLE IF EXISTS mng_menu CASCADE;
 CREATE TABLE mng_menu (
-                               menu_id bigserial NOT NULL,
-                               CONSTRAINT mng_menu_pkey PRIMARY KEY (menu_id)
+                          menu_id bigserial NOT NULL,
+                          CONSTRAINT mng_menu_pkey PRIMARY KEY (menu_id)
 );
-ALTER TABLE mng_menu ALTER COLUMN menu_id SET DEFAULT nextval('mng_menu_id_seq');
 
-DROP SEQUENCE IF EXISTS mng_mealrecipe_id_seq;
-CREATE SEQUENCE mng_mealrecipe_id_seq  START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 DROP TABLE IF EXISTS mng_mealrecipe CASCADE;
-CREATE TABLE mng_mealrecipe
-(
-    mealrecipe_id bigserial NOT NULL,
-    meal_id       bigint    NOT NULL,
-    menu_id  bigint    NULL,
-    CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (mealrecipe_id),
-    CONSTRAINT meal_id_fk FOREIGN KEY (meal_id)
-        REFERENCES tblmeal (meal_id),
-    CONSTRAINT menu_id_fk FOREIGN KEY (menu_id)
-        REFERENCES mng_menu (menu_id)
+CREATE TABLE mng_mealrecipe(
+                               mealrecipe_id bigserial NOT NULL,
+                               meal_id       bigint    NOT NULL,
+                               menu_id  bigint    NULL,
+                               CONSTRAINT mng_mealrecipe_pkey PRIMARY KEY (mealrecipe_id),
+                               CONSTRAINT meal_id_fk FOREIGN KEY (meal_id)
+                                   REFERENCES tblmeal (meal_id),
+                               CONSTRAINT menu_id_fk FOREIGN KEY (menu_id)
+                                   REFERENCES mng_menu (menu_id)
 );
 
-ALTER TABLE mng_mealrecipe ALTER COLUMN mealrecipe_id SET DEFAULT nextval('mng_mealrecipe_id_seq');
-
-DROP TABLE IF EXISTS mng_mealreciperecipes CASCADE;
-CREATE TABLE mng_mealreciperecipes(
-                                     mealrecipe_id bigint NOT NULL,
-                                     recipe_id bigint NOT NULL
-);
-
-DROP SEQUENCE IF EXISTS mng_dailymenu_id_seq;
-CREATE SEQUENCE mng_dailymenu_id_seq  START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 DROP TABLE IF EXISTS mng_dailymenu CASCADE;
 CREATE TABLE mng_dailymenu (
                                dailymenu_id bigserial NOT NULL,
@@ -347,5 +156,14 @@ CREATE TABLE mng_dailymenu (
                                CONSTRAINT dailymenu_menu_id_fk FOREIGN KEY (menu_id)
                                    REFERENCES mng_menu (menu_id)
 );
-ALTER TABLE mng_dailymenu ALTER COLUMN dailymenu_id SET DEFAULT nextval('mng_dailymenu_id_seq');
 
+DROP TABLE IF EXISTS mng_mealreciperecipe CASCADE;
+CREATE TABLE mng_mealreciperecipe(
+                                     mealrecipe_id bigint NOT NULL,
+                                     recipe_id bigint NOT NULL,
+                                     CONSTRAINT mng_mealreciperecipe_pkey PRIMARY KEY (mealrecipe_id,recipe_id),
+                                     CONSTRAINT mealrecipe_id_fk FOREIGN KEY (mealrecipe_id)
+                                         REFERENCES mng_mealrecipe(mealrecipe_id),
+                                     CONSTRAINT recipe_id_fk FOREIGN KEY (recipe_id)
+                                         REFERENCES tblrecipe(recipe_id)
+);

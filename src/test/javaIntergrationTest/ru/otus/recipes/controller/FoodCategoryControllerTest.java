@@ -60,7 +60,7 @@ class FoodCategoryControllerTest {
 
     @Test
     @DisplayName("Сохранение foodCategory")
-    void saveCourse() throws Exception {
+    void saveFoodCategory() throws Exception {
         String jsonToSave = objectMapper.writeValueAsString(dto);
         dto.setId(DTO_ID);
         given(service.save(any())).willReturn(dto);
@@ -73,7 +73,7 @@ class FoodCategoryControllerTest {
 
     @Test
     @DisplayName("Обновление foodCategory")
-    void updateCourse() throws Exception {
+    void updateFoodCategory() throws Exception {
         dto.setId(DTO_ID);
         dto.setFoodCategory(UPDATED_NAME);
         String jsonToSave = objectMapper.writeValueAsString(dto);
@@ -87,7 +87,7 @@ class FoodCategoryControllerTest {
 
     @Test
     @DisplayName("Получение foodCategory")
-    void getCourse() throws Exception {
+    void getFoodCategory() throws Exception {
         dto.setId(DTO_ID);
         given(service.findById(any())).willReturn(dto);
         mockMvc.perform(get(URL_TEMPLATE+"/"+DTO_ID))
@@ -97,10 +97,10 @@ class FoodCategoryControllerTest {
 
     @Test
     @DisplayName("Удаление foodCategory")
-    void deleteCourse() throws Exception {
+    void deleteFoodCategory() throws Exception {
         dto.setId(DTO_ID);
         mockMvc.perform(delete(URL_TEMPLATE+"/"+DTO_ID))
-                .andExpect(content().string(EXPECTED_CONTENT_AFTER_DELETE))
+                .andExpect(content().string(containsString(EXPECTED_CONTENT_AFTER_DELETE)))
                 .andExpect(status().isOk());
     }
 
@@ -112,7 +112,7 @@ class FoodCategoryControllerTest {
         mockMvc.perform(post(URL_TEMPLATE)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_EXISTS_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_EXISTS_MESSAGE)))
                 .andExpect(status().isConflict());
     }
 
@@ -124,7 +124,7 @@ class FoodCategoryControllerTest {
         mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -134,7 +134,7 @@ class FoodCategoryControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         given(service.findById(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
         mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -144,7 +144,7 @@ class FoodCategoryControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         doThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE)).when(service).deleteById(any());
         mockMvc.perform(delete(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 }

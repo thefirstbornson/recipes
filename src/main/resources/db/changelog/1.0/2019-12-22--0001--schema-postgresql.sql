@@ -25,9 +25,7 @@ DROP TABLE IF EXISTS public.tblfoodcategory CASCADE;
 CREATE TABLE public.tblfoodcategory (
                                     food_category_id bigint NOT NULL DEFAULT nextval('public.tblfoodcategory_food_category_id_seq'::regclass),
                                     food_category character varying(255),
-                                    CONSTRAINT tblfoodcategory_pkey PRIMARY KEY (food_category_id),
-                                    CONSTRAINT fkfood_category_id FOREIGN KEY (food_category_id)
-                                        REFERENCES public.tblfoodcategory(food_category_id)
+                                    CONSTRAINT tblfoodcategory_pkey PRIMARY KEY (food_category_id)
 );
 
 DROP SEQUENCE IF EXISTS public.tblingredient_id_seq CASCADE;
@@ -36,9 +34,7 @@ DROP TABLE IF EXISTS public.tblingredient CASCADE;
 CREATE TABLE public.tblingredient (
                                    ingredient_id bigint NOT NULL DEFAULT nextval('public.tblingredient_id_seq'::regclass),
                                    name character varying(255),
-                                   CONSTRAINT tblingredient_pkey PRIMARY KEY (ingredient_id),
-                                   CONSTRAINT fk_ingredient_id FOREIGN KEY (ingredient_id)
-                                       REFERENCES public.tblingredient(ingredient_id)
+                                   CONSTRAINT tblingredient_pkey PRIMARY KEY (ingredient_id)
 );
 
 DROP SEQUENCE IF EXISTS public.tblnutritionalinformation_nutrition_information_id_seq CASCADE;
@@ -76,8 +72,7 @@ DROP TABLE IF EXISTS tblmeal CASCADE;
 CREATE TABLE public.tblmeal (
                                 meal_id bigint NOT NULL DEFAULT nextval('public.tblmeal_meal_id_seq'::regclass),
                                 meal character varying(255),
-                                CONSTRAINT tblmeal_pkey PRIMARY KEY (meal_id),
-                                CONSTRAINT fk_meal_id FOREIGN KEY (meal_id) REFERENCES public.tblmeal(meal_id)
+                                CONSTRAINT tblmeal_pkey PRIMARY KEY (meal_id)
 );
 
 DROP SEQUENCE IF EXISTS public.tblmeasurement_measurement_id_seq CASCADE;
@@ -86,9 +81,7 @@ DROP TABLE IF EXISTS tblmeasurement CASCADE;
 CREATE TABLE public.tblmeasurement (
                                measurement_id bigint NOT NULL DEFAULT nextval('public.tblmeasurement_measurement_id_seq'::regclass),
                                name character varying(255),
-                               CONSTRAINT tblmeasurement_pkey PRIMARY KEY (measurement_id),
-                               CONSTRAINT fk_measurement_id FOREIGN KEY (measurement_id)
-                                   REFERENCES public.tblmeasurement(measurement_id)
+                               CONSTRAINT tblmeasurement_pkey PRIMARY KEY (measurement_id)
 );
 
 DROP SEQUENCE IF EXISTS public.tblrecipe_recipe_id_seq CASCADE;

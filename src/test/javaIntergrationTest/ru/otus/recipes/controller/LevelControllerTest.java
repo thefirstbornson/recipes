@@ -60,7 +60,7 @@ class LevelControllerTest {
 
     @Test
     @DisplayName("Сохранение level")
-    void saveCourse() throws Exception {
+    void saveLevel() throws Exception {
         String jsonToSave = objectMapper.writeValueAsString(dto);
         dto.setId(DTO_ID);
         given(service.save(any())).willReturn(dto);
@@ -73,7 +73,7 @@ class LevelControllerTest {
 
     @Test
     @DisplayName("Обновление level")
-    void updateCourse() throws Exception {
+    void updateLevel() throws Exception {
         dto.setId(UPDATED_ID);
         String jsonToSave = objectMapper.writeValueAsString(dto);
         given(service.update(any())).willReturn(dto);
@@ -86,7 +86,7 @@ class LevelControllerTest {
 
     @Test
     @DisplayName("Получение level")
-    void getCourse() throws Exception {
+    void getLevel() throws Exception {
         dto.setId(DTO_ID);
         given(service.findById(any())).willReturn(dto);
         mockMvc.perform(get(URL_TEMPLATE+"/"+DTO_ID))
@@ -96,7 +96,7 @@ class LevelControllerTest {
 
     @Test
     @DisplayName("Удаление level")
-    void deleteCourse() throws Exception {
+    void deleteLevel() throws Exception {
         dto.setId(DTO_ID);
         mockMvc.perform(delete(URL_TEMPLATE+"/"+DTO_ID))
                 .andExpect(content().string(EXPECTED_CONTENT_AFTER_DELETE))
@@ -111,7 +111,7 @@ class LevelControllerTest {
         mockMvc.perform(post(URL_TEMPLATE)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_EXISTS_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_EXISTS_MESSAGE)))
                 .andExpect(status().isConflict());
     }
 
@@ -123,7 +123,7 @@ class LevelControllerTest {
         mockMvc.perform(put(URL_TEMPLATE+"/"+DTO_ID)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToSave))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -133,7 +133,7 @@ class LevelControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         given(service.findById(any())).willThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE));
         mockMvc.perform(get(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 
@@ -143,7 +143,7 @@ class LevelControllerTest {
         dto.setId(NONEXISTENT_DTO_ID);
         doThrow(new EntityNotFoundException(ERROR_ENTITY_NOT_FOUND_MESSAGE)).when(service).deleteById(any());
         mockMvc.perform(delete(URL_TEMPLATE+"/"+NONEXISTENT_DTO_ID))
-                .andExpect(content().string(ERROR_ENTITY_NOT_FOUND_MESSAGE))
+                .andExpect(content().string(containsString(ERROR_ENTITY_NOT_FOUND_MESSAGE)))
                 .andExpect(status().isNotFound());
     }
 

@@ -7,14 +7,11 @@ import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.domain.Menu;
 import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.MenuDto;
-import ru.otus.recipes.repository.MealRecipeRepository;
 import ru.otus.recipes.service.MealRecipeService;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -54,7 +51,7 @@ public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
     void mapSpecificFields(MenuDto source, Menu destination) {
         List<MealRecipe> mealRecipeList = Collections.emptyList();
         if (source.getMealRecipes()!=null) {
-            mealRecipeList = mealRecipeService.getAllEntitiesById(source.getMealRecipes()
+            mealRecipeList = mealRecipeService.getAllEntitiesByIds(source.getMealRecipes()
                     .stream()
                     .map(MealRecipeDto::getId)
                     .collect(Collectors.toList()));

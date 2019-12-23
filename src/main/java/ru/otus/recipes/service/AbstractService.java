@@ -3,7 +3,6 @@ package ru.otus.recipes.service;
 import lombok.Getter;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.recipes.domain.AbstractEntity;
 import ru.otus.recipes.dto.AbstractDto;
@@ -12,11 +11,9 @@ import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.CommonRepository;
 import ru.otus.recipes.service.mapper.AbstractMapper;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Getter
@@ -114,19 +111,19 @@ public abstract class AbstractService< D extends AbstractDto,E extends AbstractE
     public List<D> findAllByIds(List<Long> ids){
         log.info(String.format("Start getting %s entities with several ids from database", entityClass.getTypeName()));
         log.debug(String.format("Entities ids: %s", ids.stream().map(String::valueOf).collect(Collectors.joining())));
-        List<E> entities = getAllEntitiesById(ids);
+        List<E> entities = getAllEntitiesByIds(ids);
         log.info("Getting entities was successful");
         return entities.stream().map(mapper::toDto).collect(Collectors.toList());
     }
 
-    public List<E> getAllEntitiesById(List<Long> ids) {
-        List<E> entities =  repository.findByIdIn(ids);
-        Set<Long> entitiesIds = entities.stream().map(AbstractEntity::getId).collect(Collectors.toSet());
-        Set<Long> bd = new HashSet<>(ids);
-        bd.removeAll(entitiesIds);
-        if (!bd.isEmpty()) {
+    public List<E> getAllEntitiesByIds(List<Long> idList) {
+        List<E> entities =  repository.findByIdIn(idList);
+        Set<Long> entitiesIdSet = entities.stream().map(AbstractEntity::getId).collect(Collectors.toSet());
+        Set<Long> idSet = new HashSet<>(idList);
+        idSet.removeAll(entitiesIdSet);
+        if (!idSet.isEmpty()) {
             throw new EntityNotFoundException(String.format("No %s entities found with ids: %s !",
-                    entityClass.getTypeName(),bd.toString()));
+                    entityClass.getTypeName(),idSet.toString()));
         }
         return entities;
     }

@@ -8,7 +8,6 @@ import ru.otus.recipes.domain.Menu;
 import ru.otus.recipes.domain.Recipe;
 import ru.otus.recipes.dto.MealRecipeDto;
 import ru.otus.recipes.dto.RecipeDto;
-import ru.otus.recipes.repository.MenuRepository;
 import ru.otus.recipes.service.MealService;
 import ru.otus.recipes.service.MenuService;
 import ru.otus.recipes.service.RecipeService;
@@ -63,7 +62,7 @@ public class MealRecipeMapper extends AbstractMapper<MealRecipeDto, MealRecipe> 
         destination.setMeal(mealService.getEntityById(source.getMealId()));
         List<Recipe> recipes = Collections.emptyList();
         if (source.getRecipes() !=null){
-            recipes = recipeService.getAllEntitiesById(source.getRecipes()
+            recipes = recipeService.getAllEntitiesByIds(source.getRecipes()
                     .stream().map(RecipeDto::getId).collect(Collectors.toList()));
         }
         destination.setRecipes(recipes);
