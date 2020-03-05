@@ -67,6 +67,7 @@ public class CompactJsonAspect {
                     print(value,expansionsArray,currentPath); // RECURSIVE CALL
 
                     /// Попробовать не удалять а добавлять в новый!
+                    /// Вместо expansinonArray и пр создать объект с полями-расширениями
                 } else {
                     while (node.elements().hasNext()){
                         if (!node.elements().next().has("id")){
