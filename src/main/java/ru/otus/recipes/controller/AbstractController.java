@@ -12,6 +12,9 @@ import ru.otus.recipes.dto.AbstractDto;
 import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.service.CommonService;
+import ru.otus.recipes.service.mapper.CompactJson;
+
+import javax.persistence.Column;
 
 public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<D,E>, D extends AbstractDto>
         implements CommonController<D> {
@@ -38,6 +41,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
     }
 
     @Override
+    @CompactJson
     public ResponseEntity<?> get(@PathVariable long id) throws EntityNotFoundException {
             log.info("Get request with id: {}",id);
             return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
