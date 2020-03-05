@@ -30,7 +30,6 @@ public class CompactJsonAspect {
 
     @Around("@annotation(ru.otus.recipes.service.mapper.CompactJson)")
     public ResponseEntity<?> makeCompact(ProceedingJoinPoint pjp) throws Throwable {
-        pjp.proceed();
         Method method = getMethodFromJoinPoint(pjp);
         List<String> parametersNames = getParameterNames(method);
         CompactJson compactJsonAnnotation = method.getAnnotation(CompactJson.class);
