@@ -13,6 +13,8 @@ import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.service.CommonService;
 
+import javax.persistence.Column;
+
 public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<D,E>, D extends AbstractDto>
         implements CommonController<D> {
 

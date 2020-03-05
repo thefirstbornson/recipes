@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: jdbc:postgresql://localhost:5432/recipes
     username: postgres
@@ -26,4 +28,12 @@ logging:
     ru.otus: INFO
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+keycloak:
+  realm: RecipiesRealm
+  auth-server-url: http://localhost:8180/auth
+  resource: login-app
+  principal-attribute: preferred_username
+  public-client: true
+#  use-resource-role-mappings : true
 
