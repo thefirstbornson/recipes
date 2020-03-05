@@ -5377,7 +5377,7 @@ INSERT INTO public.tblingredient (ingredient_id,name) VALUES (1334,'Морков
 INSERT INTO public.tblingredientnutritionaninformation (amount, ingredient_id, ni_id) VALUES (0.2, 613, 1);
 INSERT INTO public.tblingredientnutritionaninformation (amount, ingredient_id, ni_id) VALUES (0.9, 613, 2);
 INSERT INTO public.tblingredientnutritionaninformation (amount, ingredient_id, ni_id) VALUES (6.8, 613, 3);
-SELECT setval('public.tblingredient_ingredient_id_seq', max(ingredient_id)) FROM public.tblingredient;
+SELECT setval('public.tblingredient_id_seq', max(ingredient_id)) FROM public.tblingredient;
 SELECT setval('public.tblingredientnutritionaninformation_rni_id_seq', max(rni_id)) FROM public.tblingredientnutritionaninformation;
 
 

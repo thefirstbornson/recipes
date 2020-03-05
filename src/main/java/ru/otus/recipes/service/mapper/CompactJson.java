@@ -10,6 +10,6 @@ import java.util.List;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CompactJson {
-    List<String> expansions = Collections.emptyList();
-    List<String> includings = Collections.emptyList();
+    String expansions() default "";
+    String includings() default "";
 }
