@@ -2,6 +2,8 @@ package ru.otus.recipes.service.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeCreator;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -54,6 +56,7 @@ public class CompactJsonAspect {
 
     void print(final JsonNode node, String[] expansionsArray, StringBuilder currentPath ) throws IOException {
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = node.fields();
+        JsonNode jsonNode = JsonNodeFactory.instance.objectNode();
 
         while (fieldsIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = fieldsIterator.next();
