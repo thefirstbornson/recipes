@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeCreator;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -42,8 +43,8 @@ public class CompactJsonAspect {
         String[] expansionsArray ={} ;
         if (parametersNames.indexOf(expansions)>0){
             expansionsArray = (String[]) methodsArguments[parametersNames.indexOf(expansions)];
-            expansionsByValue = Map.of(expansions,expansionsArray);
         }
+
 
         ResponseEntity<?> responseEntity = (ResponseEntity<?>) pjp.proceed();
         JsonNode jsonNode = objectMapper.valueToTree(responseEntity.getBody());
@@ -64,23 +65,27 @@ public class CompactJsonAspect {
             System.out.println("Key: " + key);
             final JsonNode value = field.getValue();
             if (value.isObject()) {
-                currentPath.append(key);
-                if (Arrays.asList(expansionsArray).contains(currentPath.toString())){
-                    print(value,expansionsArray,currentPath); // RECURSIVE CALL
-
-                    /// Попробовать не удалять а добавлять в новый!
-                    /// Вместо expansinonArray и пр создать объект с полями-расширениями
-                } else {
-                    while (node.elements().hasNext()){
-                        if (!node.elements().next().has("id")){
-                            node.elements().remove();
-                        }
-                        currentPath.setLength(0);
-                    }
+                if (currentPath.length()==0){
+                    currentPath.append(key);
                 }
+//                else {
+//                    currentPath.append(".").append(key);
+//                }
+                if (!Arrays.asList(expansionsArray).contains(currentPath.toString())){
+                    ObjectNode objectNode = (ObjectNode) value;
+                    objectNode.retain("id");
+                }
+                currentPath.append(".").append(key);
+                print(value,expansionsArray,currentPath);
+
             } else {
                 System.out.println("Value: " + value);
             }
+            if(currentPath.lastIndexOf(".")>0) {
+                currentPath.replace(currentPath.lastIndexOf("."),currentPath.length()-1,"");
+            } else if (currentPath.length()>0) {
+                currentPath.setLength(0);
+        }
         }
     }
 
