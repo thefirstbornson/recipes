@@ -13,7 +13,7 @@ import ru.otus.recipes.dto.testdto.*;
 import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.service.CommonService;
-import ru.otus.recipes.service.mapper.CompactJson;
+import ru.otus.recipes.service.mapper.CompressJson;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +43,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
     }
 
     @Override
-    @CompactJson(expansions="expansions", includings = "includings")
+    @CompressJson(expansions="expansions", includings = "includings")
     public ResponseEntity<?> get(@PathVariable long id, @RequestParam(value = "expand", required = false) String[] expansions,
                                  @RequestParam(value = "include",required = false) String[] includings) throws EntityNotFoundException {
             log.info("Get request with id: {}",id);

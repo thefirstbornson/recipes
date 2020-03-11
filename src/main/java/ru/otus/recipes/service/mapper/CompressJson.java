@@ -9,7 +9,9 @@ import java.util.List;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CompactJson {
+public @interface CompressJson {
     String expansions() default "";
     String includings() default "";
+    String delimiter() default ".";
+    String identifier() default "id";
 }
