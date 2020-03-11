@@ -1,16 +1,14 @@
 package ru.otus.recipes.dto.testdto;
 
-public class ClientDto {
-    private long id;
+public class VendorDto {
+    long id;
+    String name;
+    AddressDto address;
 
-    private String name;
-    private String lastname;
-    private AddressDto address;
-
-    public ClientDto(long id, String name, String lastname) {
+    public VendorDto(long id, String name, AddressDto address) {
         this.id = id;
         this.name = name;
-        this.lastname = lastname;
+        this.address = address;
     }
 
     public long getId() {
@@ -27,14 +25,6 @@ public class ClientDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
     }
 
     public AddressDto getAddress() {

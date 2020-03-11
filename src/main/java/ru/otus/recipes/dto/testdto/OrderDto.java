@@ -1,9 +1,13 @@
 package ru.otus.recipes.dto.testdto;
 
+import java.util.List;
+
 public class OrderDto {
     long id;
     String comment;
     ClientDto client;
+    List<ItemDto> items;
+    VendorDto vendor;
 
     public OrderDto(long id, String comment, ClientDto client) {
         this.id = id;
@@ -33,5 +37,21 @@ public class OrderDto {
 
     public void setClient(ClientDto client) {
         this.client = client;
+    }
+
+    public List<ItemDto> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemDto> items) {
+        this.items = items;
+    }
+
+    public VendorDto getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(VendorDto vendor) {
+        this.vendor = vendor;
     }
 }
