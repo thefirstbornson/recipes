@@ -5,14 +5,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IngredientDto extends AbstractDto {
-    private String name;
-    private List<IngredientNutritionalDto> nutritionalInformation;
+public class IngredientNutritionalDto  extends AbstractDto  {
+    private NutritionalInformationDto nutrition;
+    private float amount;
 }

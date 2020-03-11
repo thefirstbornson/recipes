@@ -15,18 +15,18 @@ import java.util.stream.Collectors;
 @Service
 public class IngredientMapper extends AbstractMapper<IngredientDto, Ingredient> {
     private final ModelMapper mapper;
-    private final NutritionalInformationService nutritionalInformationService;
+    private final IngredientNutritionalMapper ingredientNutritionalMapper;
 
-    IngredientMapper(ModelMapper mapper, NutritionalInformationService nutritionalInformationService) {
+    IngredientMapper(ModelMapper mapper, IngredientNutritionalMapper ingredientNutritionalMapper) {
         super(Ingredient.class, IngredientDto.class);
         this.mapper = mapper;
-        this.nutritionalInformationService = nutritionalInformationService;
+        this.ingredientNutritionalMapper = ingredientNutritionalMapper;
     }
 
     @PostConstruct
     public void setupMapper() {
         mapper.createTypeMap(Ingredient.class, IngredientDto.class)
-                .addMappings(m -> m.skip(IngredientDto::setNutritionalIdsAndAmountMap))
+                .addMappings(m -> m.skip(IngredientDto::setNutritionalInformation))
                 .setPostConverter(toDtoConverter());
         mapper.createTypeMap(IngredientDto.class, Ingredient.class)
                 .addMappings(m -> m.skip(Ingredient::setIngredientNutritionalInformations))
@@ -35,32 +35,19 @@ public class IngredientMapper extends AbstractMapper<IngredientDto, Ingredient> 
 
     @Override
     void mapSpecificFields(Ingredient source, IngredientDto destination) {
-        Map<Long,Float> nutritionalIdsAndAmountMap = new HashMap<>();
-        source.getIngredientNutritionalInformations()
-                .forEach(nutritionalInformation -> nutritionalIdsAndAmountMap.
-                        put(nutritionalInformation.getNutrition().getId(), nutritionalInformation.getAmount()));
-        destination.setNutritionalIdsAndAmountMap(nutritionalIdsAndAmountMap);
+        destination.setNutritionalInformation(source.getIngredientNutritionalInformations()
+                .stream()
+                .map(ingredientNutritionalMapper::toDto)
+                .collect(Collectors.toList())
+        );
     }
 
     @Override
     void mapSpecificFields(IngredientDto source, Ingredient destination) {
-        List<IngredientNutritionalInformation> ingredientNutritionalInformationList = new ArrayList<>();
-        if (source.getNutritionalIdsAndAmountMap() !=null){
-            List<Long>  nutritionalIds = new ArrayList<>(source.getNutritionalIdsAndAmountMap().keySet());
-            List<NutritionalInformation> nutritionalInformationList = nutritionalInformationService.getAllEntitiesByIds(nutritionalIds);
-            ingredientNutritionalInformationList = getIngredientNutritionalInformationList(source, nutritionalInformationList);
-            ingredientNutritionalInformationList.
-                    forEach(ingredientNutritionalInformation->ingredientNutritionalInformation.setIngredient(destination));
-        }
-        destination.setIngredientNutritionalInformations(new HashSet<>(ingredientNutritionalInformationList));
+        destination.setIngredientNutritionalInformations(source.getNutritionalInformation()
+                .stream()
+                .map(ingredientNutritionalMapper::toEntity)
+                .collect(Collectors.toSet()));
     }
 
-    private List<IngredientNutritionalInformation> getIngredientNutritionalInformationList(IngredientDto source,
-                                                                                           List<NutritionalInformation> nutritionalInformationList) {
-        return nutritionalInformationList
-                        .stream()
-                        .map(n->new IngredientNutritionalInformation(
-                                n, source.getNutritionalIdsAndAmountMap().get(n.getId())))
-                        .collect(Collectors.toList());
-    }
 }

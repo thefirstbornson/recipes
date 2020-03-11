@@ -19,13 +19,14 @@ public class RecipeDto extends AbstractDto {
     private long cuisineId;
     private int rating;
     private String imagepath;
-    private Map<String, Map<String,Long>> ingredientIdAndMeasurementIdAmountMap;
+//    private Map<String, Map<String,Long>> ingredientIdAndMeasurementIdAmountMap;
+    private List<IngredientDto> ingredients;
     private List<Long> courseIdList;
     private List<Long> foodCategoryIdList;
     private List<Long> mealIdList;
 
     public RecipeDto(long id,String name, String description, String instructions, int cooktime, long levelId,
-                     long cuisineId, int rating, String imagepath, Map<String, Map<String, Long>> ingredientIdAndMeasurementIdAmountMap,
+                     long cuisineId, int rating, String imagepath, List<IngredientDto> ingredients,
                      List<Long> courseIdList, List<Long> foodCategoryIdList, List<Long> mealIdList) {
         super();
         this.id=id;
@@ -37,7 +38,7 @@ public class RecipeDto extends AbstractDto {
         this.cuisineId = cuisineId;
         this.rating = rating;
         this.imagepath = imagepath;
-        this.ingredientIdAndMeasurementIdAmountMap = ingredientIdAndMeasurementIdAmountMap;
+        this.ingredients = ingredients;
         this.courseIdList = courseIdList;
         this.foodCategoryIdList = foodCategoryIdList;
         this.mealIdList = mealIdList;

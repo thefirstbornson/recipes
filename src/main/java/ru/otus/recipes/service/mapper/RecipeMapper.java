@@ -13,8 +13,6 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.Math.toIntExact;
-
 @Service
 public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
     private final IngredientService ingredientService;
@@ -25,11 +23,13 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
     private final MeasurementRepository measurementRepository;
     private final CourseService courseService;
     private final ModelMapper mapper;
+    private final IngredientMapper ingredientMapper;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
     @Autowired
-    RecipeMapper(IngredientService ingredientService, LevelService levelService, CourseRepository courseRepository,
+    RecipeMapper(IngredientService ingredientService, LevelService levelService,
                  CuisineService cuisineService, FoodCategoryService foodCategoryService, MealService mealService,
-                 MeasurementRepository measurementRepository, CourseService courseService, ModelMapper mapper) {
+                 MeasurementRepository measurementRepository, CourseService courseService, ModelMapper mapper, IngredientMapper ingredientMapper, RecipeIngredientRepository recipeIngredientRepository) {
         super(Recipe.class, RecipeDto.class);
         this.ingredientService = ingredientService;
         this.levelService = levelService;
@@ -39,6 +39,8 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         this.measurementRepository = measurementRepository;
         this.courseService = courseService;
         this.mapper = mapper;
+        this.ingredientMapper = ingredientMapper;
+        this.recipeIngredientRepository = recipeIngredientRepository;
     }
 
     @PostConstruct
@@ -47,7 +49,7 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
                 .addMappings(m -> m.skip(RecipeDto::setCourseIdList))
                 .addMappings(m -> m.skip(RecipeDto::setFoodCategoryIdList))
                 .addMappings(m -> m.skip(RecipeDto::setMealIdList))
-                .addMappings(m -> m.skip(RecipeDto::setIngredientIdAndMeasurementIdAmountMap))
+                .addMappings(m -> m.skip(RecipeDto::setIngredients))
                 .setPostConverter(toDtoConverter());
         mapper.createTypeMap(RecipeDto.class, Recipe.class)
                 .addMappings(m -> m.skip(Recipe::setLevel))
@@ -64,12 +66,16 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         destination.setCourseIdList(source.getCourses().stream().map(Course::getId).collect(Collectors.toList()));
         destination.setFoodCategoryIdList(source.getFoodCategories().stream().map(FoodCategory::getId).collect(Collectors.toList()));
         destination.setMealIdList(source.getMeals().stream().map(Meal::getId).collect(Collectors.toList()));
-        Map<String,Map<String,Long>> ingredientIdAndAmountMeasurementMap = new HashMap<>();
-        source.getRecipeIngredients()
-                .forEach(recipeIngr -> {ingredientIdAndAmountMeasurementMap.put(String.valueOf(recipeIngr.getIngredient().getId()),
-                                Map.of("measurement_id", recipeIngr.getMeasurement().getId(),"amount", (long) recipeIngr.getAmount()));
-                });
-        destination.setIngredientIdAndMeasurementIdAmountMap(ingredientIdAndAmountMeasurementMap);
+//        Map<String,Map<String,Long>> ingredientIdAndAmountMeasurementMap = new HashMap<>();
+//        source.getRecipeIngredients()
+//                .forEach(recipeIngr -> {ingredientIdAndAmountMeasurementMap.put(String.valueOf(recipeIngr.getIngredient().getId()),
+//                                Map.of("measurement_id", recipeIngr.getMeasurement().getId(),"amount", (long) recipeIngr.getAmount()));
+//                });
+        destination.setIngredients(source.getRecipeIngredients()
+                .stream()
+                .map(RecipeIngredient::getIngredient)
+                .map(ingredientMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -79,23 +85,23 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         destination.setCourses(new HashSet<>(courseService.getAllEntitiesByIds(source.getCourseIdList())));
         destination.setFoodCategories(new HashSet<>(foodCategoryService.getAllEntitiesByIds(source.getFoodCategoryIdList())));
         destination.setMeals(new HashSet<>(mealService.getAllEntitiesByIds(source.getMealIdList())));
-        List<RecipeIngredient> recipeIngredientList =
-                extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap(),destination);
+        List<RecipeIngredient> recipeIngredientList = recipeIngredientRepository.findRecipeIngredientListByRecipeId(source.getId());
+//                extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap(),destination);
         destination.setRecipeIngredients(recipeIngredientList);
     }
 
-    private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String, Map<String ,Long>> ingredinentMeasureAmountMap,
-                                                                      Recipe recipe) {
-        return ingredinentMeasureAmountMap.keySet()
-                .stream()
-                .map(ingredientId ->{
-                    RecipeIngredient recipeIngredient =  new RecipeIngredient();
-                    recipeIngredient.setRecipe(recipe);
-                    recipeIngredient.setIngredient(ingredientService.getEntityById(Long.parseLong(ingredientId)));
-                    recipeIngredient.setAmount(toIntExact(ingredinentMeasureAmountMap.get(ingredientId).get("amount")));
-                    recipeIngredient.setMeasurement(measurementRepository.getOne(
-                            ingredinentMeasureAmountMap.get(ingredientId).get("measurement_id")));
-                    return recipeIngredient;})
-                .collect(Collectors.toList());
-    }
+//    private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String, Map<String ,Long>> ingredinentMeasureAmountMap,
+//                                                                      Recipe recipe) {
+//        return ingredinentMeasureAmountMap.keySet()
+//                .stream()
+//                .map(ingredientId ->{
+//                    RecipeIngredient recipeIngredient =  new RecipeIngredient();
+//                    recipeIngredient.setRecipe(recipe);
+//                    recipeIngredient.setIngredient(ingredientService.getEntityById(Long.parseLong(ingredientId)));
+//                    recipeIngredient.setAmount(toIntExact(ingredinentMeasureAmountMap.get(ingredientId).get("amount")));
+//                    recipeIngredient.setMeasurement(measurementRepository.getOne(
+//                            ingredinentMeasureAmountMap.get(ingredientId).get("measurement_id")));
+//                    return recipeIngredient;})
+//                .collect(Collectors.toList());
+//    }
 }
