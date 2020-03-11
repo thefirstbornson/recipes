@@ -3,8 +3,6 @@ package ru.otus.recipes.service.mapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeCreator;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -14,15 +12,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import ru.otus.recipes.service.mapper.CompactJson;
 
 @Aspect
 @Component
@@ -40,94 +32,85 @@ public class CompactJsonAspect {
         List<String> parametersNames = getParameterNames(method);
         CompactJson compactJsonAnnotation = method.getAnnotation(CompactJson.class);
 
-        String expansions = compactJsonAnnotation.expansions();
-        String includings = compactJsonAnnotation.includings();
-        Object[] methodsArguments = pjp.getArgs();
+        String expansionsParamName = compactJsonAnnotation.expansions();
+        String includingsParamName = compactJsonAnnotation.includings();
+        Object[] methodArguments = pjp.getArgs();
 
-        List<String> expansionsList = new ArrayList<>();
-        int methodArgumentIndex = parametersNames.indexOf(expansions);
-        if (methodArgumentIndex > 0) {
-            String[] expansionArray = (String[]) methodsArguments[methodArgumentIndex];
-            if (expansionArray != null) {
-                expansionsList.addAll(Arrays.asList(expansionArray));
-            }
-        }
+        List<String> expansionsList = getArgumentList(parametersNames.indexOf(expansionsParamName),methodArguments);
+        List<String> includingsList = getArgumentList(parametersNames.indexOf(includingsParamName),methodArguments);
 
-        List<String> includingsList = new ArrayList<>();
-        methodArgumentIndex = parametersNames.indexOf(includings);
-        if (methodArgumentIndex > 0) {
-            String[] includingArray = (String[]) methodsArguments[methodArgumentIndex];
-            if (includingArray != null) {
-                includingsList.addAll(Arrays.asList(includingArray));
-            }
-        }
+        CompressionCriteria compressionCriteria = CompressionCriteria.builder()
+                .includingsList(includingsList)
+                .expansionsList(expansionsList)
+                .build();
 
+        ResponseEntity<?> methodResult = (ResponseEntity<?>) pjp.proceed();
+        JsonNode jsonNodeToCompress = objectMapper.valueToTree(methodResult.getBody());
+        compressJsonNode(jsonNodeToCompress, compressionCriteria);
 
-        ResponseEntity<?> responseEntity = (ResponseEntity<?>) pjp.proceed();
-        JsonNode jsonNode = objectMapper.valueToTree(responseEntity.getBody());
-
-        print(jsonNode, expansionsList, includingsList, new StringBuilder());
-
-        responseEntity = ResponseEntity.ok(jsonNode);
-        return responseEntity;
+//        methodResult = ResponseEntity.ok(jsonNodeToCompress);
+        return ResponseEntity.ok(jsonNodeToCompress);
     }
 
-    void print(final JsonNode node, List<String> expansions, List<String> includings, StringBuilder currentPath) {
+    void compressJsonNode(final JsonNode node, CompressionCriteria compressionCriteria) {
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = node.fields();
 
         while (fieldsIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = fieldsIterator.next();
             final String key = field.getKey();
-            System.out.println("Key: " + key);
             final JsonNode value = field.getValue();
+
             if (value.isObject()) {
-                if (currentPath.length() == 0) {
-                    currentPath.append(key);
+                increasePath(compressionCriteria, key);
+                ObjectNode objectNode = (ObjectNode) value;
+                if (!compressionCriteria.getExpansionsList().contains(compressionCriteria.getPath().toString()) &
+                        compressionCriteria.getExpansionsList().stream().noneMatch(expansion -> expansion.contains(compressionCriteria.getPath().toString() + ".")) &
+                        !compressionCriteria.getIncludingsList().contains(compressionCriteria.getPath().toString())) {
+                    objectNode.retain("id");
                 } else {
-                    currentPath.append(".").append(key);
+                    compressJsonNode(objectNode,compressionCriteria);
                 }
-
-                if (!expansions.contains(currentPath.toString()) &
-                        expansions.stream().noneMatch(expansion -> expansion.contains(currentPath.toString() + ".")) &
-                        !includings.contains(currentPath.toString())) {
-                    ObjectNode objectNode = (ObjectNode) value;
-                    List<String> ignoredFields = new ArrayList<>();
-                    ignoredFields.add("id");
-                    objectNode.retain(ignoredFields);
-                } else {
-                    print(value, expansions, includings, currentPath);
-                }
-
-                if (currentPath.lastIndexOf(".") > 0) {
-                    currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
-                } else if (currentPath.length() > 0) {
-                    currentPath.setLength(0);
-                }
-
+                reducePath(compressionCriteria);
             } else if (value.isArray()) {
-                System.out.println("Value: " + value);
-
-                if (currentPath.length() == 0) {
-                    currentPath.append(key);
-                } else {
-                    currentPath.append(".").append(key);
-                }
-
+                increasePath(compressionCriteria, key);
                 ArrayNode arrayNode = (ArrayNode) value;
-                if (!includings.contains(currentPath.toString()) & includings.stream().noneMatch(including -> including.contains(currentPath.toString() + "."))) {
+                if (!compressionCriteria.getIncludingsList().contains(compressionCriteria.getPath().toString()) &
+                        compressionCriteria.getIncludingsList().stream().noneMatch(including -> including.contains(compressionCriteria.getPath().toString() + "."))) {
                     arrayNode.removeAll();
                 } else {
-                    arrayNode.forEach(arrayNode1 -> {
-                        print(arrayNode1, expansions, includings, currentPath);
-                    });
+                    arrayNode.forEach(jsonNode -> {compressJsonNode(jsonNode, compressionCriteria);});
                 }
-                if (currentPath.lastIndexOf(".") > 0) {
-                    currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
-                } else if (currentPath.length() > 0) {
-                    currentPath.setLength(0);
-                }
+                reducePath(compressionCriteria);
             }
         }
+    }
+
+    private void reducePath(CompressionCriteria compressionCriteria) {
+        if (compressionCriteria.getPath().lastIndexOf(".") > 0) {
+            compressionCriteria.getPath().replace(compressionCriteria.getPath().lastIndexOf("."),
+                    compressionCriteria.getPath().length(), "");
+        } else if (compressionCriteria.getPath().length() > 0) {
+            compressionCriteria.getPath().setLength(0);
+        }
+    }
+
+    private void increasePath(CompressionCriteria compressionCriteria, String path) {
+        if (compressionCriteria.getPath().length() == 0) {
+            compressionCriteria.appendPath(path);
+        } else {
+            compressionCriteria.appendPath(".").append(path);
+        }
+    }
+
+    private List<String> getArgumentList(int index, Object[] methodArguments ) {
+        List<String> expansionsList = new ArrayList<>();
+        if (index > 0) {
+            String[] expansionArray = (String[]) methodArguments[index];
+            if (expansionArray != null) {
+                expansionsList.addAll(Arrays.asList(expansionArray));
+            }
+        }
+        return expansionsList;
     }
 
     private List<String> getParameterNames(Method method) {
