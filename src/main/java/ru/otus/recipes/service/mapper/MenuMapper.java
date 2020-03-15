@@ -21,7 +21,7 @@ public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
     private final MealRecipeService mealRecipeService;
     private final MealRecipeMapper mealRecipeMapper;
 
-    MenuMapper(ModelMapper mapper, @Lazy MealRecipeService mealRecipeService, MealRecipeMapper mealRecipeMapper) {
+    MenuMapper(ModelMapper mapper, MealRecipeService mealRecipeService, MealRecipeMapper mealRecipeMapper) {
         super(Menu.class, MenuDto.class);
         this.mapper = mapper;
         this.mealRecipeService = mealRecipeService;
@@ -42,7 +42,9 @@ public class MenuMapper extends AbstractMapper<MenuDto, Menu> {
     void mapSpecificFields(Menu source, MenuDto destination) {
         List<MealRecipeDto> mealRecipeDtoList = Collections.emptyList();
         if (source.getMealRecipes()!=null) {
-            mealRecipeDtoList = source.getMealRecipes().stream().map(mealRecipeMapper::toDto).collect(Collectors.toList());
+            mealRecipeDtoList = source.getMealRecipes()
+                    .stream().map(mealRecipeMapper::toDto)
+                    .collect(Collectors.toList());
         }
         destination.setMealRecipes(mealRecipeDtoList);
     }

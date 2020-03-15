@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.IngredientNutritionalInformation;
 import ru.otus.recipes.dto.IngredientNutritionalDto;
+import ru.otus.recipes.service.NutritionalInformationService;
 
 import javax.annotation.PostConstruct;
 
@@ -11,11 +12,13 @@ import javax.annotation.PostConstruct;
 public class IngredientNutritionalMapper extends AbstractMapper<IngredientNutritionalDto, IngredientNutritionalInformation> {
     private final ModelMapper mapper;
     private final NutritionalInformationMapper nutritionalInformationMapper;
+    private final NutritionalInformationService nutritionalInformationService;
 
-    IngredientNutritionalMapper(ModelMapper mapper, NutritionalInformationMapper nutritionalInformationMapper) {
+    IngredientNutritionalMapper(ModelMapper mapper, NutritionalInformationMapper nutritionalInformationMapper, NutritionalInformationService nutritionalInformationService) {
         super(IngredientNutritionalInformation.class, IngredientNutritionalDto.class);
         this.mapper = mapper;
         this.nutritionalInformationMapper = nutritionalInformationMapper;
+        this.nutritionalInformationService = nutritionalInformationService;
     }
 
     @PostConstruct
@@ -36,6 +39,6 @@ public class IngredientNutritionalMapper extends AbstractMapper<IngredientNutrit
 
     @Override
     void mapSpecificFields(IngredientNutritionalDto source, IngredientNutritionalInformation destination) {
-        destination.setNutrition(nutritionalInformationMapper.toEntity(source.getNutrition()));
+        destination.setNutrition(nutritionalInformationService.getEntityById(source.getNutrition().getId()));
     }
 }

@@ -42,6 +42,7 @@ class RecipeMapperTest {
     @Test
     void toDto() {
         RecipeDto recipeDtoFromEntity = recipeMapper.toDto(recipe);
+        recipeDtoFromEntity.getIngredients().get(0).g
         assertEquals(recipeDtoFromEntity.getIngredientIdAndMeasurementIdAmountMap().get(String.valueOf(1)).get("amount"),
                 recipe.getRecipeIngredients().stream().findFirst().get().getAmount());
     }

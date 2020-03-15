@@ -8,8 +8,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.MealRecipe;
-import ru.otus.recipes.dto.MealRecipeDto;
-import ru.otus.recipes.dto.RecipeDto;
+import ru.otus.recipes.dto.*;
 import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.MealRecipeRepository;
@@ -28,15 +27,16 @@ class MealRecipeServiceTest {
     private static final String RECIPE_DESCRIPTION = "testDescription";
     private static final String INSTRUCTIONS = "testInstructions";
     private static final Integer COOK_TIME = 30;
-    private static final Integer LEVEL_ID = 1;
-    private static final Integer CUISINE_ID = 1;
+    private static final LevelDto LEVEL_DTO = new LevelDto(1);
+    private static final CuisineDto CUISINE_DTO = new CuisineDto("testCuisine");
     private static final Integer RATING = 1;
     private static final String IMAGE_PATH = "testImagePath";
-    private static final String MEAL_NAME = "testMealName";
+    private static final String MEAL_NAME = "anotherMealName";
     private static final Long ID = 1L;
     private static final Long DTO_ID = 1L;
     private static final Long DTO_ID_UPDATE = 2L;
     private MealRecipe persistedEntity;
+    private MealDto mealDtoUpdate;
     private MealRecipeDto dto;
     private MealRecipeService service;
 
@@ -48,9 +48,19 @@ class MealRecipeServiceTest {
     @BeforeEach
     void setUp() {
         service = new MealRecipeService(repository, mapper);
-        RecipeDto recipeDto = new RecipeDto(1, RECIPE_NAME, RECIPE_DESCRIPTION, INSTRUCTIONS, COOK_TIME, LEVEL_ID, CUISINE_ID, RATING, IMAGE_PATH,
-                new HashMap<>(), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L));
-        dto = new MealRecipeDto(DTO_ID, new HashSet<>(List.of(recipeDto)),null);
+        NutritionalInformationDto nutritionalInformationDto = new NutritionalInformationDto("testNutrition");
+        IngredientNutritionalDto ingredientNutritionalDto = new IngredientNutritionalDto(nutritionalInformationDto,1);
+        IngredientDto ingredientDto= new IngredientDto("testIngredient", Collections.singletonList(ingredientNutritionalDto));
+        MeasurementDto measurementDto = new MeasurementDto("testMeasurement");
+        RecipeIngredientDto recipeIngredientDto = new RecipeIngredientDto(ingredientDto,1,measurementDto);
+        FoodCategoryDto foodCategoryDto = new FoodCategoryDto("testFoodCategory");
+        CourseDto courseDto = new CourseDto("testCourse");
+        MealDto mealDto = new MealDto("testMeal");
+        mealDtoUpdate = new MealDto(MEAL_NAME);
+        RecipeDto recipeDto = new RecipeDto(0,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME, LEVEL_DTO, CUISINE_DTO,RATING,IMAGE_PATH,
+                Collections.singletonList(recipeIngredientDto), Collections.singletonList(courseDto), Collections.singletonList(foodCategoryDto),
+                Collections.singletonList(mealDto));
+        dto = new MealRecipeDto(mealDto, new HashSet<>(List.of(recipeDto)));
         dto.setId(ID);
         persistedEntity = new MealRecipe();
         persistedEntity.setId(ID);
@@ -70,11 +80,11 @@ class MealRecipeServiceTest {
     @Test
     @DisplayName("Обновление mealRecipe entity")
     void update() throws EntityNotFoundException {
-        dto.setMealId(DTO_ID_UPDATE);
+        dto.setMeal(mealDtoUpdate);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(persistedEntity));
         Mockito.when(repository.save(any(MealRecipe.class))).thenReturn(persistedEntity);
         Mockito.when(mapper.toDto(any(MealRecipe.class))).thenReturn(dto);
-        assertEquals(DTO_ID_UPDATE, service.update(dto).getMealId());
+        assertEquals(MEAL_NAME, service.update(dto).getMeal().getMeal());
     }
 
     @Test

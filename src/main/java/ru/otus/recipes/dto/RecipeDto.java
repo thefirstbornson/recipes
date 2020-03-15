@@ -3,7 +3,6 @@ package ru.otus.recipes.dto;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -15,33 +14,33 @@ public class RecipeDto extends AbstractDto {
     private String description;
     private String instructions;
     private int cooktime;
-    private long levelId;
-    private long cuisineId;
+    private LevelDto level;
+    private CuisineDto cuisine;
     private int rating;
     private String imagepath;
 //    private Map<String, Map<String,Long>> ingredientIdAndMeasurementIdAmountMap;
-    private List<IngredientDto> ingredients;
-    private List<Long> courseIdList;
-    private List<Long> foodCategoryIdList;
-    private List<Long> mealIdList;
+    private List<RecipeIngredientDto> ingredientsInfo;
+    private List<CourseDto> courseList;
+    private List<FoodCategoryDto> foodCategoryList;
+    private List<MealDto> mealList;
 
-    public RecipeDto(long id,String name, String description, String instructions, int cooktime, long levelId,
-                     long cuisineId, int rating, String imagepath, List<IngredientDto> ingredients,
-                     List<Long> courseIdList, List<Long> foodCategoryIdList, List<Long> mealIdList) {
+    public RecipeDto(long id, String name, String description, String instructions, int cooktime, LevelDto level,
+                     CuisineDto cuisine, int rating, String imagepath, List<RecipeIngredientDto> ingredientsInfo,
+                     List<CourseDto> courseList, List<FoodCategoryDto> foodCategoryList, List<MealDto> mealList) {
         super();
         this.id=id;
         this.name = name;
         this.description = description;
         this.instructions = instructions;
         this.cooktime = cooktime;
-        this.levelId = levelId;
-        this.cuisineId = cuisineId;
+        this.level = level;
+        this.cuisine = cuisine;
         this.rating = rating;
         this.imagepath = imagepath;
-        this.ingredients = ingredients;
-        this.courseIdList = courseIdList;
-        this.foodCategoryIdList = foodCategoryIdList;
-        this.mealIdList = mealIdList;
+        this.ingredientsInfo = ingredientsInfo;
+        this.courseList = courseList;
+        this.foodCategoryList = foodCategoryList;
+        this.mealList = mealList;
     }
 }
 

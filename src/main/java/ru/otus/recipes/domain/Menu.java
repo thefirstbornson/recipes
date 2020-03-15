@@ -19,7 +19,8 @@ public class Menu extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy ="menu",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "mealrecipe_id")
     private List<MealRecipe> mealRecipes ;
 
 //    @OneToOne(mappedBy = "menu", optional = false, fetch = FetchType.LAZY)

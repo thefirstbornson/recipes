@@ -12,7 +12,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "mng_mealrecipe")
 public class MealRecipe extends AbstractEntity {
@@ -34,19 +33,12 @@ public class MealRecipe extends AbstractEntity {
     )
     private List<Recipe> recipes;
 
+    public MealRecipe(Meal meal, List<Recipe> recipes) {
+        this.meal = meal;
+        this.recipes = recipes;
+    }
+
     @ManyToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;
-
-    public MealRecipe(Long id,Meal meal, List<Recipe> recipes) {
-        this.id = id;
-        this.meal = meal;
-        this.recipes = recipes;
-    }
-
-    public MealRecipe(Meal meal, List<Recipe> recipes, Menu menu) {
-        this.meal = meal;
-        this.recipes = recipes;
-        this.menu = menu;
-    }
 }

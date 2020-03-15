@@ -15,5 +15,5 @@ import java.util.Date;
 public class DailyMenuDto extends AbstractDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Moscow")
     private Date date;
-    private Long menuId;
+    private MenuDto menu;
 }

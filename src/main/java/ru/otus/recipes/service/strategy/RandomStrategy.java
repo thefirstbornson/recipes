@@ -34,7 +34,7 @@ public class RandomStrategy implements Strategy {
                     .skip(randomRecipeId-1)
                     .findFirst()
                     .orElse(null);
-            mealRecipes.add(new MealRecipe(meal, Collections.singletonList(recipe),menu));
+            mealRecipes.add(new MealRecipe(meal, Collections.singletonList(recipe)));
         }
         menu.setMealRecipes(mealRecipes);
         return menu;

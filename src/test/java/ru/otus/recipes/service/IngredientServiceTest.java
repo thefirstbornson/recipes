@@ -16,6 +16,7 @@ import ru.otus.recipes.repository.IngredientNutritionalInformationRepository;
 import ru.otus.recipes.repository.IngredientRepository;
 import ru.otus.recipes.service.mapper.IngredientMapper;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -42,12 +43,13 @@ class IngredientServiceTest {
     private IngredientService service;
 
     @BeforeEach
+
     void setUp() {
         service = new IngredientService(repository, ingredientNutritionalInformationRepository, mapper);
         Ingredient ingredient = new Ingredient( "IngredientName", Collections.singletonList(new IngredientNutritionalInformation()));
-        dto = new IngredientDto("IngredientName", new HashMap<>());
+        dto = new IngredientDto("IngredientName", new ArrayList<>());
         persistedEntity = new Ingredient("IngredientName", Collections.singletonList(new IngredientNutritionalInformation()));
-        persistedDto = new IngredientDto("IngredientName",new HashMap<>());
+        persistedDto = new IngredientDto("IngredientName",new ArrayList<>());
         Mockito.when(mapper.toEntity(any(IngredientDto.class))).thenReturn(ingredient);
     }
 

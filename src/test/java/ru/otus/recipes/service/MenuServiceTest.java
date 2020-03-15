@@ -9,9 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.recipes.domain.MealRecipe;
 import ru.otus.recipes.domain.Menu;
-import ru.otus.recipes.dto.MealRecipeDto;
-import ru.otus.recipes.dto.MenuDto;
-import ru.otus.recipes.dto.RecipeDto;
+import ru.otus.recipes.dto.*;
 import ru.otus.recipes.exception.EntityExistsException;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.MealRecipeRepository;
@@ -31,8 +29,8 @@ class MenuServiceTest {
     private static final String RECIPE_DESCRIPTION = "testDescription";
     private static final String INSTRUCTIONS = "testInstructions";
     private static final Integer COOK_TIME = 30;
-    private static final Integer LEVEL_ID = 1;
-    private static final Integer CUISINE_ID = 1;
+    private static final LevelDto LEVEL_DTO = new LevelDto(1);
+    private static final CuisineDto CUISINE_DTO = new CuisineDto("testCuisine");
     private static final Integer RATING = 1;
     private static final String IMAGE_PATH = "testImagePath";
     private static final Long ID = 1L;
@@ -53,12 +51,20 @@ class MenuServiceTest {
     @BeforeEach
     void setUp() {
         service = new MenuService(repository, mapper, mealRecipeRepository);
+        NutritionalInformationDto nutritionalInformationDto = new NutritionalInformationDto("testNutrition");
+        IngredientNutritionalDto ingredientNutritionalDto = new IngredientNutritionalDto(nutritionalInformationDto,1);
+        IngredientDto ingredientDto= new IngredientDto("testIngredient", Collections.singletonList(ingredientNutritionalDto));
+        MeasurementDto measurementDto = new MeasurementDto("testMeasurement");
+        RecipeIngredientDto recipeIngredientDto = new RecipeIngredientDto(ingredientDto,1,measurementDto);
+        FoodCategoryDto foodCategoryDto = new FoodCategoryDto("testFoodCategory");
+        CourseDto courseDto = new CourseDto("testCourse");
+        MealDto mealDto = new MealDto("testMeal");
         MealRecipe mealRecipe = new MealRecipe();
         mealRecipe.setId(ID);
-        RecipeDto recipeDto =
-                new RecipeDto(1, RECIPE_NAME, RECIPE_DESCRIPTION, INSTRUCTIONS, COOK_TIME, LEVEL_ID, CUISINE_ID, RATING, IMAGE_PATH,
-                        new HashMap<>(), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L), Arrays.asList(1L, 2L));
-        MealRecipeDto mealRecipeDto = new MealRecipeDto(DTO_ID, new HashSet<>(List.of(recipeDto)),null);
+        RecipeDto recipeDto = new RecipeDto(0,RECIPE_NAME,RECIPE_DESCRIPTION,INSTRUCTIONS,COOK_TIME, LEVEL_DTO, CUISINE_DTO,RATING,IMAGE_PATH,
+                Collections.singletonList(recipeIngredientDto), Collections.singletonList(courseDto), Collections.singletonList(foodCategoryDto),
+                Collections.singletonList(mealDto));
+        MealRecipeDto mealRecipeDto = new MealRecipeDto(mealDto, new HashSet<>(List.of(recipeDto)));
         persistedEntity = new Menu(ID, List.of(mealRecipe));
         dto = new MenuDto(List.of(mealRecipeDto));
         dto.setId(DTO_ID);

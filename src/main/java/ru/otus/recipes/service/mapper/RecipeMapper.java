@@ -4,6 +4,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.*;
+import ru.otus.recipes.dto.CourseDto;
+import ru.otus.recipes.dto.FoodCategoryDto;
+import ru.otus.recipes.dto.MealDto;
 import ru.otus.recipes.dto.RecipeDto;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.*;
@@ -15,41 +18,51 @@ import java.util.stream.Collectors;
 
 @Service
 public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
-    private final IngredientService ingredientService;
     private final LevelService levelService;
     private final CuisineService cuisineService;
     private final FoodCategoryService foodCategoryService;
     private final MealService mealService;
-    private final MeasurementRepository measurementRepository;
     private final CourseService courseService;
     private final ModelMapper mapper;
+    private final LevelMapper levelMapper;
+    private final CuisineMapper cuisineMapper;
     private final IngredientMapper ingredientMapper;
     private final RecipeIngredientRepository recipeIngredientRepository;
-
+    private final CourseMapper courseMapper;
+    private final FoodCategoryMapper foodCategoryMapper;
+    private final MealMapper mealMapper;
+    private final RecipeIngredientMapper recipeIngredientMapper;
     @Autowired
-    RecipeMapper(IngredientService ingredientService, LevelService levelService,
+    RecipeMapper(LevelService levelService,
                  CuisineService cuisineService, FoodCategoryService foodCategoryService, MealService mealService,
-                 MeasurementRepository measurementRepository, CourseService courseService, ModelMapper mapper, IngredientMapper ingredientMapper, RecipeIngredientRepository recipeIngredientRepository) {
+                 CourseService courseService, ModelMapper mapper, LevelMapper levelMapper, CuisineMapper cuisineMapper, IngredientMapper ingredientMapper,
+                 RecipeIngredientRepository recipeIngredientRepository, CourseMapper courseMapper, FoodCategoryMapper foodCategoryMapper, MealMapper mealMapper, RecipeIngredientMapper recipeIngredientMapper) {
         super(Recipe.class, RecipeDto.class);
-        this.ingredientService = ingredientService;
         this.levelService = levelService;
         this.cuisineService = cuisineService;
         this.foodCategoryService = foodCategoryService;
         this.mealService = mealService;
-        this.measurementRepository = measurementRepository;
         this.courseService = courseService;
         this.mapper = mapper;
+        this.levelMapper = levelMapper;
+        this.cuisineMapper = cuisineMapper;
         this.ingredientMapper = ingredientMapper;
         this.recipeIngredientRepository = recipeIngredientRepository;
+        this.courseMapper = courseMapper;
+        this.foodCategoryMapper = foodCategoryMapper;
+        this.mealMapper = mealMapper;
+        this.recipeIngredientMapper = recipeIngredientMapper;
     }
 
     @PostConstruct
     public void setupMapper() {
         mapper.createTypeMap(Recipe.class, RecipeDto.class)
-                .addMappings(m -> m.skip(RecipeDto::setCourseIdList))
-                .addMappings(m -> m.skip(RecipeDto::setFoodCategoryIdList))
-                .addMappings(m -> m.skip(RecipeDto::setMealIdList))
-                .addMappings(m -> m.skip(RecipeDto::setIngredients))
+                .addMappings(m -> m.skip(RecipeDto::setLevel))
+                .addMappings(m -> m.skip(RecipeDto::setCuisine))
+                .addMappings(m -> m.skip(RecipeDto::setCourseList))
+                .addMappings(m -> m.skip(RecipeDto::setFoodCategoryList))
+                .addMappings(m -> m.skip(RecipeDto::setMealList))
+                .addMappings(m -> m.skip(RecipeDto::setIngredientsInfo))
                 .setPostConverter(toDtoConverter());
         mapper.createTypeMap(RecipeDto.class, Recipe.class)
                 .addMappings(m -> m.skip(Recipe::setLevel))
@@ -63,45 +76,35 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
 
     @Override
     void mapSpecificFields(Recipe source, RecipeDto destination) {
-        destination.setCourseIdList(source.getCourses().stream().map(Course::getId).collect(Collectors.toList()));
-        destination.setFoodCategoryIdList(source.getFoodCategories().stream().map(FoodCategory::getId).collect(Collectors.toList()));
-        destination.setMealIdList(source.getMeals().stream().map(Meal::getId).collect(Collectors.toList()));
-//        Map<String,Map<String,Long>> ingredientIdAndAmountMeasurementMap = new HashMap<>();
-//        source.getRecipeIngredients()
-//                .forEach(recipeIngr -> {ingredientIdAndAmountMeasurementMap.put(String.valueOf(recipeIngr.getIngredient().getId()),
-//                                Map.of("measurement_id", recipeIngr.getMeasurement().getId(),"amount", (long) recipeIngr.getAmount()));
-//                });
-        destination.setIngredients(source.getRecipeIngredients()
+        destination.setLevel(levelMapper.toDto(source.getLevel()));
+        destination.setCuisine(cuisineMapper.toDto(source.getCuisine()));
+        destination.setCourseList(source.getCourses().stream().map(courseMapper::toDto).collect(Collectors.toList()));
+        destination.setFoodCategoryList(source.getFoodCategories().stream().map(foodCategoryMapper::toDto).collect(Collectors.toList()));
+        destination.setMealList(source.getMeals().stream().map(mealMapper::toDto).collect(Collectors.toList()));
+        destination.setIngredientsInfo(source.getRecipeIngredients()
                 .stream()
-                .map(RecipeIngredient::getIngredient)
-                .map(ingredientMapper::toDto)
+                .map(recipeIngredientMapper::toDto)
                 .collect(Collectors.toList()));
     }
 
     @Override
     void mapSpecificFields(RecipeDto source, Recipe destination) throws EntityNotFoundException {
-        destination.setLevel(levelService.getEntityById(source.getLevelId()));
-        destination.setCuisine(cuisineService.getEntityById(source.getCuisineId()));
-        destination.setCourses(new HashSet<>(courseService.getAllEntitiesByIds(source.getCourseIdList())));
-        destination.setFoodCategories(new HashSet<>(foodCategoryService.getAllEntitiesByIds(source.getFoodCategoryIdList())));
-        destination.setMeals(new HashSet<>(mealService.getAllEntitiesByIds(source.getMealIdList())));
+        destination.setLevel(levelService.getEntityById(source.getLevel().getId()));
+        destination.setCuisine(cuisineService.getEntityById(source.getCuisine().getId()));
+        destination.setCourses(new HashSet<>(courseService.getAllEntitiesByIds(source.getCourseList()
+                .stream()
+                .map(CourseDto::getId)
+                .collect(Collectors.toList()))));
+        destination.setFoodCategories(new HashSet<>(foodCategoryService.getAllEntitiesByIds(source.getFoodCategoryList()
+                .stream()
+                .map(FoodCategoryDto::getId)
+                .collect(Collectors.toList()))));
+        destination.setMeals(new HashSet<>(mealService.getAllEntitiesByIds(source.getMealList()
+                .stream()
+                .map(MealDto::getId)
+                .collect(Collectors.toList()))));
         List<RecipeIngredient> recipeIngredientList = recipeIngredientRepository.findRecipeIngredientListByRecipeId(source.getId());
-//                extractRecipeIngredientListFromMap(source.getIngredientIdAndMeasurementIdAmountMap(),destination);
         destination.setRecipeIngredients(recipeIngredientList);
     }
 
-//    private List<RecipeIngredient> extractRecipeIngredientListFromMap(Map<String, Map<String ,Long>> ingredinentMeasureAmountMap,
-//                                                                      Recipe recipe) {
-//        return ingredinentMeasureAmountMap.keySet()
-//                .stream()
-//                .map(ingredientId ->{
-//                    RecipeIngredient recipeIngredient =  new RecipeIngredient();
-//                    recipeIngredient.setRecipe(recipe);
-//                    recipeIngredient.setIngredient(ingredientService.getEntityById(Long.parseLong(ingredientId)));
-//                    recipeIngredient.setAmount(toIntExact(ingredinentMeasureAmountMap.get(ingredientId).get("amount")));
-//                    recipeIngredient.setMeasurement(measurementRepository.getOne(
-//                            ingredinentMeasureAmountMap.get(ingredientId).get("measurement_id")));
-//                    return recipeIngredient;})
-//                .collect(Collectors.toList());
-//    }
 }
