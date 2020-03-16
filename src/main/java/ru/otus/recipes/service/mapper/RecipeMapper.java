@@ -1,13 +1,13 @@
 package ru.otus.recipes.service.mapper;
 
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.NoOp;
 import org.springframework.stereotype.Service;
 import ru.otus.recipes.domain.*;
-import ru.otus.recipes.dto.CourseDto;
-import ru.otus.recipes.dto.FoodCategoryDto;
-import ru.otus.recipes.dto.MealDto;
-import ru.otus.recipes.dto.RecipeDto;
+import ru.otus.recipes.dto.*;
 import ru.otus.recipes.exception.EntityNotFoundException;
 import ru.otus.recipes.repository.*;
 import ru.otus.recipes.service.*;
@@ -63,9 +63,8 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
                 .addMappings(m -> m.skip(RecipeDto::setFoodCategoryList))
                 .addMappings(m -> m.skip(RecipeDto::setMealList))
                 .addMappings(m -> m.skip(RecipeDto::setIngredientsInfo))
-                .setPostConverter(toDtoConverter());
+                .setPostConverter(converter);
         mapper.createTypeMap(RecipeDto.class, Recipe.class)
-                .addMappings(m -> m.skip(Recipe::setLevel))
                 .addMappings(m -> m.skip(Recipe::setCuisine))
                 .addMappings(m -> m.skip(Recipe::setCourses))
                 .addMappings(m -> m.skip(Recipe::setFoodCategories))
@@ -76,8 +75,9 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
 
     @Override
     void mapSpecificFields(Recipe source, RecipeDto destination) {
-        destination.setLevel(levelMapper.toDto(source.getLevel()));
-        destination.setCuisine(cuisineMapper.toDto(source.getCuisine()));
+//         (true) ? destination.setLevel(levelMapper.toDto(source.getLevel())) : destination.setLevel()); ;
+//        source = (Recipe) createProxy(source.getClass());
+        destination.setCuisine(cuisineMapper.toDto((Cuisine)returnProxyIfRequired(source.getCuisine())));
         destination.setCourseList(source.getCourses().stream().map(courseMapper::toDto).collect(Collectors.toList()));
         destination.setFoodCategoryList(source.getFoodCategories().stream().map(foodCategoryMapper::toDto).collect(Collectors.toList()));
         destination.setMealList(source.getMeals().stream().map(mealMapper::toDto).collect(Collectors.toList()));
@@ -85,6 +85,10 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
                 .stream()
                 .map(recipeIngredientMapper::toDto)
                 .collect(Collectors.toList()));
+    }
+
+    Object returnProxyIfRequired(Cuisine source){
+        return 1==1 ? createProxy(source.getClass()) : source;
     }
 
     @Override
@@ -106,5 +110,4 @@ public class RecipeMapper extends AbstractMapper<RecipeDto, Recipe> {
         List<RecipeIngredient> recipeIngredientList = recipeIngredientRepository.findRecipeIngredientListByRecipeId(source.getId());
         destination.setRecipeIngredients(recipeIngredientList);
     }
-
 }
