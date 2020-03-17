@@ -11,7 +11,6 @@ import java.util.List;
 @Getter
 public class CompressionCriteria {
     @Singular("expansionsList") private List<String> expansionsList;
-    @Singular("includingsList") private List<String> includingsList;
     @Builder.Default private StringBuilder path = new StringBuilder();
     private String delimiter;
     private String identifier;

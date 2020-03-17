@@ -43,9 +43,8 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
     }
 
     @Override
-    @CompressJson(expansions="expansions", includings = "includings")
-    public ResponseEntity<?> get(@PathVariable long id, @RequestParam(value = "expand", required = false) String[] expansions,
-                                 @RequestParam(value = "include",required = false) String[] includings) throws EntityNotFoundException {
+    @CompressJson(expansions="expansions")
+    public ResponseEntity<?> get(@PathVariable long id, @RequestParam(value = "expand", required = false) String[] expansions) throws EntityNotFoundException {
             log.info("Get request with id: {}",id);
         AddressDto addressDto = new AddressDto(1,236000, "NY", "Kuibyshev", 53,59);
         VendorDto vendorDto = new VendorDto(1,"vendor",addressDto);
@@ -56,6 +55,7 @@ public abstract class AbstractController<E extends AbstractEntity, S extends Com
                 new ItemDto(3,"item3", addressDto));
         OrderDto orderDto = new OrderDto(1,"comment", clientDto);
         orderDto.setItems(itemDtoList);
+        clientDto.setItems(itemDtoList);
         orderDto.setVendor(vendorDto);
             return new ResponseEntity<>(orderDto, HttpStatus.OK);
     }

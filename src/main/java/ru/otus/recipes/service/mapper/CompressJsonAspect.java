@@ -43,15 +43,12 @@ public class CompressJsonAspect {
 
     private CompressionCriteria buildCompressionCriteria(List<String> parametersNames, Object[] methodArguments, CompressJson compressJsonAnnotation) {
         String expansionsParamName = compressJsonAnnotation.expansions();
-        String includingsParamName = compressJsonAnnotation.includings();
         String delimiter = compressJsonAnnotation.delimiter();
         String identifier = compressJsonAnnotation.identifier();
 
         List<String> expansionsList = getArgumentListByIndex(parametersNames.indexOf(expansionsParamName),methodArguments);
-        List<String> includingsList = getArgumentListByIndex(parametersNames.indexOf(includingsParamName),methodArguments);
 
         return CompressionCriteria.builder()
-                .includingsList(includingsList)
                 .expansionsList(expansionsList)
                 .delimiter(delimiter)
                 .identifier(identifier)
@@ -70,14 +67,14 @@ public class CompressJsonAspect {
                 increasePath(compressionCriteria, key);
                 if (value.isObject()) {
                     ObjectNode objectNode = (ObjectNode) value;
-                    if (areObjectNodeCompressionConditionsMet(compressionCriteria)) {
+                    if (areCompressionConditionsMet(compressionCriteria)) {
                         objectNode.retain(compressionCriteria.getIdentifier());
                     } else {
                         compressJsonNode(objectNode,compressionCriteria);
                     }
                 } else if (value.isArray()) {
                     ArrayNode arrayNode = (ArrayNode) value;
-                    if (areArrayNodeCompressionConditionsMet(compressionCriteria)) {
+                    if (areCompressionConditionsMet(compressionCriteria)) {
                         arrayNode.removeAll();
                     } else {
                         arrayNode.forEach(jsonNode -> {compressJsonNode(jsonNode, compressionCriteria);});
@@ -88,16 +85,8 @@ public class CompressJsonAspect {
         }
     }
 
-    private boolean areArrayNodeCompressionConditionsMet(CompressionCriteria compressionCriteria) {
-        return !compressionCriteria.getIncludingsList().contains(compressionCriteria.getPath().toString()) &
-                compressionCriteria.getIncludingsList()
-                        .stream()
-                        .noneMatch(including -> including.contains(compressionCriteria.getPath().toString() + compressionCriteria.getDelimiter()));
-    }
-
-    private boolean areObjectNodeCompressionConditionsMet(CompressionCriteria compressionCriteria) {
+    private boolean areCompressionConditionsMet(CompressionCriteria compressionCriteria) {
         return !compressionCriteria.getExpansionsList().contains(compressionCriteria.getPath().toString()) &
-               !compressionCriteria.getIncludingsList().contains(compressionCriteria.getPath().toString()) &
                 compressionCriteria.getExpansionsList()
                         .stream()
                         .noneMatch(expansion -> expansion.contains(compressionCriteria.getPath().toString() + compressionCriteria.getDelimiter()));

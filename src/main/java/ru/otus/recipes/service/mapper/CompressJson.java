@@ -11,7 +11,6 @@ import java.util.List;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CompressJson {
     String expansions() default "";
-    String includings() default "";
     String delimiter() default ".";
     String identifier() default "id";
 }

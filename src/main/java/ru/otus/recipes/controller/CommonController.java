@@ -16,8 +16,7 @@ public interface CommonController<D extends AbstractDto> {
     ResponseEntity<?> update(@PathVariable("id") long id,@RequestBody D dto) throws EntityNotFoundException;
 
     @GetMapping("/{id}")
-    ResponseEntity<?> get(@PathVariable long id, @RequestParam(value = "expand") String[] expansions,
-                          @RequestParam(value = "include") String[] includings) throws EntityNotFoundException;
+    ResponseEntity<?> get(@PathVariable long id, @RequestParam(value = "expand") String[] expansions) throws EntityNotFoundException;
 
     @GetMapping
     ResponseEntity<?> getAll() throws EntityNotFoundException;
